@@ -1,0 +1,12 @@
+{"level":"INFO","timestamp":"2025-02-13T14:01:06.718+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-13T14:01:06.719+0700","caller":"initialize/run.go:17","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-13T14:02:57.210+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-13T14:02:57.211+0700","caller":"initialize/run.go:17","msg":"Initialize all services successfully"}
+{"level":"ERROR","timestamp":"2025-02-14T11:55:13.272+0700","caller":"initialize/redis.go:26","msg":"Failed to connect to Redis:","error":"NOAUTH Authentication required.","stacktrace":"github.com/bhtoan2204/gateway/internal/initialize.InitRedis\n\t/Users/toanbanh/youtube-backend/gateway/internal/initialize/redis.go:26\ngithub.com/bhtoan2204/gateway/internal/initialize.Run\n\t/Users/toanbanh/youtube-backend/gateway/internal/initialize/run.go:16\nmain.main\n\t/Users/toanbanh/youtube-backend/gateway/cmd/main/main.go:6\nruntime.main\n\t/usr/local/Cellar/go/1.23.2/libexec/src/runtime/proc.go:272"}
+{"level":"INFO","timestamp":"2025-02-14T11:55:29.288+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-14T11:55:29.289+0700","caller":"initialize/run.go:18","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-14T11:57:11.523+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-14T11:57:11.524+0700","caller":"initialize/consul.go:16","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-14T11:57:11.529+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-14T11:57:11.529+0700","caller":"initialize/router.go:39","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-14T11:57:11.529+0700","caller":"initialize/run.go:18","msg":"Initialize all services successfully"}
