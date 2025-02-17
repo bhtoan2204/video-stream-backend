@@ -3,7 +3,7 @@ package global
 import (
 	"net"
 
-	"github.com/bhtoan2204/user/pkg/settings"
+	"github.com/bhtoan2204/video/pkg/settings"
 	"github.com/hashicorp/consul/api"
 
 	"github.com/redis/go-redis/v9"

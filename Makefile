@@ -6,4 +6,8 @@ run-user:
 	@echo "Running User Service"
 	@cd user && go run ./cmd/main/main.go
 
-.PHONY: run-gateway run-user
+run-video:
+	@echo "Running Video Service"
+	@cd video && go run ./cmd/main/main.go
+
+.PHONY: run-gateway run-user run-video

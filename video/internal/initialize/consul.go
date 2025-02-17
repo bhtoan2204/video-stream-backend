@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/bhtoan2204/user/global"
+	"github.com/bhtoan2204/video/global"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
 )
@@ -27,10 +27,10 @@ func InitConsul() {
 
 	registration := &api.AgentServiceRegistration{
 		ID:      serviceID,
-		Name:    "user-service",
+		Name:    "video-service",
 		Address: consulConfig.Address,
 		Port:    global.Listener.Addr().(*net.TCPAddr).Port,
-		Tags:    []string{"api", "user"},
+		Tags:    []string{"api", "video"},
 		Check: &api.AgentServiceCheck{
 			HTTP:     fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, servicePort),
 			Interval: "10s",

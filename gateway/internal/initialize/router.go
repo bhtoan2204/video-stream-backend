@@ -5,6 +5,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strconv"
+	"sync"
 
 	"github.com/bhtoan2204/gateway/global"
 	"github.com/bhtoan2204/gateway/internal/middleware"
@@ -16,23 +17,58 @@ import (
 	"golang.org/x/time/rate"
 )
 
+var (
+	serviceCounters = make(map[string]int)
+	mu              sync.Mutex
+)
+
 func getServiceAddress(client *api.Client, serviceName string) (string, error) {
 	services, err := client.Agent().Services()
 	if err != nil {
 		return "", err
 	}
+
+	var availableServices []string
 	for _, service := range services {
 		if service.Service == serviceName {
-			return service.Address + ":" + strconv.Itoa(service.Port), nil
+			address := service.Address + ":" + strconv.Itoa(service.Port)
+			availableServices = append(availableServices, address)
 		}
 	}
-	return "", errors.New("service not found")
+
+	if len(availableServices) == 0 {
+		return "", errors.New("service not found")
+	}
+
+	mu.Lock()
+	index := serviceCounters[serviceName] % len(availableServices)
+	serviceCounters[serviceName]++
+	mu.Unlock()
+
+	return availableServices[index], nil
 }
 
 func userServiceProxy(c *gin.Context) {
 	serviceAddress, err := getServiceAddress(global.ConsulClient, "user-service")
 	if err != nil {
 		global.Logger.Error("User-service not found", zap.Error(err))
+		response.ErrorNotFoundResponse(c, 404)
+		return
+	}
+	targetURL, err := url.Parse("http://" + serviceAddress)
+	if err != nil {
+		global.Logger.Error("Failed to parse URL", zap.Error(err))
+		response.ErrorInternalServerResponse(c, 500)
+		return
+	}
+	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+	proxy.ServeHTTP(c.Writer, c.Request)
+}
+
+func videoServiceProxy(c *gin.Context) {
+	serviceAddress, err := getServiceAddress(global.ConsulClient, "video-service")
+	if err != nil {
+		global.Logger.Error("Video-service not found", zap.Error(err))
 		response.ErrorNotFoundResponse(c, 404)
 		return
 	}
@@ -75,6 +111,7 @@ func InitRouter() *gin.Engine {
 		})
 
 		MainGroup.Any("/users", userServiceProxy)
+		MainGroup.Any("/videos", videoServiceProxy)
 	}
 	global.Logger.Info("Router initialized successfully")
 	return r

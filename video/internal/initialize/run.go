@@ -3,7 +3,7 @@ package initialize
 import (
 	"os"
 
-	"github.com/bhtoan2204/user/global"
+	"github.com/bhtoan2204/video/global"
 )
 
 func Run() {
