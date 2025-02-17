@@ -1,15 +1,15 @@
 server:
   port: 8080
   mode: development
-mysql:
-  host: mysql
-  port: 3306
-  user: root
-  pass: root
-  name: veeflow
-  max_idle_conns: 10
-  max_open_conns: 100
-  max_lifetime: 3600
+# mysql:
+#   host: mysql
+#   port: 3306
+#   user: root
+#   pass: root
+#   name: veeflow
+#   max_idle_conns: 10
+#   max_open_conns: 100
+#   max_lifetime: 3600
 log:
   log_level: debug
   file_path: storages/logs/gateway.log
