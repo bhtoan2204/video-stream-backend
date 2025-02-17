@@ -10,8 +10,8 @@ import (
 )
 
 func Run() {
-	InitLogger()
 	InitLoadConfig()
+	InitLogger()
 	InitConsul()
 	InitRedis()
 	r := InitRouter()

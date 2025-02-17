@@ -29,5 +29,4 @@ func InitLoadConfig() {
 	if err != nil {
 		panic(fmt.Errorf("unable to decode configuration: %s", err))
 	}
-	global.Logger.Info("Loaded configuration successfully")
 }
