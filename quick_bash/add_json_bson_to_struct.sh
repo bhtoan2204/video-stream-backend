@@ -1,0 +1,1 @@
+sed -i '' -E 's/`json:"([^"]+)"([^`]*)`/`json:"\1"\2 bson:"\1"`/g' example.go

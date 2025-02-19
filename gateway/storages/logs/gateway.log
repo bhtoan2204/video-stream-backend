@@ -47,3 +47,106 @@
 {"level":"ERROR","timestamp":"2025-02-17T15:31:23.388+0700","caller":"middleware/apiLog.middleware.go:73","msg":"Server error","method":"GET","path":"/api/v1/users","statusCode":502,"latency":0.001742976,"responseBody":"","stacktrace":"github.com/bhtoan2204/gateway/internal/initialize.InitRouter.ApiLogMiddleware.func4\n\t/Users/toanbanh/youtube-backend/gateway/internal/middleware/apiLog.middleware.go:73\ngithub.com/gin-gonic/gin.(*Context).Next\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185\ngithub.com/bhtoan2204/gateway/internal/initialize.InitRouter.RateLimitMiddleware.func3\n\t/Users/toanbanh/youtube-backend/gateway/internal/middleware/rateLimit.middleware.go:78\ngithub.com/gin-gonic/gin.(*Context).Next\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185\ngithub.com/bhtoan2204/gateway/internal/initialize.InitRouter.CORSMiddleware.func2\n\t/Users/toanbanh/youtube-backend/gateway/internal/middleware/cors.middleware.go:11\ngithub.com/gin-gonic/gin.(*Context).Next\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185\ngithub.com/gin-gonic/gin.LoggerWithConfig.func1\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/logger.go:249\ngithub.com/gin-gonic/gin.(*Context).Next\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185\ngithub.com/gin-gonic/gin.CustomRecoveryWithWriter.func1\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/recovery.go:102\ngithub.com/gin-gonic/gin.(*Context).Next\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185\ngithub.com/gin-gonic/gin.LoggerWithConfig.func1\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/logger.go:249\ngithub.com/gin-gonic/gin.(*Context).Next\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185\ngithub.com/gin-gonic/gin.(*Engine).handleHTTPRequest\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/gin.go:633\ngithub.com/gin-gonic/gin.(*Engine).ServeHTTP\n\t/Users/toanbanh/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/gin.go:589\nnet/http.serverHandler.ServeHTTP\n\t/usr/local/Cellar/go/1.23.2/libexec/src/net/http/server.go:3210\nnet/http.(*conn).serve\n\t/usr/local/Cellar/go/1.23.2/libexec/src/net/http/server.go:2092"}
 {"level":"INFO","timestamp":"2025-02-17T15:31:24.193+0700","caller":"middleware/apiLog.middleware.go:27","msg":"Request in","method":"GET","path":"/api/v1/users","clientIP":"127.0.0.1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36","requestBody":""}
 {"level":"INFO","timestamp":"2025-02-17T15:31:24.196+0700","caller":"middleware/apiLog.middleware.go:55","msg":"Client error","method":"GET","path":"/api/v1/users","statusCode":400,"latency":0.002154807,"responseBody":"{\"message\":\"OK\",\"port\":59006}"}
+{"level":"INFO","timestamp":"2025-02-19T14:39:35.157+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:39:35.158+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:39:35.164+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:39:35.164+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:12.468+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:12.469+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:12.474+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:12.474+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:12.474+0700","caller":"initialize/kafka.go:53","msg":"Kafka initialized","KafkaConfig":{"Broker":"","Port":0,"Topic":"","GroupID":""}}
+{"level":"INFO","timestamp":"2025-02-19T14:40:43.189+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:43.190+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:43.196+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:43.196+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:43.196+0700","caller":"initialize/kafka.go:53","msg":"Kafka initialized","KafkaConfig":{"Broker":"","Port":0,"Topic":"","GroupID":""}}
+{"level":"INFO","timestamp":"2025-02-19T14:40:43.197+0700","caller":"initialize/router.go:116","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:40:43.197+0700","caller":"initialize/run.go:19","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:49.730+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:49.730+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:49.735+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:49.735+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:49.735+0700","caller":"initialize/kafka.go:53","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"gateway-events","GroupID":"gateway-group"}}
+{"level":"INFO","timestamp":"2025-02-19T14:41:55.749+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:55.750+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:55.755+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:55.755+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:55.755+0700","caller":"initialize/kafka.go:53","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"gateway-events","GroupID":"gateway-group"}}
+{"level":"INFO","timestamp":"2025-02-19T14:41:55.757+0700","caller":"initialize/router.go:116","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:41:55.757+0700","caller":"initialize/run.go:19","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:42:54.758+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:42:54.758+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:42:54.762+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:42:54.763+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:42:54.763+0700","caller":"initialize/kafka.go:53","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"gateway-events","GroupID":"gateway-group"}}
+{"level":"INFO","timestamp":"2025-02-19T14:43:46.083+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:43:46.083+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:43:46.088+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:43:46.088+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:43:46.088+0700","caller":"initialize/kafka.go:28","msg":"Kafka consumer initialized","broker":"localhost","group_id":"gateway-group","topic":"gateway-events"}
+{"level":"INFO","timestamp":"2025-02-19T14:43:46.088+0700","caller":"initialize/kafka.go:61","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"gateway-events","GroupID":"gateway-group"}}
+{"level":"INFO","timestamp":"2025-02-19T14:43:46.089+0700","caller":"initialize/router.go:116","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:43:46.089+0700","caller":"initialize/run.go:19","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:09.316+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:09.316+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:09.321+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:09.321+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:09.321+0700","caller":"initialize/kafka.go:28","msg":"Kafka consumer initialized","broker":"localhost","group_id":"gateway-group","topic":"gateway-events"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:38.787+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:38.787+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:38.792+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:38.792+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:38.792+0700","caller":"initialize/kafka.go:28","msg":"Kafka consumer initialized","broker":"localhost","group_id":"gateway-group","topic":"gateway-events"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:50.119+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:50.119+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:50.124+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:50.124+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:50.124+0700","caller":"initialize/kafka.go:28","msg":"Kafka consumer initialized","broker":"localhost","group_id":"gateway-group","topic":"gateway-events"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:50.124+0700","caller":"initialize/kafka.go:61","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"gateway-events","GroupID":"gateway-group"}}
+{"level":"INFO","timestamp":"2025-02-19T14:57:50.125+0700","caller":"initialize/router.go:116","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T14:57:50.125+0700","caller":"initialize/run.go:19","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:02:35.543+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:02:35.543+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:02:35.548+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:02:35.548+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T15:02:35.548+0700","caller":"initialize/kafka.go:28","msg":"Kafka consumer initialized","broker":"localhost","group_id":"gateway-group","topic":"gateway-events"}
+{"level":"INFO","timestamp":"2025-02-19T15:02:35.548+0700","caller":"initialize/kafka.go:61","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"gateway-events","GroupID":"gateway-group"}}
+{"level":"INFO","timestamp":"2025-02-19T15:02:35.549+0700","caller":"initialize/router.go:116","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:02:35.549+0700","caller":"initialize/run.go:19","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:14.852+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:14.852+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:14.857+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:14.857+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:14.858+0700","caller":"initialize/kafka.go:28","msg":"Kafka consumer initialized","broker":"localhost","group_id":"gateway-group","topic":"gateway-events"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:14.858+0700","caller":"initialize/kafka.go:61","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"gateway-events","GroupID":"gateway-group"}}
+{"level":"INFO","timestamp":"2025-02-19T15:03:14.858+0700","caller":"initialize/router.go:117","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:14.858+0700","caller":"initialize/run.go:19","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:22.602+0700","caller":"middleware/apiLog.middleware.go:27","msg":"Request in","method":"GET","path":"/api/v1/health","clientIP":"127.0.0.1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36","requestBody":""}
+{"level":"INFO","timestamp":"2025-02-19T15:03:23.612+0700","caller":"initialize/kafka.go:54","msg":"Message sent to Kafka","key":"key","value":"message"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:23.613+0700","caller":"middleware/apiLog.middleware.go:46","msg":"Request success","method":"GET","path":"/api/v1/health","statusCode":200,"latency":1.010453314,"responseBody":"{\"message\":\"OK\"}"}
+{"level":"INFO","timestamp":"2025-02-19T15:03:42.003+0700","caller":"initialize/kafka.go:39","msg":"Message consumed from Kafka","key":"key","value":"message"}
+{"level":"INFO","timestamp":"2025-02-19T15:09:52.435+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:09:52.435+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:09:52.440+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:09:52.440+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T15:09:52.440+0700","caller":"initialize/kafka.go:28","msg":"Kafka consumer initialized","broker":"localhost","group_id":"gateway-group","topic":"gateway-events"}
+{"level":"INFO","timestamp":"2025-02-19T15:09:52.440+0700","caller":"initialize/kafka.go:61","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"gateway-events","GroupID":"gateway-group"}}
+{"level":"INFO","timestamp":"2025-02-19T15:09:52.441+0700","caller":"initialize/router.go:122","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:09:52.441+0700","caller":"initialize/run.go:19","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:09:59.412+0700","caller":"middleware/apiLog.middleware.go:27","msg":"Request in","method":"GET","path":"/api/v1/health","clientIP":"127.0.0.1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36","requestBody":""}
+{"level":"INFO","timestamp":"2025-02-19T15:10:00.419+0700","caller":"initialize/kafka.go:54","msg":"Message sent to Kafka","key":"test-key","value":"test-message"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:00.420+0700","caller":"middleware/apiLog.middleware.go:46","msg":"Request success","method":"GET","path":"/api/v1/health","statusCode":200,"latency":1.008093672,"responseBody":"{\"message\":\"OK\"}"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:17.986+0700","caller":"initialize/kafka.go:39","msg":"Message consumed from Kafka","key":"test-key","value":"test-message"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:24.210+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:24.210+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:24.215+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:24.215+0700","caller":"initialize/kafka.go:18","msg":"Kafka producer initialized"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:24.215+0700","caller":"initialize/kafka.go:28","msg":"Kafka consumer initialized","broker":"localhost","group_id":"gateway-group","topic":"gateway-events"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:24.215+0700","caller":"initialize/kafka.go:61","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"gateway-events","GroupID":"gateway-group"}}
+{"level":"INFO","timestamp":"2025-02-19T15:10:24.216+0700","caller":"initialize/router.go:117","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:24.216+0700","caller":"initialize/run.go:19","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:26.501+0700","caller":"middleware/apiLog.middleware.go:27","msg":"Request in","method":"GET","path":"/api/v1/health","clientIP":"127.0.0.1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36","requestBody":""}
+{"level":"INFO","timestamp":"2025-02-19T15:10:26.501+0700","caller":"middleware/apiLog.middleware.go:46","msg":"Request success","method":"GET","path":"/api/v1/health","statusCode":200,"latency":0.000116877,"responseBody":"{\"message\":\"OK\"}"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:27.510+0700","caller":"initialize/kafka.go:54","msg":"Message sent to Kafka","key":"test-key","value":"test-message"}
+{"level":"INFO","timestamp":"2025-02-19T15:10:51.007+0700","caller":"initialize/kafka.go:39","msg":"Message consumed from Kafka","key":"test-key","value":"test-message"}

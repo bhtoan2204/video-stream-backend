@@ -14,6 +14,7 @@ func Run() {
 	InitLogger()
 	InitConsul()
 	InitRedis()
+	InitKafka()
 	r := InitRouter()
 	global.Logger.Info("Initialize all services successfully")
 	if err := r.Run(":" + strconv.Itoa(global.Config.Server.Port)); err != nil {

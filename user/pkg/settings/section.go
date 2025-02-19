@@ -11,6 +11,9 @@ type MySQLConfig struct {
 	Host         string `mapstructure:"host"`
 	Port         int    `mapstructure:"port"`
 	Name         string `mapstructure:"name"`
+	Charset      string `mapstructure:"charset"`
+	ParseTime    bool   `mapstructure:"parse_time"`
+	Loc          string `mapstructure:"loc"`
 	MaxIdleConns int    `mapstructure:"max_idle_conns"`
 	MaxOpenConns int    `mapstructure:"max_open_conns"`
 	MaxLifetime  int    `mapstructure:"max_lifetime"`
@@ -39,12 +42,12 @@ type RedisConfig struct {
 	Database int    `mapstructure:"database"`
 }
 
-type S3Config struct {
-	AccessKeyID     string `mapstructure:"access_key_id"`
-	SecretAccessKey string `mapstructure:"secret_access_key"`
-	Region          string `mapstructure:"region"`
-	Bucket          string `mapstructure:"bucket"`
-}
+// type S3Config struct {
+// 	AccessKeyID     string `mapstructure:"access_key_id"`
+// 	SecretAccessKey string `mapstructure:"secret_access_key"`
+// 	Region          string `mapstructure:"region"`
+// 	Bucket          string `mapstructure:"bucket"`
+// }
 
 type ConsulConfig struct {
 	Address    string `mapstructure:"address"`
@@ -59,6 +62,6 @@ type Config struct {
 	LogConfig      LogConfig      `mapstructure:"log"`
 	SecurityConfig SecurityConfig `mapstructure:"security"`
 	RedisConfig    RedisConfig    `mapstructure:"redis"`
-	S3Config       S3Config       `mapstructure:"s3"`
-	ConsulConfig   ConsulConfig   `mapstructure:"consul"`
+	// S3Config       S3Config       `mapstructure:"s3"`
+	ConsulConfig ConsulConfig `mapstructure:"consul"`
 }

@@ -53,6 +53,13 @@ type ConsulConfig struct {
 	Token      string `mapstructure:"token"`
 }
 
+type KafkaConfig struct {
+	Broker  string `mapstructure:"broker"`
+	Port    int    `mapstructure:"port"`
+	Topic   string `mapstructure:"topic"`
+	GroupID string `mapstructure:"group_id"`
+}
+
 type Config struct {
 	Server         ServerConfig   `mapstructure:"server"`
 	MySQLConfig    MySQLConfig    `mapstructure:"mysql"`
@@ -61,4 +68,5 @@ type Config struct {
 	RedisConfig    RedisConfig    `mapstructure:"redis"`
 	S3Config       S3Config       `mapstructure:"s3"`
 	ConsulConfig   ConsulConfig   `mapstructure:"consul"`
+	KafkaConfig    KafkaConfig    `mapstructure:"kafka"`
 }

@@ -109,6 +109,12 @@ func InitRouter() *gin.Engine {
 				"message": "OK",
 			})
 		})
+		MainGroup.GET("/test-kafka", func(c *gin.Context) {
+			go ProduceMessage("test-key", "test-message")
+			c.JSON(200, gin.H{
+				"message": "OK",
+			})
+		})
 
 		MainGroup.Any("/users", userServiceProxy)
 		MainGroup.Any("/videos", videoServiceProxy)
