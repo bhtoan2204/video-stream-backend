@@ -8,7 +8,7 @@ import (
 )
 
 func InitListener() {
-	listener, err := net.Listen("tcp", "localhost:0")
+	listener, err := net.Listen("tcp", "localhost:8090")
 	// fmt.Println("Listening on", listener.Addr().String())
 	if err != nil {
 		// global.Logger.Error("Failed to allocate port", zap.Error(err))

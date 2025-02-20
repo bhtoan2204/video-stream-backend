@@ -1,8 +1,7 @@
 package repository
 
-import "github.com/bhtoan2204/user/internal/domain/model"
+import "github.com/bhtoan2204/user/internal/domain/entities"
 
 type UserRepository interface {
-	Create(user *model.User) (*model.User, error)
-	FindById(id uint) (*model.User, error)
+	Create(user *entities.User) (*entities.User, error)
 }

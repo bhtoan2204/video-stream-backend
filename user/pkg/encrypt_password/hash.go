@@ -1,4 +1,4 @@
-package pkg
+package encrypt_password
 
 import (
 	"crypto/rand"
@@ -38,7 +38,7 @@ func DefaultArgonParam() (*ArgonParam, error) {
 	}, nil
 }
 
-func hashPassword(password string) (string, error) {
+func HashPassword(password string) (string, error) {
 	argonParam, err := DefaultArgonParam()
 	if err != nil {
 		return "", err
@@ -51,7 +51,7 @@ func hashPassword(password string) (string, error) {
 	return fmt.Sprintf("%s$%s", encodedSalt, encodedHash), nil
 }
 
-func verifyPassword(storedHash, password string) (bool, error) {
+func VerifyPassword(storedHash, password string) (bool, error) {
 
 	parts := split(storedHash, "$")
 	if len(parts) != 2 {

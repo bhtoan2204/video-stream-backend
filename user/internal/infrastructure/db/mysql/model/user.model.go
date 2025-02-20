@@ -30,7 +30,3 @@ type User struct {
 	Settings     *UserSettings  `json:"settings,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;"`
 	DeletedAt    gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"index"`
 }
-
-type IUserQuery interface {
-	FindByID(id string) (*User, error)
-}

@@ -2,10 +2,10 @@ server:
   port: 8080
   mode: local
 mysql:
-  host: localhost
-  port: 3306
   user: root
   pass: root
+  host: localhost
+  port: 3306
   name: user
   parse_time: true
   charset: utf8mb4

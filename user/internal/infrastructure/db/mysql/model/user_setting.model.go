@@ -25,6 +25,3 @@ type UserSettings struct {
 	Privacy              *PrivacySettings `json:"privacy,omitempty" gorm:"embedded"`
 	DeletedAt            gorm.DeletedAt   `json:"deleted_at,omitempty" gorm:"index"`
 }
-
-type IUserSettings interface {
-}

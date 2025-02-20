@@ -3,6 +3,7 @@ package global
 import (
 	"net"
 
+	"github.com/bhtoan2204/user/pkg/logger"
 	"github.com/bhtoan2204/user/pkg/settings"
 	"github.com/hashicorp/consul/api"
 	"gorm.io/gorm"
@@ -11,9 +12,9 @@ import (
 )
 
 var (
-	Listener net.Listener
-	Config   settings.Config
-	// Logger       *logger.LoggerZap
+	Listener     net.Listener
+	Config       settings.Config
+	Logger       *logger.LoggerZap
 	Redis        *redis.Client
 	ConsulClient *api.Client
 	MDB          *gorm.DB

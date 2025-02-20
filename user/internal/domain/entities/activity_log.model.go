@@ -1,4 +1,4 @@
-package model
+package entities
 
 import "gorm.io/gorm"
 
@@ -11,4 +11,7 @@ type ActivityLog struct {
 	UserAgent   string         `json:"user_agent,omitempty"`
 	DeviceToken string         `json:"device_token"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"index"`
+}
+
+type IActivityLog interface {
 }

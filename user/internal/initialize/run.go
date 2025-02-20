@@ -7,8 +7,10 @@ import (
 )
 
 func Run() {
+	InitLoadConfig()
 	InitListener()
 	InitConsul()
+	InitDB()
 	r := InitRouter()
 	// listener, err := net.Listen("tcp", ":0")
 	// if err != nil {
