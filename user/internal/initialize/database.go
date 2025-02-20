@@ -6,11 +6,27 @@ import (
 	"time"
 
 	"github.com/bhtoan2204/user/global"
+	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql/persistent_object"
+	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func SetPool() {
+func migrateTables() {
+	models := []interface{}{
+		&persistent_object.User{},
+		&persistent_object.Permission{},
+		&persistent_object.Role{},
+		&persistent_object.UserSettings{},
+	}
+	err := global.MDB.AutoMigrate(models...)
+	if err != nil {
+		global.Logger.Error("Failed to migrate tables", zap.Error(err))
+		panic(err)
+	}
+}
+
+func setPool() {
 	db, err := global.MDB.DB()
 	if err != nil {
 		panic(err)
@@ -63,6 +79,8 @@ func InitDB() error {
 	}
 
 	global.MDB = db
-	SetPool()
+	setPool()
+	migrateTables()
+
 	return nil
 }
