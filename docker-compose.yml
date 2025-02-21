@@ -88,6 +88,9 @@ services:
     environment:
       - GO_ENV=development
     command: ["./user"]
+    deploy:
+      mode: replicated
+      replicas: 1
 
   video:
     build:

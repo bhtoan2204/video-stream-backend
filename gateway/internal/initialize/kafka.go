@@ -29,6 +29,8 @@ func InitKafkaConsumer() {
 
 }
 
+// ConsumeMessage consumes messages from Kafka
+// TODO: func process(generic, handler_function)
 func ConsumeMessage() {
 	for {
 		msg, err := global.KafkaConsumer.ReadMessage(context.Background())

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -56,6 +57,33 @@ func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
 			BirthDate: user.BirthDate.Format(time.RFC3339),
+		},
+	}, nil
+}
+
+// Login is a function that logs in a user.
+func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginCommandResult, error) {
+	user, err := s.userRepository.FindByEmail(loginCommand.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	isVerified, err := encrypt_password.VerifyPassword(user.PasswordHash, loginCommand.Password)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !isVerified {
+		return nil, fmt.Errorf("invalid password")
+	}
+
+	return &command.LoginCommandResult{
+		Result: &common.LoginResult{
+			AccessToken:           "access_token",
+			RefreshToken:          "refresh_token",
+			AccessTokenExpiresAt:  time.Now().Add(time.Hour * 24).Unix(),
+			RefreshTokenExpiresAt: time.Now().Add(time.Hour * 24 * 7).Unix(),
 		},
 	}, nil
 }

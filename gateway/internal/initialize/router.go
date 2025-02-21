@@ -2,9 +2,12 @@ package initialize
 
 import (
 	"errors"
+	"fmt"
+	"net"
 	"net/http/httputil"
 	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/bhtoan2204/gateway/global"
@@ -31,7 +34,15 @@ func getServiceAddress(client *api.Client, serviceName string) (string, error) {
 	var availableServices []string
 	for _, service := range services {
 		if service.Service == serviceName {
-			address := service.Address + ":" + strconv.Itoa(service.Port)
+			host := service.Address
+			if strings.Contains(host, ":") {
+				var err error
+				host, _, err = net.SplitHostPort(host)
+				if err != nil {
+					return "", err
+				}
+			}
+			address := host + ":" + strconv.Itoa(service.Port)
 			availableServices = append(availableServices, address)
 		}
 	}
@@ -56,6 +67,7 @@ func userServiceProxy(c *gin.Context) {
 		return
 	}
 	targetURL, err := url.Parse("http://" + serviceAddress)
+	fmt.Println("targetURL", targetURL)
 	if err != nil {
 		global.Logger.Error("Failed to parse URL", zap.Error(err))
 		response.ErrorInternalServerResponse(c, 500)
@@ -102,22 +114,22 @@ func InitRouter() *gin.Engine {
 	r.Use(middleware.RateLimitMiddleware(rl))
 	r.Use(middleware.ApiLogMiddleware())
 
-	MainGroup := r.Group("/api/v1")
+	V1ApiGroup := r.Group("/api/v1")
 	{
-		MainGroup.GET("/health", func(c *gin.Context) {
+		V1ApiGroup.GET("/health", func(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"message": "OK",
 			})
 		})
-		MainGroup.GET("/test-kafka", func(c *gin.Context) {
+		V1ApiGroup.GET("/test-kafka", func(c *gin.Context) {
 			go ProduceMessage("test-key", "test-message")
 			c.JSON(200, gin.H{
 				"message": "OK",
 			})
 		})
 
-		MainGroup.Any("/users", userServiceProxy)
-		MainGroup.Any("/videos", videoServiceProxy)
+		V1ApiGroup.Any("/users/*any", userServiceProxy)
+		V1ApiGroup.Any("/videos/*any", videoServiceProxy)
 	}
 	global.Logger.Info("Router initialized successfully")
 	return r

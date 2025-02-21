@@ -2,7 +2,7 @@ server:
   port: 8080
   mode: development
 # mysql:
-#   host: mysql
+#   host: localhost
 #   port: 3306
 #   user: root
 #   pass: root
@@ -27,6 +27,11 @@ consul:
   scheme: http
   data_center: dc1
   token:
+kafka:
+  broker: kafka
+  port: 9092
+  topic: gateway-events
+  group_id: gateway-group
 security:
   jwt_access_secret: 8RgPPwhw6BKHRHT68vfpZpTnpWEJqRV3lUQd4QJlrs12RNiLFtk1QpvGQoB1
   jwt_refresh_secret: ROSyJWWHgSejTAEIemaSrLT59Evc2M9AUtp4O4sVHGpIFS9rLGGEx0GPAPiV

@@ -1,6 +1,8 @@
 package initialize
 
 import (
+	"net"
+
 	"github.com/bhtoan2204/user/global"
 	"github.com/bhtoan2204/user/internal/application/controller"
 	"github.com/bhtoan2204/user/internal/application/service"
@@ -13,18 +15,17 @@ func InitRouter() *gin.Engine {
 
 	userRepository := repository.NewUserRepository(global.MDB)
 	userService := service.NewUserService(userRepository)
-	userController := controller.NewUserController(r, userService)
-	MainGroup := r.Group("/api/v1")
+	apiV1 := r.Group("/api/v1")
 	{
-		MainGroup.GET("/health", func(c *gin.Context) {
+		apiV1.GET("/health", func(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"message": "OK",
+				"port":    global.Listener.Addr().(*net.TCPAddr).Port,
 			})
 		})
-		UserGroup := MainGroup.Group("/users")
-		{
-			UserGroup.POST("", userController.CreateUser)
-		}
+
+		userGroup := apiV1.Group("/users")
+		controller.NewUserController(userService, userGroup)
 	}
 	return r
 }

@@ -1,5 +1,4 @@
 server:
-  port: 8080
   mode: local
 mysql:
   user: root

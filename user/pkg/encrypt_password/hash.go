@@ -52,7 +52,6 @@ func HashPassword(password string) (string, error) {
 }
 
 func VerifyPassword(storedHash, password string) (bool, error) {
-
 	parts := split(storedHash, "$")
 	if len(parts) != 2 {
 		return false, fmt.Errorf("invalid stored hash format")
