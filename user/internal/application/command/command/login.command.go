@@ -1,6 +1,6 @@
 package command
 
-import "github.com/bhtoan2204/user/internal/application/common"
+import common "github.com/bhtoan2204/user/internal/application/common/command"
 
 type LoginCommand struct {
 	Email    string `json:"email" binding:"required,email"`

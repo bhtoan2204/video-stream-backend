@@ -56,12 +56,27 @@ type ConsulConfig struct {
 	Token      string `mapstructure:"token"`
 }
 
+type KafkaConfig struct {
+	Broker  string `mapstructure:"broker"`
+	Port    int    `mapstructure:"port"`
+	Topic   string `mapstructure:"topic"`
+	GroupID string `mapstructure:"group_id"`
+}
+
+type ElasticSearchConfig struct {
+	Address  string `mapstructure:"address"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+}
+
 type Config struct {
-	Server         ServerConfig   `mapstructure:"server"`
-	MySQLConfig    MySQLConfig    `mapstructure:"mysql"`
-	LogConfig      LogConfig      `mapstructure:"log"`
-	SecurityConfig SecurityConfig `mapstructure:"security"`
-	RedisConfig    RedisConfig    `mapstructure:"redis"`
+	Server              ServerConfig        `mapstructure:"server"`
+	MySQLConfig         MySQLConfig         `mapstructure:"mysql"`
+	LogConfig           LogConfig           `mapstructure:"log"`
+	SecurityConfig      SecurityConfig      `mapstructure:"security"`
+	RedisConfig         RedisConfig         `mapstructure:"redis"`
+	ConsulConfig        ConsulConfig        `mapstructure:"consul"`
+	KafkaConfig         KafkaConfig         `mapstructure:"kafka"`
+	ElasticSearchConfig ElasticSearchConfig `mapstructure:"elasticsearch"`
 	// S3Config       S3Config       `mapstructure:"s3"`
-	ConsulConfig ConsulConfig `mapstructure:"consul"`
 }

@@ -29,6 +29,15 @@ consul:
   scheme: http
   data_center: dc1
   token:
+kafka:
+  broker: kafka
+  port: 9092
+  topic: user-events
+  group_id: user-group
+elasticsearch:
+  address: http://elastic:9200
+  username: elastic
+  password: changeme
 security:
   jwt_access_secret: 8RgPPwhw6BKHRHT68vfpZpTnpWEJqRV3lUQd4QJlrs12RNiLFtk1QpvGQoB1
   jwt_refresh_secret: ROSyJWWHgSejTAEIemaSrLT59Evc2M9AUtp4O4sVHGpIFS9rLGGEx0GPAPiV

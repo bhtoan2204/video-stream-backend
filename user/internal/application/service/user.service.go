@@ -6,22 +6,29 @@ import (
 	"log"
 	"time"
 
+	"github.com/bhtoan2204/user/global"
 	"github.com/bhtoan2204/user/internal/application/command/command"
-	"github.com/bhtoan2204/user/internal/application/common"
-	"github.com/bhtoan2204/user/internal/application/query"
+	commonCommand "github.com/bhtoan2204/user/internal/application/common/command"
+	commonQuery "github.com/bhtoan2204/user/internal/application/common/query"
+	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
-	"github.com/bhtoan2204/user/internal/domain/repository"
+	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
+	eSRepository "github.com/bhtoan2204/user/internal/domain/repository/query"
 	"github.com/bhtoan2204/user/pkg/encrypt_password"
 	"github.com/bhtoan2204/user/pkg/jwt_utils"
+	"github.com/bhtoan2204/user/utils"
+	"go.uber.org/zap"
 )
 
 type UserService struct {
-	userRepository repository.UserRepository
+	userRepository   repository.UserRepository
+	esUserRepository eSRepository.ESUserRepository
 }
 
-func NewUserService(userRepository repository.UserRepository) *UserService {
+func NewUserService(userRepository repository.UserRepository, esUserRepository eSRepository.ESUserRepository) *UserService {
 	return &UserService{
-		userRepository: userRepository,
+		userRepository:   userRepository,
+		esUserRepository: esUserRepository,
 	}
 }
 
@@ -34,7 +41,7 @@ func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (
 
 	hashedPassword, err := encrypt_password.HashPassword(createUserCommand.Password)
 	if err != nil {
-		log.Fatalf("Failed to hash password: %v", err)
+		log.Fatalf("Failed to hash password: ", err)
 	}
 
 	user, err := s.userRepository.Create(&entities.User{
@@ -52,14 +59,14 @@ func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (
 	}
 
 	return &command.CreateUserCommandResult{
-		Result: &common.UserResult{
+		Result: &commonCommand.UserResult{
 			ID:        user.ID,
 			Username:  user.Username,
 			Email:     user.Email,
 			Phone:     user.Phone,
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
-			BirthDate: user.BirthDate.Format(time.RFC3339),
+			BirthDate: user.BirthDate,
 		},
 	}, nil
 }
@@ -67,7 +74,7 @@ func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (
 // Login is a function that logs in a user.
 func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginCommandResult, error) {
 	user, err := s.userRepository.FindOneByQuery(
-		query.QueryOptions{
+		utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"email": loginCommand.Email,
 			},
@@ -94,7 +101,7 @@ func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginC
 	}
 
 	return &command.LoginCommandResult{
-		Result: &common.LoginResult{
+		Result: &commonCommand.LoginResult{
 			AccessToken:           accessToken,
 			RefreshToken:          refreshToken,
 			AccessTokenExpiresAt:  int64(accessExpiration),
@@ -103,27 +110,30 @@ func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginC
 	}, nil
 }
 
-func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) (*command.RefreshTokenCommandResult, error) {
-	claims, err := jwt_utils.ExtractTokenClaims(refreshTokenCommand.RefreshToken)
+func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) (*commonCommand.RefreshTokenCommandResult, error) {
+	claims, err := jwt_utils.ExtractTokenClaims(refreshTokenCommand.RefreshToken, global.Config.SecurityConfig.JWTRefreshSecret)
 	if err != nil {
+		global.Logger.Error("Failed to extract token claims: ", zap.Error(err))
 		return nil, err
 	}
 
 	userIdFloat, ok := claims["id"].(float64)
 	if !ok {
+		global.Logger.Error("Invalid token claims, missing user id")
 		return nil, errors.New("invalid token claims, missing user id")
 	}
 	userId := uint(userIdFloat)
-
+	fmt.Println("User ID: ", userId)
 	user, err := s.userRepository.FindOneByQuery(
-		query.QueryOptions{
+		utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"id": userId,
 			},
 		},
 	)
-
+	fmt.Println("User: ", user)
 	if err != nil || user == nil {
+		global.Logger.Error("User not found")
 		return nil, errors.New("user not found")
 	}
 
@@ -132,7 +142,7 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 		return nil, err
 	}
 
-	return &command.RefreshTokenCommandResult{
+	return &commonCommand.RefreshTokenCommandResult{
 		AccessToken:           newAccessToken,
 		RefreshToken:          newRefreshToken,
 		AccessTokenExpiresAt:  accessExp,
@@ -142,7 +152,7 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 
 func (s *UserService) GetUserById(getUserByIdCommand *command.GetUserByIdCommand) (*command.GetUserByIdCommandResult, error) {
 	user, err := s.userRepository.FindOneByQuery(
-		query.QueryOptions{
+		utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"id": getUserByIdCommand.ID,
 			},
@@ -153,14 +163,41 @@ func (s *UserService) GetUserById(getUserByIdCommand *command.GetUserByIdCommand
 	}
 
 	return &command.GetUserByIdCommandResult{
-		Result: &common.UserResult{
+		Result: &commonCommand.UserResult{
 			ID:        user.ID,
 			Username:  user.Username,
 			Email:     user.Email,
 			Phone:     user.Phone,
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
-			BirthDate: user.BirthDate.Format(time.RFC3339),
+			BirthDate: user.BirthDate,
 		},
+	}, nil
+}
+
+func (s *UserService) SearchUser(searchUserQuery *query.SearchUserQuery) (*query.SearchUserQueryResult, error) {
+	fmt.Println("Search user query: ", searchUserQuery.Query)
+	users, err := s.esUserRepository.Search(string(searchUserQuery.Query))
+	if err != nil {
+		global.Logger.Error("Failed to search users: ", zap.Error(err))
+		return nil, err
+	}
+
+	var results []commonQuery.UserResult
+	for _, user := range users {
+		results = append(results, commonQuery.UserResult{
+			ID:        user.ID,
+			Username:  user.Username,
+			Email:     user.Email,
+			Phone:     user.Phone,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			// BirthDate: user.BirthDate.Format(time.RFC3339),
+
+		})
+	}
+
+	return &query.SearchUserQueryResult{
+		Result: &results,
 	}, nil
 }

@@ -1,4 +1,4 @@
-package query
+package utils
 
 type QueryOptions struct {
 	Filters map[string]interface{}

@@ -64,8 +64,7 @@ func VerifyToken(tokenString string, secret string) (*jwt.Token, jwt.MapClaims, 
 	return parsedToken, claims, nil
 }
 
-func ExtractTokenClaims(tokenString string) (jwt.MapClaims, error) {
-	secret := global.Config.SecurityConfig.JWTAccessSecret
+func ExtractTokenClaims(tokenString string, secret string) (jwt.MapClaims, error) {
 	_, claims, err := VerifyToken(tokenString, secret)
 	return claims, err
 }

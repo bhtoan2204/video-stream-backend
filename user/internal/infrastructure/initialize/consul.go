@@ -60,7 +60,7 @@ func InitConsul() {
 	servicePort := global.Listener.Addr().(*net.TCPAddr).Port
 	serviceAddress, err := getDockerInternalIP()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to get Docker internal IP: %v", err))
+		panic(fmt.Sprintf("Failed to get Docker internal IP: ", err))
 	}
 
 	registration := &api.AgentServiceRegistration{

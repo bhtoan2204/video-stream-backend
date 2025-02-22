@@ -6,8 +6,10 @@ import (
 	"github.com/bhtoan2204/user/global"
 	"github.com/bhtoan2204/user/internal/application/command"
 	"github.com/bhtoan2204/user/internal/application/controller"
+	"github.com/bhtoan2204/user/internal/application/query"
 	"github.com/bhtoan2204/user/internal/application/service"
 	"github.com/bhtoan2204/user/internal/application/shared"
+	eSRepository "github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch/repository"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql/repository"
 	"github.com/gin-gonic/gin"
 )
@@ -16,9 +18,14 @@ func InitRouter() *gin.Engine {
 	r := gin.Default()
 
 	userRepository := repository.NewUserRepository(global.MDB)
-	userService := service.NewUserService(userRepository)
+	eSUserRepository := eSRepository.NewESUserRepository(global.ESClient)
+	userService := service.NewUserService(userRepository, eSUserRepository)
 
 	commandBus := command.SetUpCommandBus(&shared.ServiceDependencies{
+		UserService: userService,
+	})
+
+	queryBus := query.SetUpQueryBus(&shared.ServiceDependencies{
 		UserService: userService,
 	})
 
@@ -32,7 +39,7 @@ func InitRouter() *gin.Engine {
 		})
 
 		userGroup := apiV1.Group("/users")
-		controller.NewUserController(commandBus, userGroup)
+		controller.NewUserController(commandBus, queryBus, userGroup)
 	}
 	return r
 }

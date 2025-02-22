@@ -50,13 +50,13 @@ func InitDB() error {
 
 	baseDB, err := gorm.Open(mysql.Open(baseDSN), &gorm.Config{})
 	if err != nil {
-		panic(fmt.Errorf("failed to connect to MySQL: %v", err))
+		panic(fmt.Errorf("failed to connect to MySQL: ", err))
 	}
 
 	dbName := global.Config.MySQLConfig.Name
 	createDBSQL := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET %s", dbName, global.Config.MySQLConfig.Charset)
 	if err := baseDB.Exec(createDBSQL).Error; err != nil {
-		panic(fmt.Errorf("failed to create database: %v", err))
+		panic(fmt.Errorf("failed to create database: ", err))
 	}
 
 	sqlDB, _ := baseDB.DB()
@@ -75,7 +75,7 @@ func InitDB() error {
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(fmt.Errorf("failed to connect to database %s: %v", dbName, err))
+		panic(fmt.Errorf("failed to connect to database %s: ", dbName, err))
 	}
 
 	global.MDB = db

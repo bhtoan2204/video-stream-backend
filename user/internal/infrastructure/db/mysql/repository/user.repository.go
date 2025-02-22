@@ -3,9 +3,9 @@ package repository
 import (
 	"errors"
 
-	"github.com/bhtoan2204/user/internal/application/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
-	"github.com/bhtoan2204/user/internal/domain/repository"
+	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
+	"github.com/bhtoan2204/user/utils"
 	"gorm.io/gorm"
 )
 
@@ -18,20 +18,21 @@ func NewUserRepository(db *gorm.DB) repository.UserRepository {
 }
 
 func (r *GormUserRepository) Create(user *entities.User) (*entities.User, error) {
-	if err := r.db.Create(user).Error; err != nil {
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(user).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
 
-func (r *GormUserRepository) CreateUser(user *entities.User) (*entities.User, error) {
-	if err := r.db.Create(user).Error; err != nil {
-		return nil, err
-	}
-	return user, nil
-}
-
-func (r *GormUserRepository) FindByQuery(q query.QueryOptions) ([]entities.User, error) {
+func (r *GormUserRepository) FindByQuery(q utils.QueryOptions) ([]entities.User, error) {
 	var users []entities.User
 	dbQuery := r.db
 
@@ -61,7 +62,7 @@ func (r *GormUserRepository) FindByQuery(q query.QueryOptions) ([]entities.User,
 	return users, nil
 }
 
-func (r *GormUserRepository) FindOneByQuery(q query.QueryOptions) (*entities.User, error) {
+func (r *GormUserRepository) FindOneByQuery(q utils.QueryOptions) (*entities.User, error) {
 	var user entities.User
 	dbQuery := r.db
 

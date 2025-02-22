@@ -1,4 +1,4 @@
-package repository
+package command
 
 type RefreshTokenRepository interface {
 }
