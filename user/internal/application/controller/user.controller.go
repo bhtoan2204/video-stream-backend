@@ -2,18 +2,18 @@ package controller
 
 import (
 	"github.com/bhtoan2204/user/internal/application/command"
-	"github.com/bhtoan2204/user/internal/application/interfaces"
+	realCommand "github.com/bhtoan2204/user/internal/application/command/command"
 	"github.com/bhtoan2204/user/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	userService interfaces.UserServiceInterface
+	commandBus *command.CommandBus
 }
 
-func NewUserController(userService interfaces.UserServiceInterface, r *gin.RouterGroup) *UserController {
+func NewUserController(commandBus *command.CommandBus, r *gin.RouterGroup) *UserController {
 	ctrl := &UserController{
-		userService: userService,
+		commandBus: commandBus,
 	}
 
 	r.POST("", ctrl.CreateUser)
@@ -22,12 +22,12 @@ func NewUserController(userService interfaces.UserServiceInterface, r *gin.Route
 }
 
 func (controller *UserController) CreateUser(c *gin.Context) {
-	var command command.CreateUserCommand
+	var command realCommand.CreateUserCommand
 	if err := c.ShouldBindJSON(&command); err != nil {
 		response.ErrorBadRequestResponse(c, 4000, err)
 		return
 	}
-	result, err := controller.userService.CreateUser(&command)
+	result, err := controller.commandBus.Dispatch(&command)
 	if err != nil {
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
@@ -36,15 +36,30 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 }
 
 func (controller *UserController) Login(c *gin.Context) {
-	var command command.LoginCommand
+	var command realCommand.LoginCommand
 	if err := c.ShouldBindJSON(&command); err != nil {
 		response.ErrorBadRequestResponse(c, 4000, err)
 		return
 	}
-	result, err := controller.userService.Login(&command)
+	result, err := controller.commandBus.Dispatch(&command)
 	if err != nil {
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}
+	c.JSON(200, result)
+}
+
+func (controller *UserController) RefreshNewToken(c *gin.Context) {
+	var command realCommand.RefreshTokenCommand
+	if err := c.ShouldBindJSON(&command); err != nil {
+		response.ErrorBadRequestResponse(c, 4001, err)
+		return
+	}
+	result, err := controller.commandBus.Dispatch(&command)
+	if err != nil {
+		response.ErrorBadRequestResponse(c, 4001, err.Error())
+		return
+	}
+
 	c.JSON(200, result)
 }

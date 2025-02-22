@@ -4,8 +4,10 @@ import (
 	"net"
 
 	"github.com/bhtoan2204/user/global"
+	"github.com/bhtoan2204/user/internal/application/command"
 	"github.com/bhtoan2204/user/internal/application/controller"
 	"github.com/bhtoan2204/user/internal/application/service"
+	"github.com/bhtoan2204/user/internal/application/shared"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql/repository"
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +17,11 @@ func InitRouter() *gin.Engine {
 
 	userRepository := repository.NewUserRepository(global.MDB)
 	userService := service.NewUserService(userRepository)
+
+	commandBus := command.SetUpCommandBus(&shared.ServiceDependencies{
+		UserService: userService,
+	})
+
 	apiV1 := r.Group("/api/v1")
 	{
 		apiV1.GET("/health", func(c *gin.Context) {
@@ -25,7 +32,7 @@ func InitRouter() *gin.Engine {
 		})
 
 		userGroup := apiV1.Group("/users")
-		controller.NewUserController(userService, userGroup)
+		controller.NewUserController(commandBus, userGroup)
 	}
 	return r
 }

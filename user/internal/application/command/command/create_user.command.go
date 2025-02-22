@@ -15,3 +15,7 @@ type CreateUserCommand struct {
 type CreateUserCommandResult struct {
 	Result *common.UserResult `json:"result"`
 }
+
+func (*CreateUserCommand) CommandName() string {
+	return "CreateUserCommand"
+}

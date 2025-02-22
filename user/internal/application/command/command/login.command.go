@@ -10,3 +10,7 @@ type LoginCommand struct {
 type LoginCommandResult struct {
 	Result *common.LoginResult `json:"result"`
 }
+
+func (*LoginCommand) CommandName() string {
+	return "LoginCommand"
+}

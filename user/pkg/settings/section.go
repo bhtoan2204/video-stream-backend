@@ -22,8 +22,8 @@ type MySQLConfig struct {
 type SecurityConfig struct {
 	JWTAccessSecret      string `mapstructure:"jwt_access_secret"`
 	JWTRefreshSecret     string `mapstructure:"jwt_refresh_secret"`
-	JWTAccessExpiration  string `mapstructure:"jwt_access_expiration"`
-	JWTRefreshExpiration string `mapstructure:"jwt_refresh_expiration"`
+	JWTAccessExpiration  int    `mapstructure:"jwt_access_expiration"`
+	JWTRefreshExpiration int    `mapstructure:"jwt_refresh_expiration"`
 }
 
 type LogConfig struct {
