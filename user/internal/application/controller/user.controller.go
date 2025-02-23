@@ -30,7 +30,7 @@ func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus,
 	r.POST("/refresh", ctrl.RefreshNewToken)
 
 	// Query
-	r.GET("/search", ctrl.SearchUser)
+	r.GET("", ctrl.SearchUser)
 	return ctrl
 }
 
@@ -56,6 +56,7 @@ func (controller *UserController) Login(c *gin.Context) {
 	}
 	result, err := controller.commandBus.Dispatch(&command)
 	if err != nil {
+		global.Logger.Error("Failed to hash password: ", zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}
@@ -110,6 +111,7 @@ func (controller *UserController) SearchUser(c *gin.Context) {
 	}
 	result, err := controller.queryBus.Dispatch(&query)
 	if err != nil {
+		global.Logger.Error("Failed to hash password: ", zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}

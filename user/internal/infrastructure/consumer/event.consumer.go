@@ -20,7 +20,7 @@ func ConsumeMessage(esRepositories *shared.Repositories) {
 			continue
 		}
 		global.Logger.Info("Message consumed from Kafka", zap.String("key", string(msg.Key)), zap.String("value", string(msg.Value)))
-		processMessage(msg, esRepositories)
+		go processMessage(msg, esRepositories)
 	}
 }
 
@@ -38,6 +38,10 @@ func processMessage(msg kafka.Message, esRepositories *shared.Repositories) {
 		user.Email = userCreatedEvent.Payload.Email
 		user.FirstName = userCreatedEvent.Payload.FirstName
 		user.LastName = userCreatedEvent.Payload.LastName
+		user.Phone = userCreatedEvent.Payload.Phone
+		user.BirthDate = userCreatedEvent.Payload.BirthDate
+		user.Address = userCreatedEvent.Payload.Address
+
 		if err := esRepositories.ESUserRepository.Index(&user); err != nil {
 			global.Logger.Error("Failed to index user", zap.Error(err))
 		}

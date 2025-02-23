@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strconv"
@@ -74,6 +75,11 @@ func userServiceProxy(c *gin.Context) {
 		return
 	}
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+	proxy.Director = func(req *http.Request) {
+		req.URL.Scheme = targetURL.Scheme
+		req.URL.Host = targetURL.Host
+		req.URL.Path = strings.Replace(req.URL.Path, "/user-service", "", 1)
+	}
 	proxy.ServeHTTP(c.Writer, c.Request)
 }
 
@@ -91,6 +97,11 @@ func videoServiceProxy(c *gin.Context) {
 		return
 	}
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+	proxy.Director = func(req *http.Request) {
+		req.URL.Scheme = targetURL.Scheme
+		req.URL.Host = targetURL.Host
+		req.URL.Path = strings.Replace(req.URL.Path, "/video-service", "", 1)
+	}
 	proxy.ServeHTTP(c.Writer, c.Request)
 }
 
@@ -128,8 +139,8 @@ func InitRouter() *gin.Engine {
 			})
 		})
 
-		V1ApiGroup.Any("/users/*any", userServiceProxy)
-		V1ApiGroup.Any("/videos/*any", videoServiceProxy)
+		V1ApiGroup.Any("/user-service/*any", userServiceProxy)
+		V1ApiGroup.Any("/video-service/*any", videoServiceProxy)
 	}
 	global.Logger.Info("Router initialized successfully")
 	return r

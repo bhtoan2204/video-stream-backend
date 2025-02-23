@@ -8,14 +8,24 @@ import (
 	"strconv"
 
 	"github.com/bhtoan2204/user/global"
+	common "github.com/bhtoan2204/user/internal/application/common/query"
+	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/query"
+	"github.com/bhtoan2204/user/utils"
 	"github.com/elastic/go-elasticsearch/v8"
 	"go.uber.org/zap"
 )
 
 type ESUserRepository struct {
 	db *elasticsearch.Client
+}
+
+var keywordFields = map[string]bool{
+	"username":   true,
+	"email":      true,
+	"first_name": true,
+	"last_name":  true,
 }
 
 func NewESUserRepository(db *elasticsearch.Client) repository.ESUserRepository {
@@ -27,7 +37,8 @@ func (r *ESUserRepository) Index(user *entities.User) error {
 	jsonData, err := json.Marshal(user)
 	fmt.Println("After indexing user", string(jsonData))
 	if err != nil {
-		return fmt.Errorf("failed to marshal user: %w", err)
+		global.Logger.Error("Failed to marshal user:", zap.Error(err))
+		return fmt.Errorf("Failed to marshal user: %w", err)
 	}
 
 	res, err := r.db.Index(
@@ -49,20 +60,43 @@ func (r *ESUserRepository) Index(user *entities.User) error {
 	return nil
 }
 
-func (r *ESUserRepository) Search(query string) ([]*entities.User, error) {
-	searchQuery := map[string]interface{}{
-		"query": map[string]interface{}{
-			"multi_match": map[string]interface{}{
-				"query":  query,
-				"fields": []string{"username", "email", "first_name", "last_name"},
-			},
-		},
+func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*query.SearchUserQueryResult, error) {
+	from := (params.Page - 1) * params.Limit
+
+	queryMap := map[string]interface{}{
+		"from": from,
+		"size": params.Limit,
 	}
 
-	fmt.Println("aaaaaaaaaa", searchQuery)
+	if params.Query != "" {
+		queryMap["query"] = map[string]interface{}{
+			"multi_match": map[string]interface{}{
+				"query":  params.Query,
+				"fields": []string{"username", "email", "first_name", "last_name"},
+			},
+		}
+	}
 
-	jsonQuery, err := json.Marshal(searchQuery)
-	fmt.Println("aaaaaaaaaa", string(jsonQuery))
+	// Sửa đổi trường sort: nếu là text, sắp xếp theo phiên bản keyword
+	if params.SortBy != "" && params.SortDirection != "" {
+		sortField := params.SortBy
+		// if !strings.Contains(sortField, ".keyword") {
+		// 	sortField = sortField + ".keyword"
+		// }
+		if keywordFields[sortField] {
+			sortField = sortField + ".keyword"
+		}
+
+		queryMap["sort"] = []interface{}{
+			map[string]interface{}{
+				sortField: map[string]interface{}{
+					"order": params.SortDirection,
+				},
+			},
+		}
+	}
+
+	jsonQuery, err := json.Marshal(queryMap)
 	if err != nil {
 		global.Logger.Error("Failed to marshal search query", zap.Error(err))
 		return nil, fmt.Errorf("failed to marshal search query: %w", err)
@@ -76,7 +110,7 @@ func (r *ESUserRepository) Search(query string) ([]*entities.User, error) {
 		r.db.Search.WithPretty(),
 	)
 	if err != nil {
-		global.Logger.Error("Failed to marshal search query", zap.Error(err))
+		global.Logger.Error("Failed to execute search query", zap.Error(err))
 		return nil, fmt.Errorf("failed to execute search query: %w", err)
 	}
 	defer res.Body.Close()
@@ -88,7 +122,7 @@ func (r *ESUserRepository) Search(query string) ([]*entities.User, error) {
 
 	var result map[string]interface{}
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
-		global.Logger.Error("Failed to marshal search query", zap.Error(err))
+		global.Logger.Error("Failed to decode search response", zap.Error(err))
 		return nil, fmt.Errorf("failed to decode search response: %w", err)
 	}
 
@@ -97,12 +131,25 @@ func (r *ESUserRepository) Search(query string) ([]*entities.User, error) {
 		global.Logger.Error("Unexpected search result format")
 		return nil, fmt.Errorf("unexpected search result format")
 	}
+
+	var totalDocs int
+	switch v := hits["total"].(type) {
+	case map[string]interface{}:
+		if value, ok := v["value"].(float64); ok {
+			totalDocs = int(value)
+		}
+	case float64:
+		totalDocs = int(v)
+	default:
+		totalDocs = 0
+	}
+
 	hitsArray, ok := hits["hits"].([]interface{})
 	if !ok {
 		return nil, fmt.Errorf("unexpected hits format")
 	}
 
-	var users []*entities.User
+	var users []common.UserResult
 	for _, hit := range hitsArray {
 		hitMap, ok := hit.(map[string]interface{})
 		if !ok {
@@ -116,12 +163,17 @@ func (r *ESUserRepository) Search(query string) ([]*entities.User, error) {
 		if err != nil {
 			continue
 		}
-		var user entities.User
+		var user common.UserResult
 		if err := json.Unmarshal(sourceBytes, &user); err != nil {
 			continue
 		}
-		users = append(users, &user)
+		users = append(users, user)
 	}
 
-	return users, nil
+	paginateResult := utils.BuildPaginateResult(totalDocs, params.Page, params.Limit)
+
+	return &query.SearchUserQueryResult{
+		Result:         &users,
+		PaginateResult: paginateResult,
+	}, nil
 }

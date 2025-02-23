@@ -31,11 +31,12 @@ func (h *CreateUserCommandHandler) Handle(cmd *command.CreateUserCommand) (*comm
 		Occurred: time.Now(),
 	}
 
-	if err := h.eventPublisher.Publish(userCreatedEvent); err != nil {
-		global.Logger.Error("Failed to publish user created event", zap.Error(err))
-		// rollback
-
-	}
+	go func() {
+		if err := h.eventPublisher.Publish(userCreatedEvent); err != nil {
+			global.Logger.Error("Failed to publish user created event", zap.Error(err))
+			// TODO: Handle error or rollback here
+		}
+	}()
 
 	return result, err
 }

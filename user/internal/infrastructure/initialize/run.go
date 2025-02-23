@@ -16,6 +16,7 @@ func Run() {
 	InitDB()
 	InitKafka()
 	InitElasticsearch()
+	// InitGrpcClient()
 	eSRepository := shared.NewRepositories(global.ESClient)
 	go consumer.ConsumeMessage(eSRepository)
 	r := InitRouter()

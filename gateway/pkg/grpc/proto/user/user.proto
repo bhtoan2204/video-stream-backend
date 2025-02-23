@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package user;
 
+option go_package = "./pkg/grpc/proto/user";
+
 service UserService {
   rpc ValidateUser(ValidateUserRequest) returns (UserResponse);
 }
@@ -17,7 +19,7 @@ message UserResponse {
   string first_name = 4;
   string last_name = 5;
   string phone = 6;
-  repeated Role roles = 12;
+  repeated Role roles = 7;
 }
 
 message Role {
