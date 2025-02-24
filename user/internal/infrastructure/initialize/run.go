@@ -4,8 +4,7 @@ import (
 	"os"
 
 	"github.com/bhtoan2204/user/global"
-	"github.com/bhtoan2204/user/internal/domain/repository/shared"
-	"github.com/bhtoan2204/user/internal/infrastructure/consumer"
+	"github.com/bhtoan2204/user/internal/infrastructure/debezium"
 )
 
 func Run() {
@@ -17,8 +16,8 @@ func Run() {
 	InitKafka()
 	InitElasticsearch()
 	// InitGrpcClient()
-	eSRepository := shared.NewRepositories(global.ESClient)
-	go consumer.ConsumeMessage(eSRepository)
+	InitDebeziumConsumer()
+	go debezium.ConsumeCDC()
 	r := InitRouter()
 	if err := r.RunListener(global.Listener); err != nil {
 		os.Exit(1)
