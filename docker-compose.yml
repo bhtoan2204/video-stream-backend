@@ -30,7 +30,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - mysql_data:/var/lib/mysql
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --server-id=184054 --log-bin=mysql-bin --binlog-format=ROW
 
   redis:
     image: redis:latest
@@ -113,10 +113,10 @@ services:
       - elastic_data:/usr/share/elasticsearch/data
 
   connect:
-    image: debezium/connect:latest
-    # depends_on:
-    #   - kafka
-    #   - mysql
+    image: debezium/connect:3.0.0.Final
+    depends_on:
+      - kafka
+      - mysql
     ports:
       - "8083:8083"
     environment:
@@ -128,9 +128,6 @@ services:
       - KEY_CONVERTER_SCHEMAS_ENABLE=false
       - VALUE_CONVERTER_SCHEMAS_ENABLE=false
     restart: always
-
-  init-connector:
-    image: alpine/curl
 volumes:
   mysql_data:
   qdrant_data:
