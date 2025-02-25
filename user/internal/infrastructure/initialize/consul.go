@@ -10,6 +10,7 @@ import (
 	"github.com/bhtoan2204/user/global"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
+	"go.uber.org/zap"
 )
 
 func getDockerInternalIP() (string, error) {
@@ -38,7 +39,6 @@ func getDockerInternalIP() (string, error) {
 			}
 			ip = ip.To4()
 			if ip == nil {
-				// Bỏ qua nếu không phải IPv4
 				continue
 			}
 			return ip.String(), nil
@@ -60,7 +60,8 @@ func InitConsul() {
 	servicePort := global.Listener.Addr().(*net.TCPAddr).Port
 	serviceAddress, err := getDockerInternalIP()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to get Docker internal IP: ", err))
+		global.Logger.Error("Failed to get internal IP address:", zap.Error(err))
+		panic(err)
 	}
 
 	registration := &api.AgentServiceRegistration{

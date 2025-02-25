@@ -1,15 +1,18 @@
 package command
 
-import common "github.com/bhtoan2204/user/internal/application/common/command"
+import (
+	common "github.com/bhtoan2204/user/internal/application/common/command"
+	"github.com/go-playground/validator/v10"
+)
 
 type CreateUserCommand struct {
-	Username  string `json:"username" binding:"required"`
-	Password  string `json:"password" binding:"required"`
-	Email     string `json:"email" binding:"required,email"`
-	Phone     string `json:"phone" binding:"required"`
-	FirstName string `json:"first_name" binding:"required"`
-	LastName  string `json:"last_name" binding:"required"`
-	BirthDate string `json:"birth_date" binding:"required"`
+	Username  string `json:"username" validate:"required,min=3,max=20"`
+	Password  string `json:"password" validate:"required,min=8"`
+	Email     string `json:"email" validate:"required,email"`
+	Phone     string `json:"phone" validate:"required,e164"`
+	FirstName string `json:"first_name" validate:"required"`
+	LastName  string `json:"last_name" validate:"required"`
+	BirthDate string `json:"birth_date" validate:"required"`
 }
 
 type CreateUserCommandResult struct {
@@ -18,4 +21,9 @@ type CreateUserCommandResult struct {
 
 func (*CreateUserCommand) CommandName() string {
 	return "CreateUserCommand"
+}
+
+func (c *CreateUserCommand) Validate() error {
+	validate := validator.New()
+	return validate.Struct(c)
 }

@@ -1,9 +1,5 @@
 package model
 
-import (
-	"gorm.io/gorm"
-)
-
 type Theme string
 
 const (
@@ -23,5 +19,4 @@ type UserSettings struct {
 	Theme                Theme            `json:"theme,omitempty" gorm:"type:enum('light','dark');default:'light'"`
 	NotificationsEnabled bool             `json:"notifications_enabled,omitempty"`
 	Privacy              *PrivacySettings `json:"privacy,omitempty" gorm:"embedded"`
-	DeletedAt            gorm.DeletedAt   `json:"deleted_at,omitempty" gorm:"index"`
 }

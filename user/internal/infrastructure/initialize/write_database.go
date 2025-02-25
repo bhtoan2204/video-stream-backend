@@ -18,6 +18,8 @@ func migrateTables() {
 		&persistent_object.Permission{},
 		&persistent_object.Role{},
 		&persistent_object.UserSettings{},
+		&persistent_object.ActivityLog{},
+		&persistent_object.RefreshToken{},
 	}
 	err := global.MDB.AutoMigrate(models...)
 	if err != nil {
@@ -37,7 +39,6 @@ func setPool() {
 }
 
 func InitDB() error {
-
 	baseDSN := fmt.Sprintf("%s:%s@tcp(%s:%s)/?charset=%s&parseTime=%t&loc=%s",
 		global.Config.MySQLConfig.User,
 		global.Config.MySQLConfig.Pass,
@@ -50,13 +51,15 @@ func InitDB() error {
 
 	baseDB, err := gorm.Open(mysql.Open(baseDSN), &gorm.Config{})
 	if err != nil {
-		panic(fmt.Errorf("failed to connect to MySQL: ", err))
+		global.Logger.Error("Failed to connect to MySQL", zap.Error(err))
+		panic(err)
 	}
 
 	dbName := global.Config.MySQLConfig.Name
 	createDBSQL := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET %s", dbName, global.Config.MySQLConfig.Charset)
 	if err := baseDB.Exec(createDBSQL).Error; err != nil {
-		panic(fmt.Errorf("failed to create database: ", err))
+		global.Logger.Error("Failed to create database", zap.Error(err))
+		panic(err)
 	}
 
 	sqlDB, _ := baseDB.DB()
@@ -75,7 +78,8 @@ func InitDB() error {
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(fmt.Errorf("failed to connect to database %s: ", dbName, err))
+		global.Logger.Error("Failed to connect to MySQL", zap.Error(err))
+		panic(err)
 	}
 
 	global.MDB = db

@@ -81,8 +81,7 @@ func ErrorForbiddenResponse(c *gin.Context, code int) {
 func ErrorNotFoundResponse(c *gin.Context, code int) {
 	c.JSON(http.StatusNotFound, ResponseData{
 		Code:    code,
-		Message: msg[code],
-		Data:    nil,
+		Message: msg[code], Data: nil,
 	})
 }
 

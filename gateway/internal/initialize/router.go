@@ -27,29 +27,28 @@ var (
 )
 
 func getServiceAddress(client *api.Client, serviceName string) (string, error) {
-	services, err := client.Agent().Services()
+	healthServices, _, err := client.Health().Service(serviceName, "", true, nil)
 	if err != nil {
 		return "", err
 	}
 
 	var availableServices []string
-	for _, service := range services {
-		if service.Service == serviceName {
-			host := service.Address
-			if strings.Contains(host, ":") {
-				var err error
-				host, _, err = net.SplitHostPort(host)
-				if err != nil {
-					return "", err
-				}
+	for _, serviceEntry := range healthServices {
+		svc := serviceEntry.Service
+		host := svc.Address
+		if strings.Contains(host, ":") {
+			var err error
+			host, _, err = net.SplitHostPort(host)
+			if err != nil {
+				return "", err
 			}
-			address := host + ":" + strconv.Itoa(service.Port)
-			availableServices = append(availableServices, address)
 		}
+		address := host + ":" + strconv.Itoa(svc.Port)
+		availableServices = append(availableServices, address)
 	}
 
 	if len(availableServices) == 0 {
-		return "", errors.New("service not found")
+		return "", errors.New("service not found or not healthy")
 	}
 
 	mu.Lock()
@@ -62,9 +61,10 @@ func getServiceAddress(client *api.Client, serviceName string) (string, error) {
 
 func userServiceProxy(c *gin.Context) {
 	serviceAddress, err := getServiceAddress(global.ConsulClient, "user-service")
+	fmt.Println("serviceAddress", serviceAddress)
 	if err != nil {
 		global.Logger.Error("User-service not found", zap.Error(err))
-		response.ErrorNotFoundResponse(c, 404)
+		response.ErrorBadRequestResponse(c, 4000, err)
 		return
 	}
 	targetURL, err := url.Parse("http://" + serviceAddress)

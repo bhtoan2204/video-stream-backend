@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/bhtoan2204/user/global"
 	"github.com/bhtoan2204/user/internal/application/command/command"
@@ -12,6 +11,8 @@ import (
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
 	eSRepository "github.com/bhtoan2204/user/internal/domain/repository/query"
+	domain_service "github.com/bhtoan2204/user/internal/domain/service"
+	value_object "github.com/bhtoan2204/user/internal/domain/value_object/user"
 	"github.com/bhtoan2204/user/pkg/encrypt_password"
 	"github.com/bhtoan2204/user/pkg/jwt_utils"
 	"github.com/bhtoan2204/user/utils"
@@ -19,39 +20,54 @@ import (
 )
 
 type UserService struct {
-	userRepository   repository.UserRepository
-	esUserRepository eSRepository.ESUserRepository
+	userRepository    repository.UserRepository
+	esUserRepository  eSRepository.ESUserRepository
+	userDomainService domain_service.AuthDomainService
 }
 
 func NewUserService(userRepository repository.UserRepository, esUserRepository eSRepository.ESUserRepository) *UserService {
 	return &UserService{
-		userRepository:   userRepository,
-		esUserRepository: esUserRepository,
+		userRepository:    userRepository,
+		esUserRepository:  esUserRepository,
+		userDomainService: domain_service.NewAuthDomainService(userRepository),
 	}
 }
 
 // CreateUser is a function that creates a new user.
 func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (*command.CreateUserCommandResult, error) {
-	birthDate, err := time.Parse(time.DateOnly, createUserCommand.BirthDate)
-	if err != nil {
-		global.Logger.Error("Failed to parse birth date ", zap.Error(err))
+	if err := createUserCommand.Validate(); err != nil {
 		return nil, err
 	}
 
-	hashedPassword, err := encrypt_password.HashPassword(createUserCommand.Password)
+	// Domain logic
+	birthDate, err := value_object.NewBirthDate(createUserCommand.BirthDate)
 	if err != nil {
-		global.Logger.Error("Failed to hash password: ", zap.Error(err))
+		return nil, err
+	}
+
+	email, err := value_object.NewEmail(createUserCommand.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	phone, err := value_object.NewPhone(createUserCommand.Phone)
+	if err != nil {
+		return nil, err
+	}
+
+	password, err := value_object.NewPassword(createUserCommand.Password)
+	if err != nil {
 		return nil, err
 	}
 
 	user, err := s.userRepository.Create(&entities.User{
 		Username:     createUserCommand.Username,
-		PasswordHash: hashedPassword,
-		Email:        createUserCommand.Email,
-		Phone:        createUserCommand.Phone,
+		PasswordHash: password.Hash(),
+		Email:        email.Value(),
+		Phone:        phone.Value(),
 		FirstName:    createUserCommand.FirstName,
 		LastName:     createUserCommand.LastName,
-		BirthDate:    &birthDate,
+		BirthDate:    birthDate.Value(),
 	})
 
 	if err != nil {
@@ -74,6 +90,10 @@ func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (
 
 // Login is a function that logs in a user.
 func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginCommandResult, error) {
+	if err := loginCommand.Validate(); err != nil {
+		return nil, err
+	}
+
 	user, err := s.userRepository.FindOneByQuery(
 		utils.QueryOptions{
 			Filters: map[string]interface{}{
@@ -81,6 +101,7 @@ func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginC
 			},
 		},
 	)
+
 	if err != nil {
 		global.Logger.Error("Failed to find user: ", zap.Error(err))
 		return nil, err
@@ -116,6 +137,10 @@ func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginC
 }
 
 func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) (*commonCommand.RefreshTokenCommandResult, error) {
+	if err := refreshTokenCommand.Validate(); err != nil {
+		return nil, err
+	}
+
 	claims, err := jwt_utils.ExtractTokenClaims(refreshTokenCommand.RefreshToken, global.Config.SecurityConfig.JWTRefreshSecret)
 	if err != nil {
 		global.Logger.Error("Failed to extract token claims: ", zap.Error(err))
