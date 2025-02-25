@@ -1,14 +1,15 @@
-package initialize
+package event_consumer
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"strings"
 
 	"github.com/bhtoan2204/user/global"
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	"github.com/bhtoan2204/user/internal/domain/repository/query"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch/repository"
+	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql/persistent_object"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
 )
@@ -48,20 +49,44 @@ type rawUser struct {
 }
 
 type Debezium struct {
-	reader           *kafka.Reader
+	readers          *[]kafka.Reader // Slice của Kafka Readers
 	esUserRepository query.ESUserRepository
 }
 
 func NewDebezium(esRepo query.ESUserRepository) *Debezium {
-	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers: []string{global.Config.KafkaConfig.Broker},
-		GroupID: "inventory-connector",
-		Topic:   "dbserver1.user.users",
-	})
+	topics := []string{
+		"dbserver1.user." + persistent_object.ActivityLog{}.TableName(),
+		"dbserver1.user." + persistent_object.Permission{}.TableName(),
+		"dbserver1.user." + persistent_object.RefreshToken{}.TableName(),
+		"dbserver1.user." + persistent_object.Role{}.TableName(),
+		"dbserver1.user." + persistent_object.UserSettings{}.TableName(),
+		"dbserver1.user." + persistent_object.User{}.TableName(),
+	}
+
+	var readers []kafka.Reader
+
+	for _, topic := range topics {
+		global.Logger.Info("Creating reader", zap.String("topic", topic))
+		reader := kafka.NewReader(kafka.ReaderConfig{
+			Brokers: []string{global.Config.KafkaConfig.Broker},
+			GroupID: "mysql-user-connector",
+			Topic:   topic,
+		})
+		readers = append(readers, *reader)
+	}
+
 	return &Debezium{
-		reader:           reader,
+		readers:          &readers,
 		esUserRepository: esRepo,
 	}
+}
+
+func getTableName(fullName string) string {
+	parts := strings.Split(fullName, ".")
+	if len(parts) > 2 {
+		return parts[len(parts)-1]
+	}
+	return fullName
 }
 
 func (d *Debezium) ProcessMessage(msg kafka.Message) {
@@ -71,11 +96,21 @@ func (d *Debezium) ProcessMessage(msg kafka.Message) {
 		global.Logger.Error("Error unmarshalling message", zap.Error(err))
 		return
 	}
-	fmt.Println(string(message.Payload.After))
+	tableName := getTableName(message.Payload.Source.Name)
+	global.Logger.Info("Table name", zap.String("table_name", tableName))
 	switch message.Payload.Op {
 	case "c", "u":
+		d.IndexTable(tableName, message.Payload.After)
+	default:
+		global.Logger.Info("No operation")
+	}
+}
+
+func (d *Debezium) IndexTable(tableName string, data json.RawMessage) {
+	switch tableName {
+	case persistent_object.User{}.TableName():
 		var ru rawUser
-		if err := json.Unmarshal(message.Payload.After, &ru); err != nil {
+		if err := json.Unmarshal(data, &ru); err != nil {
 			global.Logger.Error("Error unmarshalling raw user data", zap.Error(err))
 			return
 		}
@@ -114,20 +149,23 @@ func (d *Debezium) ProcessMessage(msg kafka.Message) {
 }
 
 func (d *Debezium) Consume() {
-	for {
-		global.Logger.Info("Waiting for message")
-		m, err := d.reader.ReadMessage(context.Background())
-		if err != nil {
-			global.Logger.Error("Error reading message", zap.Error(err))
-			continue
-		}
-		global.Logger.Info("Message received")
-		d.ProcessMessage(m)
+	for _, reader := range *d.readers { // Lặp qua từng reader
+		go func(r kafka.Reader) {
+			for {
+				global.Logger.Info("Waiting for message", zap.String("topic", r.Config().Topic))
+				m, err := r.ReadMessage(context.Background())
+				if err != nil {
+					global.Logger.Error("Error reading message", zap.String("topic", r.Config().Topic), zap.Error(err))
+					continue
+				}
+				global.Logger.Info("Message received", zap.String("topic", r.Config().Topic))
+				d.ProcessMessage(m)
+			}
+		}(reader) // Goroutine
 	}
 }
 
 func InitDebeziumConsumer() {
-
 	esRepo := repository.NewESUserRepository(global.ESClient)
 	debezium := NewDebezium(esRepo)
 	go debezium.Consume()

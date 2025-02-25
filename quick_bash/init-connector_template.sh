@@ -1,7 +1,7 @@
 #!/bin/bash
 
 curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d "{
-  \"name\": \"inventory-connector\",
+  \"name\": \"mysql-user-connector\",
   \"config\": {
     \"connector.class\": \"io.debezium.connector.mysql.MySqlConnector\",
     \"tasks.max\": \"1\",
@@ -11,7 +11,7 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
     \"database.password\": \"root\",
     \"database.server.id\": \"184054\",
     \"database.server.name\": \"dbserver1\",
-    \"database.whitelist\": \"user\",
+    \"database.whitelist\": \"user,refresh_tokens\",
     \"database.history.kafka.bootstrap.servers\": \"kafka:29092\",
     \"database.history.kafka.topic\": \"dbhistory.user\",
     \"schema.history.internal.kafka.topic\": \"schemahistory.user\",

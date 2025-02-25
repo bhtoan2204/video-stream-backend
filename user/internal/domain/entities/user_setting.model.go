@@ -1,9 +1,5 @@
 package entities
 
-import (
-	"gorm.io/gorm"
-)
-
 type Theme string
 
 const (
@@ -18,12 +14,11 @@ type PrivacySettings struct {
 
 type UserSettings struct {
 	AbstractModel
-	UserID               string           `json:"user_id" gorm:"index;not null"`
+	UserID               string           `json:"user_id"`
 	Language             string           `json:"language,omitempty"`
-	Theme                Theme            `json:"theme,omitempty" gorm:"type:enum('light','dark');default:'light'"`
+	Theme                Theme            `json:"theme,omitempty"`
 	NotificationsEnabled bool             `json:"notifications_enabled,omitempty"`
-	Privacy              *PrivacySettings `json:"privacy,omitempty" gorm:"embedded"`
-	DeletedAt            gorm.DeletedAt   `json:"deleted_at,omitempty" gorm:"index"`
+	Privacy              *PrivacySettings `json:"privacy,omitempty"`
 }
 
 type IUserSettings interface {

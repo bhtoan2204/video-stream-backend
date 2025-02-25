@@ -14,7 +14,7 @@ mysql:
   max_lifetime: 3600
 log:
   log_level: debug
-  file_path: storages/logs/gateway.log
+  file_path: storages/logs/user.log
   max_size: 100
   max_backups: 3
   max_age: 28
