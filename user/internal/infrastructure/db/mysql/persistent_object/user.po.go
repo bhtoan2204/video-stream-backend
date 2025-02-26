@@ -2,8 +2,6 @@ package persistent_object
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Status int
@@ -15,7 +13,7 @@ const (
 )
 
 type User struct {
-	gorm.Model
+	BasePO
 	Username     string     `json:"username" gorm:"type:varchar(255);uniqueIndex;not null"`
 	Email        string     `json:"email" gorm:"type:varchar(255);uniqueIndex;not null"`
 	FirstName    string     `json:"first_name,omitempty"`

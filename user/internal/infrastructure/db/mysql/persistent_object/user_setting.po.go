@@ -1,9 +1,5 @@
 package persistent_object
 
-import (
-	"gorm.io/gorm"
-)
-
 type Theme string
 
 const (
@@ -17,8 +13,8 @@ type PrivacySettings struct {
 }
 
 type UserSettings struct {
-	gorm.Model
-	UserID               uint             `json:"user_id" gorm:"index;not null"`
+	BasePO
+	UserID               string           `json:"user_id" gorm:"index;not null"`
 	Language             string           `json:"language,omitempty"`
 	Theme                Theme            `json:"theme,omitempty" gorm:"type:enum('light','dark');default:'light'"`
 	NotificationsEnabled bool             `json:"notifications_enabled,omitempty"`

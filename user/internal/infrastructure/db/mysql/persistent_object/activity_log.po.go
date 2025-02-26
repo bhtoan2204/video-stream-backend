@@ -1,10 +1,8 @@
 package persistent_object
 
-import "gorm.io/gorm"
-
 type ActivityLog struct {
-	gorm.Model
-	UserID      uint   `json:"user_id" gorm:"index;not null"`
+	BasePO
+	UserID      string `json:"user_id" gorm:"index;not null"`
 	Action      string `json:"action" gorm:"type:varchar(255);not null"`
 	Description string `json:"description,omitempty" gorm:"type:varchar(255)"`
 	IPAddress   string `json:"ip_address,omitempty" gorm:"type:varchar(255)"`

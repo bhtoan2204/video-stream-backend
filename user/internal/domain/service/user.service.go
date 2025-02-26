@@ -11,7 +11,6 @@ import (
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
 	eSRepository "github.com/bhtoan2204/user/internal/domain/repository/query"
-	domain_service "github.com/bhtoan2204/user/internal/domain/service"
 	value_object "github.com/bhtoan2204/user/internal/domain/value_object/user"
 	"github.com/bhtoan2204/user/pkg/encrypt_password"
 	"github.com/bhtoan2204/user/pkg/jwt_utils"
@@ -20,16 +19,14 @@ import (
 )
 
 type UserService struct {
-	userRepository    repository.UserRepository
-	esUserRepository  eSRepository.ESUserRepository
-	userDomainService domain_service.AuthDomainService
+	userRepository   repository.UserRepository
+	esUserRepository eSRepository.ESUserRepository
 }
 
 func NewUserService(userRepository repository.UserRepository, esUserRepository eSRepository.ESUserRepository) *UserService {
 	return &UserService{
-		userRepository:    userRepository,
-		esUserRepository:  esUserRepository,
-		userDomainService: domain_service.NewAuthDomainService(userRepository),
+		userRepository:   userRepository,
+		esUserRepository: esUserRepository,
 	}
 }
 
@@ -147,21 +144,14 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 		return nil, err
 	}
 
-	userIdFloat, ok := claims["id"].(float64)
-	if !ok {
-		global.Logger.Error("Invalid token claims, missing user id")
-		return nil, errors.New("invalid token claims, missing user id")
-	}
-	userId := uint(userIdFloat)
-	fmt.Println("User ID: ", userId)
 	user, err := s.userRepository.FindOneByQuery(
 		utils.QueryOptions{
 			Filters: map[string]interface{}{
-				"id": userId,
+				"id": claims["id"],
 			},
 		},
 	)
-	fmt.Println("User: ", user)
+
 	if err != nil || user == nil {
 		global.Logger.Error("User not found")
 		return nil, errors.New("user not found")

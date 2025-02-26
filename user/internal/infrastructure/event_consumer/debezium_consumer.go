@@ -1,14 +1,14 @@
-package event_consumer
+package consumer
 
 import (
 	"context"
 	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/bhtoan2204/user/global"
-	"github.com/bhtoan2204/user/internal/domain/entities"
-	"github.com/bhtoan2204/user/internal/domain/repository/query"
-	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch/repository"
+	"github.com/bhtoan2204/user/internal/application/event"
+	publishedEvent "github.com/bhtoan2204/user/internal/application/event/event"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql/persistent_object"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
@@ -16,44 +16,20 @@ import (
 
 type DebeziumMessage struct {
 	Payload struct {
-		Before json.RawMessage `json:"before"`
 		After  json.RawMessage `json:"after"`
+		Op     string          `json:"op"`
 		Source struct {
-			Version   string `json:"version"`
-			Connector string `json:"connector"`
-			Name      string `json:"name"`
+			Name string `json:"name"`
 		} `json:"source"`
-		Transaction json.RawMessage `json:"transaction"`
-		Op          string          `json:"op"`
-		TsMs        int64           `json:"ts_ms"`
-		TsUs        int64           `json:"ts_us"`
-		TsNs        int64           `json:"ts_ns"`
 	} `json:"payload"`
 }
 
-type rawUser struct {
-	ID           uint   `json:"id"`
-	CreatedAt    int64  `json:"created_at"`
-	UpdatedAt    int64  `json:"updated_at"`
-	DeletedAt    *int64 `json:"deleted_at"` // pointer để nhận null
-	Username     string `json:"username"`
-	Email        string `json:"email"`
-	FirstName    string `json:"first_name"`
-	LastName     string `json:"last_name"`
-	Phone        string `json:"phone"`
-	BirthDate    int64  `json:"birth_date"`
-	Address      string `json:"address"`
-	PasswordHash string `json:"password_hash"`
-	PinCode      string `json:"pin_code"`
-	Status       int    `json:"status"`
+type DebeziumConsumer struct {
+	readers  *[]kafka.Reader
+	eventBus *event.EventBus
 }
 
-type Debezium struct {
-	readers          *[]kafka.Reader // Slice của Kafka Readers
-	esUserRepository query.ESUserRepository
-}
-
-func NewDebezium(esRepo query.ESUserRepository) *Debezium {
+func NewDebezium(eventBus *event.EventBus) *DebeziumConsumer {
 	topics := []string{
 		"dbserver1.user." + persistent_object.ActivityLog{}.TableName(),
 		"dbserver1.user." + persistent_object.Permission{}.TableName(),
@@ -75,81 +51,72 @@ func NewDebezium(esRepo query.ESUserRepository) *Debezium {
 		readers = append(readers, *reader)
 	}
 
-	return &Debezium{
-		readers:          &readers,
-		esUserRepository: esRepo,
+	return &DebeziumConsumer{
+		readers:  &readers,
+		eventBus: eventBus,
 	}
 }
 
-func getTableName(fullName string) string {
-	parts := strings.Split(fullName, ".")
-	if len(parts) > 2 {
-		return parts[len(parts)-1]
-	}
-	return fullName
-}
-
-func (d *Debezium) ProcessMessage(msg kafka.Message) {
-	global.Logger.Info("Processing message")
+func (d *DebeziumConsumer) ProcessMessage(msg kafka.Message, topic string) {
 	var message DebeziumMessage
 	if err := json.Unmarshal(msg.Value, &message); err != nil {
 		global.Logger.Error("Error unmarshalling message", zap.Error(err))
 		return
 	}
-	tableName := getTableName(message.Payload.Source.Name)
-	global.Logger.Info("Table name", zap.String("table_name", tableName))
-	switch message.Payload.Op {
-	case "c", "u":
-		d.IndexTable(tableName, message.Payload.After)
-	default:
-		global.Logger.Info("No operation")
-	}
-}
 
-func (d *Debezium) IndexTable(tableName string, data json.RawMessage) {
-	switch tableName {
-	case persistent_object.User{}.TableName():
-		var ru rawUser
-		if err := json.Unmarshal(data, &ru); err != nil {
-			global.Logger.Error("Error unmarshalling raw user data", zap.Error(err))
+	tableName := getTableName(topic)
+	global.Logger.Info("Processing message", zap.String("table", tableName), zap.String("operation", message.Payload.Op))
+	global.Logger.Info("Message payload", zap.Any("payload", message.Payload))
+
+	if tableName == "users" && (message.Payload.Op == "c" || message.Payload.Op == "u") {
+		var ru struct {
+			ID           string `json:"id"`
+			CreatedAt    int64  `json:"created_at"`
+			UpdatedAt    int64  `json:"updated_at"`
+			DeletedAt    *int64 `json:"deleted_at"`
+			Username     string `json:"username"`
+			Email        string `json:"email"`
+			FirstName    string `json:"first_name"`
+			LastName     string `json:"last_name"`
+			Phone        string `json:"phone"`
+			BirthDate    int64  `json:"birth_date"`
+			Address      string `json:"address"`
+			PasswordHash string `json:"password_hash"`
+			PinCode      string `json:"pin_code"`
+			Status       int    `json:"status"`
+		}
+		if err := json.Unmarshal(message.Payload.After, &ru); err != nil {
+			global.Logger.Error("Error unmarshalling user", zap.Error(err))
 			return
 		}
 
-		var user entities.User
-		user.AbstractModel = entities.AbstractModel{
-			ID: uint(ru.ID),
-			// CreatedAt: ru.CreatedAt,
-			// UpdatedAt: ru.UpdatedAt,
+		indexUserEvent := &publishedEvent.IndexUserEvent{
+			ID:           ru.ID,
+			CreatedAt:    time.UnixMilli(ru.CreatedAt),
+			UpdatedAt:    time.UnixMilli(ru.UpdatedAt),
+			DeletedAt:    int64ToTimePtr(ru.DeletedAt),
+			Username:     ru.Username,
+			Email:        ru.Email,
+			FirstName:    ru.FirstName,
+			LastName:     ru.LastName,
+			Phone:        ru.Phone,
+			BirthDate:    int64ToTimePtr(&ru.BirthDate),
+			Address:      ru.Address,
+			PasswordHash: ru.PasswordHash,
+			PinCode:      ru.PinCode,
+			Status:       1,
 		}
-		user.Username = ru.Username
-		user.Email = ru.Email
-		user.FirstName = ru.FirstName
-		user.LastName = ru.LastName
-		user.Phone = ru.Phone
-		user.Address = ru.Address
-		user.PasswordHash = ru.PasswordHash
-		user.PinCode = ru.PinCode
-		user.Status = 1
-		user.BirthDate = nil
-		// if ru.BirthDate > 0 {
-		// 	t := time.Unix(0, ru.BirthDate*int64(time.Millisecond))
-		// 	user.BirthDate = &t
-		// } else {
-		// 	user.BirthDate = nil
-		// }
 
-		if err := d.esUserRepository.Index(&user); err != nil {
-			global.Logger.Error("Error indexing document", zap.Error(err))
+		if _, err := d.eventBus.Dispatch(indexUserEvent); err != nil {
+			global.Logger.Error("Error dispatching event", zap.Error(err))
 			return
 		}
-		global.Logger.Info("Document indexed successfully")
-	default:
-		global.Logger.Info("No operation")
+		global.Logger.Info("Event dispatched", zap.Any("event", indexUserEvent))
 	}
 }
 
-func (d *Debezium) Consume() {
-	for _, reader := range *d.readers { // Lặp qua từng reader
+func (d *DebeziumConsumer) Consume() {
+	for _, reader := range *d.readers {
 		go func(r kafka.Reader) {
 			for {
 				global.Logger.Info("Waiting for message", zap.String("topic", r.Config().Topic))
@@ -159,14 +126,25 @@ func (d *Debezium) Consume() {
 					continue
 				}
 				global.Logger.Info("Message received", zap.String("topic", r.Config().Topic))
-				d.ProcessMessage(m)
+				d.ProcessMessage(m, r.Config().Topic)
 			}
-		}(reader) // Goroutine
+		}(reader)
 	}
 }
 
-func InitDebeziumConsumer() {
-	esRepo := repository.NewESUserRepository(global.ESClient)
-	debezium := NewDebezium(esRepo)
-	go debezium.Consume()
+func int64ToTimePtr(timestamp *int64) *time.Time {
+	if timestamp == nil {
+		return nil
+	}
+
+	t := time.UnixMilli(*timestamp)
+	return &t
+}
+
+func getTableName(fullName string) string {
+	parts := strings.Split(fullName, ".")
+	if len(parts) > 2 {
+		return parts[len(parts)-1]
+	}
+	return fullName
 }
