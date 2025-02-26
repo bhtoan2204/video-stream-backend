@@ -25,7 +25,7 @@ type DebeziumMessage struct {
 }
 
 type DebeziumConsumer struct {
-	readers  *[]kafka.Reader
+	readers  []*kafka.Reader
 	eventBus *event.EventBus
 }
 
@@ -39,7 +39,7 @@ func NewDebezium(eventBus *event.EventBus) *DebeziumConsumer {
 		"dbserver1.user." + persistent_object.User{}.TableName(),
 	}
 
-	var readers []kafka.Reader
+	var readers []*kafka.Reader
 
 	for _, topic := range topics {
 		global.Logger.Info("Creating reader", zap.String("topic", topic))
@@ -48,11 +48,11 @@ func NewDebezium(eventBus *event.EventBus) *DebeziumConsumer {
 			GroupID: "mysql-user-connector",
 			Topic:   topic,
 		})
-		readers = append(readers, *reader)
+		readers = append(readers, reader)
 	}
 
 	return &DebeziumConsumer{
-		readers:  &readers,
+		readers:  readers,
 		eventBus: eventBus,
 	}
 }
@@ -116,8 +116,8 @@ func (d *DebeziumConsumer) ProcessMessage(msg kafka.Message, topic string) {
 }
 
 func (d *DebeziumConsumer) Consume() {
-	for _, reader := range *d.readers {
-		go func(r kafka.Reader) {
+	for _, reader := range d.readers {
+		go func(r *kafka.Reader) {
 			for {
 				global.Logger.Info("Waiting for message", zap.String("topic", r.Config().Topic))
 				m, err := r.ReadMessage(context.Background())
