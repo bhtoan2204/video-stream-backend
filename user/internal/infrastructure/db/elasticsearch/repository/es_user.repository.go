@@ -5,13 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/bhtoan2204/user/global"
 	common "github.com/bhtoan2204/user/internal/application/common/query"
 	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/query"
+	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch/mapper"
 	"github.com/bhtoan2204/user/utils"
 	"github.com/elastic/go-elasticsearch/v8"
 	"go.uber.org/zap"
@@ -33,9 +33,10 @@ func NewESUserRepository(db *elasticsearch.Client) repository.ESUserRepository {
 }
 
 func (r *ESUserRepository) Index(user *entities.User) error {
-	fmt.Println("Before indexing user", user)
-	jsonData, err := json.Marshal(user)
-	fmt.Println("After indexing user", string(jsonData))
+	userModel := mapper.ESUserEntityToModel(*user)
+
+	jsonData, err := json.Marshal(userModel)
+
 	if err != nil {
 		global.Logger.Error("Failed to marshal user:", zap.Error(err))
 		return fmt.Errorf("Failed to marshal user: %w", err)
@@ -44,7 +45,7 @@ func (r *ESUserRepository) Index(user *entities.User) error {
 	res, err := r.db.Index(
 		"users",
 		bytes.NewReader(jsonData),
-		r.db.Index.WithDocumentID(strconv.FormatUint(uint64(user.ID), 10)),
+		r.db.Index.WithDocumentID(userModel.ID),
 		r.db.Index.WithRefresh("true"),
 	)
 

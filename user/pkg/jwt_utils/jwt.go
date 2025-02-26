@@ -8,7 +8,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// GenerateToken tạo access token và refresh token
 func GenerateToken(user *entities.User) (string, string, int, int, error) {
 	accessSecret := []byte(global.Config.SecurityConfig.JWTAccessSecret)
 	accessExpiration := time.Now().Add(time.Duration(global.Config.SecurityConfig.JWTAccessExpiration) * time.Second).Unix()
@@ -25,6 +24,7 @@ func GenerateToken(user *entities.User) (string, string, int, int, error) {
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
 	signedAccessToken, err := accessToken.SignedString(accessSecret)
+
 	if err != nil {
 		return "", "", 0, 0, err
 	}

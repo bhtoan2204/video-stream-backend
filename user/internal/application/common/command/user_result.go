@@ -7,7 +7,7 @@ import (
 )
 
 type UserResult struct {
-	ID        uint
+	ID        string
 	Username  string
 	Email     string
 	FirstName string

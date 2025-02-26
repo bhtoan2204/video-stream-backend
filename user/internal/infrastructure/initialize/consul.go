@@ -71,14 +71,14 @@ func InitConsul() {
 		Port:    global.Listener.Addr().(*net.TCPAddr).Port,
 		Tags:    []string{"api", "user"},
 		Check: &api.AgentServiceCheck{
-			HTTP:     fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, servicePort),
-			Method:   "GET",
-			Interval: "10s",
-			Timeout:  "5s",
-			Notes:    "Basic health check in user service " + fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, servicePort),
+			HTTP:                           fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, servicePort),
+			Method:                         "GET",
+			Interval:                       "10s",
+			Timeout:                        "5s",
+			Notes:                          "Basic health check in user service " + fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, servicePort),
+			DeregisterCriticalServiceAfter: "1m",
 		},
 	}
-	fmt.Printf("http://%s:%d/api/v1/health", serviceAddress, servicePort)
 	consulClient, err := api.NewClient(consulConfig)
 	if err != nil {
 		// global.Logger.Error("Failed to connect to Consul:", zap.Error(err))
@@ -104,11 +104,9 @@ func handleShutdown(serviceID string) {
 
 	err := global.ConsulClient.Agent().ServiceDeregister(serviceID)
 	if err != nil {
-		// global.Logger.Error("Failed to unregister service from Consul", zap.Error(err))
-		fmt.Print("Failed to unregister service from Consul")
+		global.Logger.Error("Failed to unregister service from Consul", zap.Error(err))
 	} else {
-		// global.Logger.Info("Service unregistered successfully from Consul")
-		fmt.Print("Service unregistered successfully from Consul")
+		global.Logger.Info("Service unregistered successfully from Consul")
 	}
 
 	os.Exit(0)

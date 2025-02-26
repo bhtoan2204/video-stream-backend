@@ -3,7 +3,7 @@ package common
 import "github.com/bhtoan2204/user/internal/domain/entities"
 
 type UserResult struct {
-	ID        uint                   `json:"id"`
+	ID        string                 `json:"id"`
 	Username  string                 `json:"username"`
 	Email     string                 `json:"email"`
 	FirstName string                 `json:"first_name"`
