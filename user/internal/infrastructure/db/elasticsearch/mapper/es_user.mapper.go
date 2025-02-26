@@ -43,3 +43,19 @@ func ESUserEntityToModel(entity entities.User) model.ESUser {
 		PinCode:      entity.PinCode,
 	}
 }
+
+func ESUserModelsToEntities(models []model.ESUser) []entities.User {
+	var entities []entities.User
+	for _, model := range models {
+		entities = append(entities, ESUserModelToEntity(model))
+	}
+	return entities
+}
+
+func ESUserEntitiesToModels(entities []entities.User) []model.ESUser {
+	var models []model.ESUser
+	for _, entity := range entities {
+		models = append(models, ESUserEntityToModel(entity))
+	}
+	return models
+}

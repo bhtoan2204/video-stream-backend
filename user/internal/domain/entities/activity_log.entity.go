@@ -9,6 +9,3 @@ type ActivityLog struct {
 	UserAgent   string `json:"user_agent,omitempty"`
 	DeviceToken string `json:"device_token"`
 }
-
-type IActivityLog interface {
-}

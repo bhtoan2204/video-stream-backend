@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/bhtoan2204/user/internal/application/command/command"
-	"github.com/bhtoan2204/user/internal/application/interfaces"
+	"github.com/bhtoan2204/user/internal/domain/interfaces"
 )
 
 type CreateUserCommandHandler struct {

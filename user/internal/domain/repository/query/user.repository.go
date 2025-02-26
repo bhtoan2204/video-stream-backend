@@ -7,5 +7,5 @@ import (
 
 type ESUserRepository interface {
 	Index(*entities.User) error
-	Search(query *query.SearchUserQuery) (*query.SearchUserQueryResult, error)
+	Search(query *query.SearchUserQuery) (*[]entities.User, *query.PaginateResult, error)
 }

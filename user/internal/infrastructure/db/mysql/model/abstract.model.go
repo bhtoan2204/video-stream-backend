@@ -14,7 +14,7 @@ type AbstractModel struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+func (u *AbstractModel) BeforeCreate(tx *gorm.DB) (err error) {
 	if u.ID == "" {
 		u.ID = uuid.New().String()
 	}

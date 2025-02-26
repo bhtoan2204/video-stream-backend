@@ -3,30 +3,34 @@ package service
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/bhtoan2204/user/global"
 	"github.com/bhtoan2204/user/internal/application/command/command"
 	commonCommand "github.com/bhtoan2204/user/internal/application/common/command"
+	common "github.com/bhtoan2204/user/internal/application/common/query"
 	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
+	"github.com/bhtoan2204/user/internal/domain/manager"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
 	eSRepository "github.com/bhtoan2204/user/internal/domain/repository/query"
 	value_object "github.com/bhtoan2204/user/internal/domain/value_object/user"
 	"github.com/bhtoan2204/user/pkg/encrypt_password"
 	"github.com/bhtoan2204/user/pkg/jwt_utils"
 	"github.com/bhtoan2204/user/utils"
-	"go.uber.org/zap"
 )
 
 type UserService struct {
-	userRepository   repository.UserRepository
-	esUserRepository eSRepository.ESUserRepository
+	userRepository      repository.UserRepository
+	esUserRepository    eSRepository.ESUserRepository
+	refreshTokenManager manager.RefreshTokenManager
 }
 
-func NewUserService(userRepository repository.UserRepository, esUserRepository eSRepository.ESUserRepository) *UserService {
+func NewUserService(userRepository repository.UserRepository, esUserRepository eSRepository.ESUserRepository, refreshTokenManager manager.RefreshTokenManager) *UserService {
 	return &UserService{
-		userRepository:   userRepository,
-		esUserRepository: esUserRepository,
+		userRepository:      userRepository,
+		esUserRepository:    esUserRepository,
+		refreshTokenManager: refreshTokenManager,
 	}
 }
 
@@ -65,10 +69,10 @@ func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (
 		FirstName:    createUserCommand.FirstName,
 		LastName:     createUserCommand.LastName,
 		BirthDate:    birthDate.Value(),
+		Address:      createUserCommand.Address,
 	})
 
 	if err != nil {
-		global.Logger.Error("Failed to create user: ", zap.Error(err))
 		return nil, err
 	}
 
@@ -100,26 +104,31 @@ func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginC
 	)
 
 	if err != nil {
-		global.Logger.Error("Failed to find user: ", zap.Error(err))
 		return nil, err
 	}
 
 	isVerified, err := encrypt_password.VerifyPassword(user.PasswordHash, loginCommand.Password)
 
 	if err != nil {
-		global.Logger.Error("Failed to verify password: ", zap.Error(err))
 		return nil, err
 	}
 
 	if !isVerified {
-		global.Logger.Error("Failed to hash password: ", zap.Error(fmt.Errorf("invalid password")))
 		return nil, fmt.Errorf("invalid password")
 	}
 
 	accessToken, refreshToken, accessExpiration, refreshExpiration, err := jwt_utils.GenerateToken(user)
 
+	fmt.Println()
+	fmt.Println(user)
+	fmt.Println()
+
+	// TODO: Save refresh token here
+	if err := s.refreshTokenManager.CreateRefreshToken(refreshToken, user.ID, time.UnixMilli(refreshExpiration)); err != nil {
+		return nil, err
+	}
+
 	if err != nil {
-		global.Logger.Error("Failed to generate token: ", zap.Error(err))
 		return nil, err
 	}
 
@@ -140,7 +149,6 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 
 	claims, err := jwt_utils.ExtractTokenClaims(refreshTokenCommand.RefreshToken, global.Config.SecurityConfig.JWTRefreshSecret)
 	if err != nil {
-		global.Logger.Error("Failed to extract token claims: ", zap.Error(err))
 		return nil, err
 	}
 
@@ -153,13 +161,20 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 	)
 
 	if err != nil || user == nil {
-		global.Logger.Error("User not found")
 		return nil, errors.New("user not found")
+	}
+
+	// Check if the refresh token is valid
+	isRefreshTokenValid, err := s.refreshTokenManager.CheckRefreshToken(refreshTokenCommand.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+	if !isRefreshTokenValid {
+		return nil, errors.New("refresh token is invalid")
 	}
 
 	newAccessToken, newRefreshToken, accessExp, refreshExp, err := jwt_utils.RefreshNewToken(user, refreshTokenCommand.RefreshToken)
 	if err != nil {
-		global.Logger.Error("Failed to refresh new token: ", zap.Error(err))
 		return nil, err
 	}
 
@@ -180,7 +195,6 @@ func (s *UserService) GetUserById(getUserByIdCommand *command.GetUserByIdCommand
 		},
 	)
 	if err != nil {
-		global.Logger.Error("Failed to find user: ", zap.Error(err))
 		return nil, err
 	}
 
@@ -199,11 +213,32 @@ func (s *UserService) GetUserById(getUserByIdCommand *command.GetUserByIdCommand
 
 func (s *UserService) SearchUser(searchUserQuery *query.SearchUserQuery) (*query.SearchUserQueryResult, error) {
 	searchUserQuery.SetDefaults()
-	searchUserQueryResult, err := s.esUserRepository.Search(searchUserQuery)
+	searchUserQueryResult, pagination, err := s.esUserRepository.Search(searchUserQuery)
 	if err != nil {
-		global.Logger.Error("Failed to search users: ", zap.Error(err))
 		return nil, err
 	}
 
-	return searchUserQueryResult, nil
+	// convert []searchUserQueryResult to []common.UserResult
+	result := make([]common.UserResult, len(*searchUserQueryResult))
+	for i, user := range *searchUserQueryResult {
+		birthDate, err := value_object.NewBirthDate(user.BirthDate.Format("2006-01-02"))
+		if err != nil {
+			return nil, err
+		}
+		result[i] = common.UserResult{
+			ID:        user.ID,
+			Username:  user.Username,
+			Email:     user.Email,
+			Phone:     user.Phone,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			BirthDate: birthDate.String(),
+			Address:   user.Address,
+		}
+	}
+
+	return &query.SearchUserQueryResult{
+		Result:         &result,
+		PaginateResult: pagination,
+	}, nil
 }

@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/bhtoan2204/user/internal/application/interfaces"
 	"github.com/bhtoan2204/user/internal/application/query/query"
+	"github.com/bhtoan2204/user/internal/domain/interfaces"
 )
 
 type SearchUserQueryHandler struct {

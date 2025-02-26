@@ -29,6 +29,13 @@ func (r *GormUserRepository) Create(user *entities.User) (*entities.User, error)
 		if execution.RowsAffected == 0 {
 			return errors.New("no rows affected")
 		}
+		var adminRole model.Role
+		if err := tx.Where("name = ?", "admin").First(&adminRole).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(&userModel).Association("Roles").Append(&adminRole); err != nil {
+			return err
+		}
 		return nil
 	})
 

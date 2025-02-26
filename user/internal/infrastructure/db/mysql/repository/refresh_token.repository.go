@@ -60,7 +60,8 @@ func (g *GormRefreshTokenRepository) DeleteByQuery(query map[string]interface{})
 // FindOneByQuery implements command.RefreshTokenRepository.
 func (g *GormRefreshTokenRepository) FindOneByQuery(query map[string]interface{}) (*entities.RefreshToken, error) {
 	refreshTokenModel := model.RefreshToken{}
-	if err := g.db.Where(query).First(&refreshTokenModel).Error; err != nil {
+	dbQuery := BuildQuery(g.db, query)
+	if err := dbQuery.First(&refreshTokenModel).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -74,6 +75,19 @@ func (g *GormRefreshTokenRepository) FindOneByQuery(query map[string]interface{}
 func (g *GormRefreshTokenRepository) UpdateByQuery(query map[string]interface{}, update map[string]interface{}) error {
 	err := g.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&model.RefreshToken{}).Where(query).Updates(update).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *GormRefreshTokenRepository) HardDeleteByQuery(query map[string]interface{}) error {
+	err := g.db.Transaction(func(tx *gorm.DB) error {
+		if err := g.db.Where(query).Delete(&model.RefreshToken{}).Error; err != nil {
 			return err
 		}
 		return nil

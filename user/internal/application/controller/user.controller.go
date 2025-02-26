@@ -42,6 +42,7 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 	}
 	result, err := controller.commandBus.Dispatch(&command)
 	if err != nil {
+		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}
@@ -51,12 +52,13 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 func (controller *UserController) Login(c *gin.Context) {
 	var command realCommand.LoginCommand
 	if err := c.ShouldBindJSON(&command); err != nil {
+		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err)
 		return
 	}
 	result, err := controller.commandBus.Dispatch(&command)
 	if err != nil {
-		global.Logger.Error("Failed to hash password: ", zap.Error(err))
+		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}
@@ -88,13 +90,13 @@ func (controller *UserController) RefreshNewToken(c *gin.Context) {
 	command.RefreshToken = refreshToken
 
 	if err := c.ShouldBindJSON(&command); err != nil {
-		global.Logger.Error("Failed to bind JSON: ", zap.Error(err))
+		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4001, err)
 		return
 	}
 	result, err := controller.commandBus.Dispatch(&command)
 	if err != nil {
-		global.Logger.Error("Failed to bind JSON: ", zap.Error(err))
+		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4001, err.Error())
 		return
 	}
@@ -111,7 +113,7 @@ func (controller *UserController) SearchUser(c *gin.Context) {
 	}
 	result, err := controller.queryBus.Dispatch(&query)
 	if err != nil {
-		global.Logger.Error("Failed to hash password: ", zap.Error(err))
+		global.Logger.Error(query.QueryName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}

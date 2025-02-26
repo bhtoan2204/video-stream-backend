@@ -17,10 +17,16 @@ import (
 func InitRouter() *gin.Engine {
 	r := gin.Default()
 
+	// Refresh token
+	refreshTokenRepository := repository.NewRefreshTokenRepository(global.MDB)
+	refreshTokenService := service.NewRefreshTokenService(refreshTokenRepository)
+
+	// User
 	userRepository := repository.NewUserRepository(global.MDB)
 	eSUserRepository := eSRepository.NewESUserRepository(global.ESClient)
-	userService := service.NewUserService(userRepository, eSUserRepository)
+	userService := service.NewUserService(userRepository, eSUserRepository, refreshTokenService)
 
+	// Command and Query
 	commandBus := command.SetUpCommandBus(&shared.ServiceDependencies{
 		UserService: userService,
 	})

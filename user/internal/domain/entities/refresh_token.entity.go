@@ -11,6 +11,3 @@ type RefreshToken struct {
 	ExpiresAt time.Time  `json:"expires_at"`
 	RevokedAt *time.Time `json:"revoked_at,omitempty"`
 }
-
-type IRefreshToken interface {
-}

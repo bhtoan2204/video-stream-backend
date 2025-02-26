@@ -7,11 +7,11 @@ import (
 	"fmt"
 
 	"github.com/bhtoan2204/user/global"
-	common "github.com/bhtoan2204/user/internal/application/common/query"
 	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/query"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch/mapper"
+	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch/model"
 	"github.com/bhtoan2204/user/utils"
 	"github.com/elastic/go-elasticsearch/v8"
 	"go.uber.org/zap"
@@ -61,7 +61,7 @@ func (r *ESUserRepository) Index(user *entities.User) error {
 	return nil
 }
 
-func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*query.SearchUserQueryResult, error) {
+func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*[]entities.User, *query.PaginateResult, error) {
 	from := (params.Page - 1) * params.Limit
 
 	queryMap := map[string]interface{}{
@@ -100,7 +100,7 @@ func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*query.SearchU
 	jsonQuery, err := json.Marshal(queryMap)
 	if err != nil {
 		global.Logger.Error("Failed to marshal search query", zap.Error(err))
-		return nil, fmt.Errorf("failed to marshal search query: %w", err)
+		return nil, nil, fmt.Errorf("failed to marshal search query: %w", err)
 	}
 
 	res, err := r.db.Search(
@@ -112,25 +112,25 @@ func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*query.SearchU
 	)
 	if err != nil {
 		global.Logger.Error("Failed to execute search query", zap.Error(err))
-		return nil, fmt.Errorf("failed to execute search query: %w", err)
+		return nil, nil, fmt.Errorf("failed to execute search query: %w", err)
 	}
 	defer res.Body.Close()
 
 	if res.IsError() {
 		global.Logger.Error("Error response from search", zap.String("response", res.String()))
-		return nil, fmt.Errorf("error response from search: %s", res.String())
+		return nil, nil, fmt.Errorf("error response from search: %s", res.String())
 	}
 
 	var result map[string]interface{}
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
 		global.Logger.Error("Failed to decode search response", zap.Error(err))
-		return nil, fmt.Errorf("failed to decode search response: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode search response: %w", err)
 	}
 
 	hits, ok := result["hits"].(map[string]interface{})
 	if !ok {
 		global.Logger.Error("Unexpected search result format")
-		return nil, fmt.Errorf("unexpected search result format")
+		return nil, nil, fmt.Errorf("unexpected search result format")
 	}
 
 	var totalDocs int
@@ -147,10 +147,10 @@ func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*query.SearchU
 
 	hitsArray, ok := hits["hits"].([]interface{})
 	if !ok {
-		return nil, fmt.Errorf("unexpected hits format")
+		return nil, nil, fmt.Errorf("unexpected hits format")
 	}
 
-	var users []common.UserResult
+	var users []model.ESUser
 	for _, hit := range hitsArray {
 		hitMap, ok := hit.(map[string]interface{})
 		if !ok {
@@ -164,7 +164,7 @@ func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*query.SearchU
 		if err != nil {
 			continue
 		}
-		var user common.UserResult
+		var user model.ESUser
 		if err := json.Unmarshal(sourceBytes, &user); err != nil {
 			continue
 		}
@@ -172,9 +172,7 @@ func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*query.SearchU
 	}
 
 	paginateResult := utils.BuildPaginateResult(totalDocs, params.Page, params.Limit)
+	usersEntities := mapper.ESUserModelsToEntities(users)
 
-	return &query.SearchUserQueryResult{
-		Result:         &users,
-		PaginateResult: paginateResult,
-	}, nil
+	return &usersEntities, paginateResult, nil
 }

@@ -23,3 +23,7 @@ func NewBirthDate(birthDate string) (*BirthDate, error) {
 func (b BirthDate) Value() *time.Time {
 	return b.value
 }
+
+func (b BirthDate) String() string {
+	return b.value.Format(time.DateOnly)
+}

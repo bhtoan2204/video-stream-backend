@@ -20,6 +20,3 @@ type UserSettings struct {
 	NotificationsEnabled bool             `json:"notifications_enabled,omitempty"`
 	Privacy              *PrivacySettings `json:"privacy,omitempty"`
 }
-
-type IUserSettings interface {
-}

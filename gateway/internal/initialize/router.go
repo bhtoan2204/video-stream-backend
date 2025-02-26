@@ -18,7 +18,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/time/rate"
 )
 
 var (
@@ -107,9 +106,9 @@ func videoServiceProxy(c *gin.Context) {
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
-	requestsPerSecond := rate.Limit(50)
-	burstSize := 10
-	rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
+	// requestsPerSecond := rate.Limit(50)
+	// burstSize := 10
+	// rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
 
 	if global.Config.Server.Mode == "local" {
 		gin.SetMode(gin.DebugMode)
@@ -122,7 +121,7 @@ func InitRouter() *gin.Engine {
 
 	r.Use(gin.Logger())
 	r.Use(middleware.CORSMiddleware())
-	r.Use(middleware.RateLimitMiddleware(rl))
+	// r.Use(middleware.RateLimitMiddleware(rl))
 	r.Use(middleware.ApiLogMiddleware())
 
 	V1ApiGroup := r.Group("/api/v1")

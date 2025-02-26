@@ -8,7 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(user *entities.User) (string, string, int, int, error) {
+func GenerateToken(user *entities.User) (string, string, int64, int64, error) {
 	accessSecret := []byte(global.Config.SecurityConfig.JWTAccessSecret)
 	accessExpiration := time.Now().Add(time.Duration(global.Config.SecurityConfig.JWTAccessExpiration) * time.Second).Unix()
 	refreshSecret := []byte(global.Config.SecurityConfig.JWTRefreshSecret)
@@ -41,7 +41,7 @@ func GenerateToken(user *entities.User) (string, string, int, int, error) {
 		return "", "", 0, 0, err
 	}
 
-	return signedAccessToken, signedRefreshToken, int(accessExpiration), int(refreshExpiration), nil
+	return signedAccessToken, signedRefreshToken, int64(accessExpiration), int64(refreshExpiration), nil
 }
 
 func VerifyToken(tokenString string, secret string) (*jwt.Token, jwt.MapClaims, error) {
@@ -69,14 +69,14 @@ func ExtractTokenClaims(tokenString string, secret string) (jwt.MapClaims, error
 	return claims, err
 }
 
-func RefreshNewToken(user *entities.User, refreshTokenString string) (string, string, int, int, error) {
+func RefreshNewToken(user *entities.User, refreshTokenString string) (string, string, int64, int64, error) {
 	refreshSecret := []byte(global.Config.SecurityConfig.JWTRefreshSecret)
 	_, claims, err := VerifyToken(refreshTokenString, string(refreshSecret))
 	if err != nil {
 		return "", "", 0, 0, err
 	}
 
-	refreshExpiration := int(claims["exp"].(float64))
+	refreshExpiration := int64(claims["exp"].(float64))
 	if time.Now().Unix() > int64(refreshExpiration) {
 		return "", "", 0, 0, jwt.ErrTokenExpired
 	}
