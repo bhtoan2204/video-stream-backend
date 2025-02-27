@@ -4,6 +4,8 @@ package user;
 
 option go_package = "./pkg/grpc/proto/user";
 
+import "empty.proto";
+
 service UserService {
   rpc ValidateUser(ValidateUserRequest) returns (UserResponse);
 }
@@ -33,3 +35,5 @@ message Permission {
   string name = 2;
   string description = 3;
 }
+
+import "health.proto";

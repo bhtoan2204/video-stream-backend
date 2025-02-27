@@ -7205,3 +7205,55 @@
 {"level":"INFO","timestamp":"2025-02-27T17:39:58.382+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
 {"level":"INFO","timestamp":"2025-02-27T17:39:58.382+0700","caller":"initialize/router.go:184","msg":"Router initialized successfully"}
 {"level":"INFO","timestamp":"2025-02-27T17:39:58.382+0700","caller":"initialize/run.go:20","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-27T17:42:27.001+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T17:42:27.001+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-27T17:42:27.006+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-27T17:42:27.006+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-02-27T17:42:27.006+0700","caller":"initialize/router.go:184","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T17:42:27.006+0700","caller":"initialize/run.go:20","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-27T17:42:35.070+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:60637","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T17:42:37.037+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:60637","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T17:42:38.069+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:60637","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T17:46:45.717+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:61210","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T17:46:46.596+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:61210","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T17:46:47.533+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:61210","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T17:46:48.375+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:61210","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T17:46:49.144+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:61210","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T17:46:50.002+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:61210","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T22:23:54.385+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:23:54.385+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:23:54.390+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:23:54.390+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:23:54.391+0700","caller":"initialize/router.go:184","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:23:54.391+0700","caller":"initialize/run.go:20","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:23:58.070+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:62689","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T22:23:59.505+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:62689","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T22:24:00.410+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:62689","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T22:24:01.230+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:62689","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T22:24:02.114+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:62689","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T22:24:02.955+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:62689","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T22:24:07.102+0700","caller":"initialize/router.go:124","msg":"Resolved service address","address":"localhost:62689","clientIP":"::1"}
+{"level":"INFO","timestamp":"2025-02-27T22:25:35.742+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:25:35.743+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:25:35.777+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:25:35.778+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:25:35.778+0700","caller":"initialize/router.go:184","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:25:35.778+0700","caller":"initialize/run.go:20","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:26:43.365+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:26:43.365+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:26:43.371+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:26:43.371+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:26:43.372+0700","caller":"initialize/router.go:184","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:26:43.372+0700","caller":"initialize/run.go:20","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:30:53.700+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:30:53.701+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:30:53.707+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:30:53.707+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:30:53.707+0700","caller":"initialize/router.go:184","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:30:53.707+0700","caller":"initialize/run.go:20","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:33:12.800+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:33:12.801+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:33:12.807+0700","caller":"initialize/redis.go:29","msg":"Connected to Redis successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:33:12.807+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:33:12.808+0700","caller":"initialize/router.go:184","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-02-27T22:33:12.808+0700","caller":"initialize/run.go:20","msg":"Initialize all services successfully"}

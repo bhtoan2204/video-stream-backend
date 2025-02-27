@@ -88,7 +88,7 @@ func (r *ConsulResolver) getAddresses() ([]resolver.Address, error) {
 		address := fmt.Sprintf("%s:%d", host, svc.Port)
 		addresses = append(addresses, resolver.Address{Addr: address})
 	}
-	fmt.Printf("Resolved addresses: %v\n", addresses)
+	// fmt.Printf("Resolved addresses: %v\n", addresses)
 	return addresses, nil
 }
 
@@ -100,11 +100,11 @@ func (r *ConsulResolver) updateState(addresses []resolver.Address) {
 func InitUserGRPCClient() {
 	resolver.Register(&ConsulResolver{
 		consulClient: global.ConsulClient,
-		serviceName:  "user-service",
+		serviceName:  "user-grpc",
 	})
 
 	conn, err := grpc.NewClient(
-		"consul:///user-service", // scheme "consul"
+		"consul:///user-grpc", // scheme "consul"
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
 	)

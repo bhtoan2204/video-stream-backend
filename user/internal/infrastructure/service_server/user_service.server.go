@@ -18,8 +18,10 @@ func NewUserServiceServer() user.UserServiceServer {
 func (s *UserServiceServerImpl) ValidateUser(ctx context.Context, req *user.ValidateUserRequest) (*user.UserResponse, error) {
 	fmt.Println("ValidateUserrrrrrrrrrrrrrrrrr")
 	if req.JwtToken == "" {
-		return nil, fmt.Errorf("jwt token trống")
+		return nil, fmt.Errorf("jwt token empty")
 	}
+
+	// TODO: validate jwt token here
 
 	return &user.UserResponse{
 		Id:        "1",
@@ -36,12 +38,12 @@ func (s *UserServiceServerImpl) ValidateUser(ctx context.Context, req *user.Vali
 					{
 						Id:          "perm1",
 						Name:        "read",
-						Description: "Quyền đọc dữ liệu",
+						Description: "read data",
 					},
 					{
 						Id:          "perm2",
 						Name:        "write",
-						Description: "Quyền ghi dữ liệu",
+						Description: "write data",
 					},
 				},
 			},
