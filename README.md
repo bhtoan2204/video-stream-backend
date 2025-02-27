@@ -8,7 +8,7 @@ My self-study project demonstrates a microservices architecture using a **Gatewa
 
 ### Diagram 1: Gateway, Consul for service discovery and load balancing
 
-![Load Balancing Diagram](./assets/Youtube Backend Architecture-Load Balancing.drawio.png)
+![Load Balancing Diagram](https://github.com/bhtoan2204/video-stream-backend/blob/main/assets/Youtube%20Backend%20Architecture-Load%20Balancing.drawio.png?raw=true)
 
 #### Components
 
@@ -27,7 +27,7 @@ My self-study project demonstrates a microservices architecture using a **Gatewa
 
 ### Diagram 2: User Service with Read/Write Storage and Event Streaming
 
-![CQRS Architecture](./assets/Youtube Backend Architecture-CQRS.drawio.png)
+![CQRS Architecture](https://github.com/bhtoan2204/video-stream-backend/blob/main/assets/Youtube%20Backend%20Architecture-CQRS.drawio.png?raw=true)
 
 #### Components
 
