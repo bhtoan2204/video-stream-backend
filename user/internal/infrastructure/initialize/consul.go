@@ -3,9 +3,6 @@ package initialize
 import (
 	"fmt"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/bhtoan2204/user/global"
 	"github.com/google/uuid"
@@ -91,23 +88,4 @@ func InitConsul() {
 		// global.Logger.Error("Failed to register service:", zap.Error(err))
 		panic(err)
 	}
-	go handleShutdown(serviceID)
-}
-
-func handleShutdown(serviceID string) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
-	<-c
-
-	// global.Logger.Info("Shutting down service, unregistering from Consul...", zap.String("serviceID", serviceID))
-
-	err := global.ConsulClient.Agent().ServiceDeregister(serviceID)
-	if err != nil {
-		global.Logger.Error("Failed to unregister service from Consul", zap.Error(err))
-	} else {
-		global.Logger.Info("Service unregistered successfully from Consul")
-	}
-
-	os.Exit(0)
 }

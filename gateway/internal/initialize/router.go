@@ -1,18 +1,24 @@
 package initialize
 
 import (
+	"errors"
+	"fmt"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/bhtoan2204/gateway/global"
 	"github.com/bhtoan2204/gateway/internal/middleware"
 	"github.com/bhtoan2204/gateway/pkg/response"
+	"github.com/hashicorp/consul/api"
 	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/time/rate"
 )
 
 var (
@@ -20,41 +26,49 @@ var (
 	mu              sync.Mutex
 )
 
-// func getServiceAddress(client *api.Client, serviceName string) (string, error) {
-// 	healthServices, _, err := client.Health().Service(serviceName, "", true, nil)
-// 	if err != nil {
-// 		return "", err
-// 	}
+func getServiceAddress(client *api.Client, serviceName string) (string, error) {
+	healthServices, _, err := client.Health().Service(serviceName, "", true, nil)
+	if err != nil {
+		return "", err
+	}
 
-// 	var availableServices []string
-// 	for _, serviceEntry := range healthServices {
-// 		svc := serviceEntry.Service
-// 		host := svc.Address
-// 		if strings.Contains(host, ":") {
-// 			var err error
-// 			host, _, err = net.SplitHostPort(host)
-// 			if err != nil {
-// 				return "", err
-// 			}
-// 		}
-// 		address := host + ":" + strconv.Itoa(svc.Port)
-// 		availableServices = append(availableServices, address)
-// 	}
+	var availableServices []string
+	for _, serviceEntry := range healthServices {
+		svc := serviceEntry.Service
+		host := svc.Address
+		if strings.Contains(host, ":") {
+			var err error
+			host, _, err = net.SplitHostPort(host)
+			if err != nil {
+				return "", err
+			}
+		}
+		address := host + ":" + strconv.Itoa(svc.Port)
+		availableServices = append(availableServices, address)
+	}
 
-// 	if len(availableServices) == 0 {
-// 		return "", errors.New("service not found or not healthy")
-// 	}
+	if len(availableServices) == 0 {
+		return "", errors.New("service not found or not healthy")
+	}
 
-// 	mu.Lock()
-// 	index := serviceCounters[serviceName] % len(availableServices)
-// 	serviceCounters[serviceName]++
-// 	mu.Unlock()
+	mu.Lock()
+	index := serviceCounters[serviceName] % len(availableServices)
+	serviceCounters[serviceName]++
+	mu.Unlock()
 
-// 	return availableServices[index], nil
-// }
+	return availableServices[index], nil
+}
 
 func userServiceProxy(c *gin.Context) {
-	targetURL, err := url.Parse("http://user-service.service.consul")
+	serviceAddress, err := getServiceAddress(global.ConsulClient, "user-service")
+	fmt.Println("serviceAddress", serviceAddress)
+	if err != nil {
+		global.Logger.Error("User-service not found", zap.Error(err))
+		response.ErrorBadRequestResponse(c, 4000, err)
+		return
+	}
+	targetURL, err := url.Parse("http://" + serviceAddress)
+	fmt.Println("targetURL", targetURL)
 	if err != nil {
 		global.Logger.Error("Failed to parse URL", zap.Error(err))
 		response.ErrorInternalServerResponse(c, 500)
@@ -70,12 +84,13 @@ func userServiceProxy(c *gin.Context) {
 }
 
 func videoServiceProxy(c *gin.Context) {
-	targetURL, err := url.Parse("http://video-service.service.consul")
+	serviceAddress, err := getServiceAddress(global.ConsulClient, "video-service")
 	if err != nil {
-		global.Logger.Error("Failed to parse URL", zap.Error(err))
-		response.ErrorInternalServerResponse(c, 500)
+		global.Logger.Error("Video-service not found", zap.Error(err))
+		response.ErrorNotFoundResponse(c, 404)
 		return
 	}
+	targetURL, err := url.Parse("http://" + serviceAddress)
 	if err != nil {
 		global.Logger.Error("Failed to parse URL", zap.Error(err))
 		response.ErrorInternalServerResponse(c, 500)
@@ -92,9 +107,9 @@ func videoServiceProxy(c *gin.Context) {
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
-	// requestsPerSecond := rate.Limit(50)
-	// burstSize := 10
-	// rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
+	requestsPerSecond := rate.Limit(50)
+	burstSize := 10
+	rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
 
 	if global.Config.Server.Mode == "local" {
 		gin.SetMode(gin.DebugMode)
@@ -107,7 +122,7 @@ func InitRouter() *gin.Engine {
 
 	r.Use(gin.Logger())
 	r.Use(middleware.CORSMiddleware())
-	// r.Use(middleware.RateLimitMiddleware(rl))
+	r.Use(middleware.RateLimitMiddleware(rl))
 	r.Use(middleware.ApiLogMiddleware())
 
 	V1ApiGroup := r.Group("/api/v1")
