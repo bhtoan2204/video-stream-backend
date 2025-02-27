@@ -11,7 +11,7 @@ import (
 	common "github.com/bhtoan2204/user/internal/application/common/query"
 	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
-	"github.com/bhtoan2204/user/internal/domain/manager"
+	"github.com/bhtoan2204/user/internal/domain/interfaces"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
 	eSRepository "github.com/bhtoan2204/user/internal/domain/repository/query"
 	value_object "github.com/bhtoan2204/user/internal/domain/value_object/user"
@@ -23,24 +23,26 @@ import (
 type UserService struct {
 	userRepository      repository.UserRepository
 	esUserRepository    eSRepository.ESUserRepository
-	refreshTokenManager manager.RefreshTokenManager
+	refreshTokenService interfaces.RefreshTokenServiceInterface
 }
 
-func NewUserService(userRepository repository.UserRepository, esUserRepository eSRepository.ESUserRepository, refreshTokenManager manager.RefreshTokenManager) *UserService {
+func NewUserService(
+	userRepository repository.UserRepository,
+	esUserRepository eSRepository.ESUserRepository,
+	refreshTokenService interfaces.RefreshTokenServiceInterface,
+) *UserService {
 	return &UserService{
 		userRepository:      userRepository,
 		esUserRepository:    esUserRepository,
-		refreshTokenManager: refreshTokenManager,
+		refreshTokenService: refreshTokenService,
 	}
 }
 
-// CreateUser is a function that creates a new user.
 func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (*command.CreateUserCommandResult, error) {
 	if err := createUserCommand.Validate(); err != nil {
 		return nil, err
 	}
 
-	// Domain logic
 	birthDate, err := value_object.NewBirthDate(createUserCommand.BirthDate)
 	if err != nil {
 		return nil, err
@@ -89,7 +91,6 @@ func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (
 	}, nil
 }
 
-// Login is a function that logs in a user.
 func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginCommandResult, error) {
 	if err := loginCommand.Validate(); err != nil {
 		return nil, err
@@ -119,12 +120,7 @@ func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginC
 
 	accessToken, refreshToken, accessExpiration, refreshExpiration, err := jwt_utils.GenerateToken(user)
 
-	fmt.Println()
-	fmt.Println(user)
-	fmt.Println()
-
-	// TODO: Save refresh token here
-	if err := s.refreshTokenManager.CreateRefreshToken(refreshToken, user.ID, time.UnixMilli(refreshExpiration)); err != nil {
+	if err := s.refreshTokenService.CreateRefreshToken(refreshToken, user.ID, time.UnixMilli(refreshExpiration)); err != nil {
 		return nil, err
 	}
 
@@ -164,8 +160,7 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 		return nil, errors.New("user not found")
 	}
 
-	// Check if the refresh token is valid
-	isRefreshTokenValid, err := s.refreshTokenManager.CheckRefreshToken(refreshTokenCommand.RefreshToken)
+	isRefreshTokenValid, err := s.refreshTokenService.CheckRefreshToken(refreshTokenCommand.RefreshToken)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +213,6 @@ func (s *UserService) SearchUser(searchUserQuery *query.SearchUserQuery) (*query
 		return nil, err
 	}
 
-	// convert []searchUserQueryResult to []common.UserResult
 	result := make([]common.UserResult, len(*searchUserQueryResult))
 	for i, user := range *searchUserQueryResult {
 		birthDate, err := value_object.NewBirthDate(user.BirthDate.Format("2006-01-02"))
