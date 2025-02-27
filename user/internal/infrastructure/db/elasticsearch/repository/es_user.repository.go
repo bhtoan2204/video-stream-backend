@@ -78,7 +78,6 @@ func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*[]entities.Us
 		}
 	}
 
-	// Sửa đổi trường sort: nếu là text, sắp xếp theo phiên bản keyword
 	if params.SortBy != "" && params.SortDirection != "" {
 		sortField := params.SortBy
 		// if !strings.Contains(sortField, ".keyword") {

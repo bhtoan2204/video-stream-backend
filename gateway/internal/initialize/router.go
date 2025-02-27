@@ -3,13 +3,14 @@ package initialize
 import (
 	"errors"
 	"fmt"
+	"hash/fnv"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/bhtoan2204/gateway/global"
 	"github.com/bhtoan2204/gateway/internal/middleware"
@@ -18,98 +19,130 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/time/rate"
 )
 
 var (
+	// Nếu fallback round-robin khi không lấy được client IP
 	serviceCounters = make(map[string]int)
 	mu              sync.Mutex
+
+	// Cache lưu danh sách các instance của mỗi service với TTL
+	serviceCache = make(map[string]serviceCacheItem)
+	cacheMu      sync.Mutex
 )
 
-func getServiceAddress(client *api.Client, serviceName string) (string, error) {
+type serviceCacheItem struct {
+	addresses []string
+	expiry    time.Time
+}
+
+// Cache with TTL is 5s
+func GetServiceAddresses(client *api.Client, serviceName string) ([]string, error) {
+	cacheMu.Lock()
+	item, found := serviceCache[serviceName]
+	if found && time.Now().Before(item.expiry) {
+		cacheMu.Unlock()
+		return item.addresses, nil
+	}
+	cacheMu.Unlock()
+
 	healthServices, _, err := client.Health().Service(serviceName, "", true, nil)
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+	if len(healthServices) == 0 {
+		return nil, errors.New("service not found or not healthy")
 	}
 
-	var availableServices []string
+	var addresses []string
 	for _, serviceEntry := range healthServices {
 		svc := serviceEntry.Service
 		host := svc.Address
+		if host == "" {
+			host = serviceEntry.Node.Address
+		}
 		if strings.Contains(host, ":") {
 			var err error
 			host, _, err = net.SplitHostPort(host)
 			if err != nil {
-				return "", err
+				return nil, err
 			}
 		}
-		address := host + ":" + strconv.Itoa(svc.Port)
-		availableServices = append(availableServices, address)
+		address := fmt.Sprintf("%s:%d", host, svc.Port)
+		addresses = append(addresses, address)
 	}
 
-	if len(availableServices) == 0 {
-		return "", errors.New("service not found or not healthy")
+	cacheMu.Lock()
+	serviceCache[serviceName] = serviceCacheItem{
+		addresses: addresses,
+		expiry:    time.Now().Add(5 * time.Second),
 	}
+	cacheMu.Unlock()
 
+	return addresses, nil
+}
+
+func selectInstance(addresses []string, clientIP, serviceName string) string {
+	if clientIP != "" {
+		h := fnv.New32a()
+		h.Write([]byte(clientIP))
+		hashValue := h.Sum32()
+		index := int(hashValue) % len(addresses)
+		return addresses[index]
+	}
 	mu.Lock()
-	index := serviceCounters[serviceName] % len(availableServices)
+	index := serviceCounters[serviceName] % len(addresses)
 	serviceCounters[serviceName]++
 	mu.Unlock()
-
-	return availableServices[index], nil
+	return addresses[index]
 }
 
-func userServiceProxy(c *gin.Context) {
-	serviceAddress, err := getServiceAddress(global.ConsulClient, "user-service")
-	fmt.Println("serviceAddress", serviceAddress)
+func newReverseProxy(targetAddress, pathPrefix string) (*httputil.ReverseProxy, error) {
+	targetURL, err := url.Parse("http://" + targetAddress)
 	if err != nil {
-		global.Logger.Error("User-service not found", zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err)
-		return
-	}
-	targetURL, err := url.Parse("http://" + serviceAddress)
-	fmt.Println("targetURL", targetURL)
-	if err != nil {
-		global.Logger.Error("Failed to parse URL", zap.Error(err))
-		response.ErrorInternalServerResponse(c, 500)
-		return
+		return nil, err
 	}
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+	originalDirector := proxy.Director
 	proxy.Director = func(req *http.Request) {
-		req.URL.Scheme = targetURL.Scheme
-		req.URL.Host = targetURL.Host
-		req.URL.Path = strings.Replace(req.URL.Path, "/user-service", "", 1)
+		originalDirector(req)
+		req.URL.Path = strings.TrimPrefix(req.URL.Path, pathPrefix)
 	}
-	proxy.ServeHTTP(c.Writer, c.Request)
+	return proxy, nil
 }
 
-func videoServiceProxy(c *gin.Context) {
-	serviceAddress, err := getServiceAddress(global.ConsulClient, "video-service")
-	if err != nil {
-		global.Logger.Error("Video-service not found", zap.Error(err))
-		response.ErrorNotFoundResponse(c, 404)
-		return
+func serviceProxy(serviceName string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		addresses, err := GetServiceAddresses(global.ConsulClient, serviceName)
+		if err != nil {
+			global.Logger.Error("Service not found", zap.Error(err))
+			response.ErrorNotFoundResponse(c, 404)
+			return
+		}
+		clientIP := c.ClientIP()
+		selected := selectInstance(addresses, clientIP, serviceName)
+		global.Logger.Info("Resolved service address", zap.String("address", selected), zap.String("clientIP", clientIP))
+
+		proxy, err := newReverseProxy(selected, "/"+serviceName)
+		if err != nil {
+			global.Logger.Error("Failed to create reverse proxy", zap.Error(err))
+			response.ErrorInternalServerResponse(c, 500)
+			return
+		}
+		proxy.Director = func(req *http.Request) {
+			req.URL.Scheme = "http"
+			req.URL.Host = selected
+			req.URL.Path = strings.Replace(req.URL.Path, "/"+serviceName, "", 1)
+		}
+		proxy.ServeHTTP(c.Writer, c.Request)
 	}
-	targetURL, err := url.Parse("http://" + serviceAddress)
-	if err != nil {
-		global.Logger.Error("Failed to parse URL", zap.Error(err))
-		response.ErrorInternalServerResponse(c, 500)
-		return
-	}
-	proxy := httputil.NewSingleHostReverseProxy(targetURL)
-	proxy.Director = func(req *http.Request) {
-		req.URL.Scheme = targetURL.Scheme
-		req.URL.Host = targetURL.Host
-		req.URL.Path = strings.Replace(req.URL.Path, "/video-service", "", 1)
-	}
-	proxy.ServeHTTP(c.Writer, c.Request)
 }
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
-	requestsPerSecond := rate.Limit(50)
-	burstSize := 10
-	rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
+	// requestsPerSecond := rate.Limit(50)
+	// burstSize := 10
+	// rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
 
 	if global.Config.Server.Mode == "local" {
 		gin.SetMode(gin.DebugMode)
@@ -121,26 +154,32 @@ func InitRouter() *gin.Engine {
 	}
 
 	r.Use(gin.Logger())
-	r.Use(middleware.CORSMiddleware())
-	r.Use(middleware.RateLimitMiddleware(rl))
-	r.Use(middleware.ApiLogMiddleware())
+	// r.Use(middleware.CORSMiddleware())
+	// r.Use(middleware.RateLimitMiddleware(rl))
+	// r.Use(middleware.ApiLogMiddleware())
 
 	V1ApiGroup := r.Group("/api/v1")
 	{
 		V1ApiGroup.GET("/health", func(c *gin.Context) {
-			c.JSON(200, gin.H{
+			c.JSON(http.StatusOK, gin.H{
 				"message": "OK",
 			})
 		})
 		V1ApiGroup.GET("/test-kafka", func(c *gin.Context) {
 			go ProduceMessage("test-key", "test-message")
-			c.JSON(200, gin.H{
+			c.JSON(http.StatusOK, gin.H{
 				"message": "OK",
 			})
 		})
 
-		V1ApiGroup.Any("/user-service/*any", userServiceProxy)
-		V1ApiGroup.Any("/video-service/*any", videoServiceProxy)
+		V1ApiGroup.Any("/user-service/*any", serviceProxy("user-service"))
+		V1ApiGroup.Any("/video-service/*any", serviceProxy("video-service"))
+		V1ApiGroup.GET(("/auth"), middleware.AuthenticationMiddleware(), func(c *gin.Context) {
+			user, _ := c.Get("user")
+			c.JSON(http.StatusOK, gin.H{
+				"user": user,
+			})
+		})
 	}
 	global.Logger.Info("Router initialized successfully")
 	return r

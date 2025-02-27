@@ -19,7 +19,7 @@ func Run() {
 	InitDB()
 	InitKafka()
 	InitElasticsearch()
-	// InitGrpcClient()
+	InitGrpcServer()
 	eSUserRepository := eSRepository.NewESUserRepository(global.ESClient)
 	userRepository := repository.NewUserRepository(global.MDB)
 	userListener := listener.NewUserListener(userRepository, eSUserRepository)

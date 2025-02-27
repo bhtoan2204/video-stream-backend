@@ -46,30 +46,30 @@ services:
     volumes:
       - ./config:/consul/config
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: qdrant
-    ports:
-      - "6333:6333"
-    volumes:
-      - qdrant_data:/qdrant/storage
-    environment:
-      - QDRANT_LOG_LEVEL=info
-    restart: always
+  # qdrant:
+  #   image: qdrant/qdrant:latest
+  #   container_name: qdrant
+  #   ports:
+  #     - "6333:6333"
+  #   volumes:
+  #     - qdrant_data:/qdrant/storage
+  #   environment:
+  #     - QDRANT_LOG_LEVEL=info
+  #   restart: always
 
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    ports:
-      - "16686:16686" # UI
-      - "14268:14268" # HTTP Thrift
-      - "14250:14250" # gRPC
-      - "6831:6831/udp" # UDP compact Thrift
-      - "6832:6832/udp" # UDP binary Thrift
-    environment:
-      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
-      - JAEGER_SAMPLER_TYPE=const
-      - JAEGER_SAMPLER_PARAM=1
-      - JAEGER_AGENT_HOST=jaeger
+  # jaeger:
+  #   image: jaegertracing/all-in-one:latest
+  #   ports:
+  #     - "16686:16686" # UI
+  #     - "14268:14268" # HTTP Thrift
+  #     - "14250:14250" # gRPC
+  #     - "6831:6831/udp" # UDP compact Thrift
+  #     - "6832:6832/udp" # UDP binary Thrift
+  #   environment:
+  #     - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+  #     - JAEGER_SAMPLER_TYPE=const
+  #     - JAEGER_SAMPLER_PARAM=1
+  #     - JAEGER_AGENT_HOST=jaeger
 
   gateway:
     build:
@@ -91,6 +91,31 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+
+  gateway-dev:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile-dev
+    ports:
+      - "8080:8080"
+    environment:
+      - GO_ENV=development
+    command: ["go", "run", "./cmd/main/main.go"]
+    volumes:
+      - /usr/app:/Users/toanbanh/youtube-backend/gateway
+
+  user-dev:
+    build:
+      context: ./user
+      dockerfile: Dockerfile-dev
+    environment:
+      - GO_ENV=development
+    command: ["go", "run", "./cmd/main/main.go"]
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - /usr/app:/Users/toanbanh/youtube-backend/user
 
   video:
     build:

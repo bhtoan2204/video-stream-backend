@@ -45,6 +45,7 @@ func NewDebezium(eventBus *event.EventBus) *DebeziumConsumer {
 		global.Logger.Info("Creating reader", zap.String("topic", topic))
 		reader := kafka.NewReader(kafka.ReaderConfig{
 			Brokers: []string{global.Config.KafkaConfig.Broker},
+			// Brokers: []string{"kafka:29092"},
 			GroupID: "mysql-user-connector",
 			Topic:   topic,
 		})
@@ -65,8 +66,6 @@ func (d *DebeziumConsumer) ProcessMessage(msg kafka.Message, topic string) {
 	}
 
 	tableName := getTableName(topic)
-	global.Logger.Info("Processing message", zap.String("table", tableName), zap.String("operation", message.Payload.Op))
-	global.Logger.Info("Message payload", zap.Any("payload", message.Payload))
 
 	if tableName == "users" && (message.Payload.Op == "c" || message.Payload.Op == "u") {
 		var ru struct {
@@ -119,7 +118,6 @@ func (d *DebeziumConsumer) Consume() {
 	for _, reader := range d.readers {
 		go func(r *kafka.Reader) {
 			for {
-				global.Logger.Info("Waiting for message", zap.String("topic", r.Config().Topic))
 				m, err := r.ReadMessage(context.Background())
 				if err != nil {
 					global.Logger.Error("Error reading message", zap.String("topic", r.Config().Topic), zap.Error(err))

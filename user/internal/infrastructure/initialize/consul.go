@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func getDockerInternalIP() (string, error) {
+func GetDockerInternalIP() (string, error) {
 	interfaces, err := net.Interfaces()
 	if err != nil {
 		return "", err
@@ -55,7 +55,7 @@ func InitConsul() {
 
 	serviceID := uuid.New().String()
 	servicePort := global.Listener.Addr().(*net.TCPAddr).Port
-	serviceAddress, err := getDockerInternalIP()
+	serviceAddress, err := GetDockerInternalIP()
 	if err != nil {
 		global.Logger.Error("Failed to get internal IP address:", zap.Error(err))
 		panic(err)
@@ -65,7 +65,7 @@ func InitConsul() {
 		ID:      serviceID,
 		Name:    "user-service",
 		Address: consulConfig.Address,
-		Port:    global.Listener.Addr().(*net.TCPAddr).Port,
+		Port:    servicePort,
 		Tags:    []string{"api", "user"},
 		Check: &api.AgentServiceCheck{
 			HTTP:                           fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, servicePort),
@@ -85,7 +85,7 @@ func InitConsul() {
 
 	err = global.ConsulClient.Agent().ServiceRegister(registration)
 	if err != nil {
-		// global.Logger.Error("Failed to register service:", zap.Error(err))
+		global.Logger.Error("Failed to register service:", zap.Error(err))
 		panic(err)
 	}
 }
