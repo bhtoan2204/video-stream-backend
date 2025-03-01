@@ -25,6 +25,7 @@ func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus,
 		queryBus:   queryBus,
 	}
 	// Command
+	r.GET("/profile", ctrl.GetUserProfile)
 	r.POST("/create", ctrl.CreateUser)
 	r.POST("/login", ctrl.Login)
 	r.POST("/refresh", ctrl.RefreshNewToken)
@@ -101,6 +102,24 @@ func (controller *UserController) RefreshNewToken(c *gin.Context) {
 		return
 	}
 
+	c.JSON(200, result)
+}
+
+func (controller *UserController) GetUserProfile(c *gin.Context) {
+	userId := c.Request.Header.Get("X-User-ID")
+	if userId == "" {
+		global.Logger.Error("User ID is missing")
+		response.ErrorUnauthorizedResponse(c, 401)
+		return
+	}
+	var query realQuery.GetUserProfileQuery
+	query.ID = userId
+	result, err := controller.queryBus.Dispatch(&query)
+	if err != nil {
+		global.Logger.Error(query.QueryName(), zap.Error(err))
+		response.ErrorBadRequestResponse(c, 4000, err.Error())
+		return
+	}
 	c.JSON(200, result)
 }
 

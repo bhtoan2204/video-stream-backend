@@ -17,6 +17,7 @@ import (
 	"github.com/bhtoan2204/gateway/pkg/response"
 	"github.com/hashicorp/consul/api"
 	"go.uber.org/zap"
+	"golang.org/x/time/rate"
 
 	"github.com/gin-gonic/gin"
 )
@@ -140,9 +141,9 @@ func serviceProxy(serviceName string) gin.HandlerFunc {
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
-	// requestsPerSecond := rate.Limit(50)
-	// burstSize := 10
-	// rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
+	requestsPerSecond := rate.Limit(50)
+	burstSize := 10
+	rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
 
 	if global.Config.Server.Mode == "local" {
 		gin.SetMode(gin.DebugMode)
@@ -154,8 +155,8 @@ func InitRouter() *gin.Engine {
 	}
 
 	r.Use(gin.Logger())
-	// r.Use(middleware.CORSMiddleware())
-	// r.Use(middleware.RateLimitMiddleware(rl))
+	r.Use(middleware.CORSMiddleware())
+	r.Use(middleware.RateLimitMiddleware(rl))
 	// r.Use(middleware.ApiLogMiddleware())
 
 	V1ApiGroup := r.Group("/api/v1")
@@ -172,14 +173,20 @@ func InitRouter() *gin.Engine {
 			})
 		})
 
-		V1ApiGroup.Any("/user-service/*any", serviceProxy("user-service"))
+		// V1ApiGroup.Any("/user-service/*any", serviceProxy("user-service"))
+		V1ApiGroup.GET("/user-service/users/profile", middleware.AuthenticationMiddleware(), serviceProxy("user-service"))
+		V1ApiGroup.POST("/user-service/users/create", serviceProxy("user-service"))
+		V1ApiGroup.POST("/user-service/users/login", serviceProxy("user-service"))
+		V1ApiGroup.POST("/user-service/users/refresh", serviceProxy("user-service"))
+		V1ApiGroup.GET("/user-service/users", serviceProxy("user-service"))
+		// r.GET("/profile", ctrl.GetUserProfile)
+		// r.POST("/create", ctrl.CreateUser)
+		// r.POST("/login", ctrl.Login)
+		// r.POST("/refresh", ctrl.RefreshNewToken)
+
+		// // Query
+		// r.GET("", ctrl.SearchUser)
 		V1ApiGroup.Any("/video-service/*any", serviceProxy("video-service"))
-		V1ApiGroup.GET(("/auth"), middleware.AuthenticationMiddleware(), func(c *gin.Context) {
-			user, _ := c.Get("user")
-			c.JSON(http.StatusOK, gin.H{
-				"user": user,
-			})
-		})
 	}
 	global.Logger.Info("Router initialized successfully")
 	return r

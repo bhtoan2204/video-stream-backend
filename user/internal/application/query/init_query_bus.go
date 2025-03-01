@@ -11,9 +11,14 @@ func SetUpQueryBus(deps *shared.ServiceDependencies) *QueryBus {
 
 	// Register User command handlers
 	searchUserHandler := handler.NewSearchUserQueryHandler(deps.UserService)
+	getUserProfileHandler := handler.NewGetUserProfileQueryHandler(deps.UserService)
 
 	bus.RegisterHandler("SearchUserQuery", func(q Query) (interface{}, error) {
 		return searchUserHandler.Handle(q.(*query.SearchUserQuery))
+	})
+
+	bus.RegisterHandler("GetUserProfileQuery", func(q Query) (interface{}, error) {
+		return getUserProfileHandler.Handle(q.(*query.GetUserProfileQuery))
 	})
 
 	// Register other command handlers here

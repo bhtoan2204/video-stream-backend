@@ -88,7 +88,7 @@ func (r *ConsulResolver) getAddresses() ([]resolver.Address, error) {
 		address := fmt.Sprintf("%s:%d", host, svc.Port)
 		addresses = append(addresses, resolver.Address{Addr: address})
 	}
-	// fmt.Printf("Resolved addresses: %v\n", addresses)
+
 	return addresses, nil
 }
 

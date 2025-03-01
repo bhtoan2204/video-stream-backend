@@ -5,8 +5,9 @@ import (
 	"net"
 
 	"github.com/bhtoan2204/user/global"
+	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
 	"github.com/bhtoan2204/user/internal/infrastructure/grpc/proto/user"
-	serviceserver "github.com/bhtoan2204/user/internal/infrastructure/service_server"
+	service_server "github.com/bhtoan2204/user/internal/infrastructure/service_server"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
 	"go.uber.org/zap"
@@ -15,14 +16,14 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
-func InitGrpcServer() {
+func InitGrpcServer(userRepository repository.UserRepository) {
 	listener, err := net.Listen("tcp", ":0")
 	if err != nil {
 		global.Logger.Fatal("Failed to allocate port", zap.Error(err))
 	}
 
 	grpcServer := grpc.NewServer()
-	user.RegisterUserServiceServer(grpcServer, serviceserver.NewUserServiceServer())
+	user.RegisterUserServiceServer(grpcServer, service_server.NewUserServiceServer(userRepository))
 
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
@@ -74,6 +75,7 @@ func InitGrpcServer() {
 		global.Logger.Error("Failed to register service:", zap.Error(err))
 		panic(err)
 	}
+
 	go func() {
 		if err := grpcServer.Serve(listener); err != nil {
 			global.Logger.Error("Error serving gRPC server", zap.Error(err))

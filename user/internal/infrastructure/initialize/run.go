@@ -19,11 +19,10 @@ func Run() {
 	InitDB()
 	InitKafka()
 	InitElasticsearch()
-	InitGrpcServer()
 	eSUserRepository := eSRepository.NewESUserRepository(global.ESClient)
 	userRepository := repository.NewUserRepository(global.MDB)
 	userListener := listener.NewUserListener(userRepository, eSUserRepository)
-
+	InitGrpcServer(userRepository)
 	eventBus := event.SetUpEventBus(&shared.ListenerDependencies{
 		UserListener: userListener,
 	})

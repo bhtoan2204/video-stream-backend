@@ -15,4 +15,5 @@ type UserServiceInterface interface {
 
 	// Query
 	SearchUser(searchUserQuery *query.SearchUserQuery) (*query.SearchUserQueryResult, error)
+	GetUserProfile(getUserProfileQuery *query.GetUserProfileQuery) (*query.GetUserProfileQueryResult, error)
 }

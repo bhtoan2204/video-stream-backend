@@ -236,3 +236,34 @@ func (s *UserService) SearchUser(searchUserQuery *query.SearchUserQuery) (*query
 		PaginateResult: pagination,
 	}, nil
 }
+
+func (s *UserService) GetUserProfile(getUserProfileQuery *query.GetUserProfileQuery) (*query.GetUserProfileQueryResult, error) {
+	user, err := s.userRepository.FindOneByQuery(
+		utils.QueryOptions{
+			Filters: map[string]interface{}{
+				"id": getUserProfileQuery.ID,
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	birthDate, err := value_object.NewBirthDate(user.BirthDate.Format("2006-01-02"))
+	if err != nil {
+		return nil, err
+	}
+
+	return &query.GetUserProfileQueryResult{
+		Result: &common.UserResult{
+			ID:        user.ID,
+			Username:  user.Username,
+			Email:     user.Email,
+			Phone:     user.Phone,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			BirthDate: birthDate.String(),
+			Address:   user.Address,
+		},
+	}, nil
+}

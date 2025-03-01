@@ -29,13 +29,15 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		req := &user.ValidateUserRequest{JwtToken: accessToken}
-		res, err := global.UserGRPCClient.ValidateUser(ctx, req)
+		user, err := global.UserGRPCClient.ValidateUser(ctx, req)
 		if err != nil {
 			response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
 			c.Abort()
 			return
 		}
-		c.Set("user", res)
+
+		c.Request.Header.Set("X-User-ID", user.GetId())
+
 		c.Next()
 	}
 }

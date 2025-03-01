@@ -78,6 +78,9 @@ func (r *GormUserRepository) FindOneByQuery(q utils.QueryOptions) (*entities.Use
 		dbQuery = dbQuery.Where(key+" = ?", value)
 	}
 
+	// Preload roles and permissions
+	dbQuery = dbQuery.Preload("Roles").Preload("Roles.Permissions")
+
 	if err := dbQuery.Model(&model.User{}).First(&userModel).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
