@@ -43,7 +43,7 @@ func (r *GormRefreshTokenRepository) Create(refreshToken *entities.RefreshToken)
 }
 
 // DeleteByQuery implements command.RefreshTokenRepository.
-func (g *GormRefreshTokenRepository) DeleteByQuery(query map[string]interface{}) error {
+func (g *GormRefreshTokenRepository) DeleteByQuery(query *map[string]interface{}) error {
 	now := time.Now()
 	err := g.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&model.RefreshToken{}).Where(query).Update("deleted_at", &now).Error; err != nil {
@@ -58,7 +58,7 @@ func (g *GormRefreshTokenRepository) DeleteByQuery(query map[string]interface{})
 }
 
 // FindOneByQuery implements command.RefreshTokenRepository.
-func (g *GormRefreshTokenRepository) FindOneByQuery(query map[string]interface{}) (*entities.RefreshToken, error) {
+func (g *GormRefreshTokenRepository) FindOneByQuery(query *map[string]interface{}) (*entities.RefreshToken, error) {
 	refreshTokenModel := model.RefreshToken{}
 	dbQuery := BuildQuery(g.db, query)
 	if err := dbQuery.First(&refreshTokenModel).Error; err != nil {
@@ -72,7 +72,7 @@ func (g *GormRefreshTokenRepository) FindOneByQuery(query map[string]interface{}
 }
 
 // UpdateByQuery implements command.RefreshTokenRepository.
-func (g *GormRefreshTokenRepository) UpdateByQuery(query map[string]interface{}, update map[string]interface{}) error {
+func (g *GormRefreshTokenRepository) UpdateByQuery(query *map[string]interface{}, update *map[string]interface{}) error {
 	err := g.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&model.RefreshToken{}).Where(query).Updates(update).Error; err != nil {
 			return err
@@ -85,7 +85,7 @@ func (g *GormRefreshTokenRepository) UpdateByQuery(query map[string]interface{},
 	return nil
 }
 
-func (g *GormRefreshTokenRepository) HardDeleteByQuery(query map[string]interface{}) error {
+func (g *GormRefreshTokenRepository) HardDeleteByQuery(query *map[string]interface{}) error {
 	err := g.db.Transaction(func(tx *gorm.DB) error {
 		if err := g.db.Where(query).Delete(&model.RefreshToken{}).Error; err != nil {
 			return err

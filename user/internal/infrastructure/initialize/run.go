@@ -22,12 +22,12 @@ func Run() {
 	eSUserRepository := eSRepository.NewESUserRepository(global.ESClient)
 	userRepository := repository.NewUserRepository(global.MDB)
 	userListener := listener.NewUserListener(userRepository, eSUserRepository)
-	InitGrpcServer(userRepository)
-	eventBus := event.SetUpEventBus(&shared.ListenerDependencies{
+	// InitGrpcServer(userRepository)
+	eventBus := *event.SetUpEventBus(&shared.ListenerDependencies{
 		UserListener: userListener,
 	})
 
-	debezium := NewDebezium(*eventBus)
+	debezium := NewDebezium(eventBus)
 	go debezium.Start()
 
 	r := InitRouter()

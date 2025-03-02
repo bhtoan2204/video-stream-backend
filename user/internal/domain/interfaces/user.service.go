@@ -12,6 +12,7 @@ type UserServiceInterface interface {
 	Login(loginCommand *command.LoginCommand) (*command.LoginCommandResult, error)
 	Refresh(refreshCommand *command.RefreshTokenCommand) (*common.RefreshTokenCommandResult, error)
 	GetUserById(getUserByIdCommand *command.GetUserByIdCommand) (*command.GetUserByIdCommandResult, error)
+	Logout(logoutCommand *command.LogoutCommand) (*common.LogoutCommandResult, error)
 
 	// Query
 	SearchUser(searchUserQuery *query.SearchUserQuery) (*query.SearchUserQueryResult, error)

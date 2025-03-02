@@ -97,7 +97,7 @@ func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginC
 	}
 
 	user, err := s.userRepository.FindOneByQuery(
-		utils.QueryOptions{
+		&utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"email": loginCommand.Email,
 			},
@@ -149,7 +149,7 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 	}
 
 	user, err := s.userRepository.FindOneByQuery(
-		utils.QueryOptions{
+		&utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"id": claims["id"],
 			},
@@ -168,6 +168,13 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 		return nil, errors.New("refresh token is invalid")
 	}
 
+	err = s.refreshTokenService.RevokedByQuery(map[string]interface{}{
+		"refresh_token": refreshTokenCommand.RefreshToken,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	newAccessToken, newRefreshToken, accessExp, refreshExp, err := jwt_utils.RefreshNewToken(user, refreshTokenCommand.RefreshToken)
 	if err != nil {
 		return nil, err
@@ -183,7 +190,7 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 
 func (s *UserService) GetUserById(getUserByIdCommand *command.GetUserByIdCommand) (*command.GetUserByIdCommandResult, error) {
 	user, err := s.userRepository.FindOneByQuery(
-		utils.QueryOptions{
+		&utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"id": getUserByIdCommand.ID,
 			},
@@ -239,7 +246,7 @@ func (s *UserService) SearchUser(searchUserQuery *query.SearchUserQuery) (*query
 
 func (s *UserService) GetUserProfile(getUserProfileQuery *query.GetUserProfileQuery) (*query.GetUserProfileQueryResult, error) {
 	user, err := s.userRepository.FindOneByQuery(
-		utils.QueryOptions{
+		&utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"id": getUserProfileQuery.ID,
 			},
@@ -265,5 +272,22 @@ func (s *UserService) GetUserProfile(getUserProfileQuery *query.GetUserProfileQu
 			BirthDate: birthDate.String(),
 			Address:   user.Address,
 		},
+	}, nil
+}
+
+func (s *UserService) Logout(logoutCommand *command.LogoutCommand) (*commonCommand.LogoutCommandResult, error) {
+	if err := logoutCommand.Validate(); err != nil {
+		return nil, err
+	}
+
+	err := s.refreshTokenService.RevokedByQuery(map[string]interface{}{
+		"refresh_token": logoutCommand.RefreshToken,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &commonCommand.LogoutCommandResult{
+		Success: true,
 	}, nil
 }

@@ -5504,3 +5504,171 @@
 {"level":"INFO","timestamp":"2025-03-01T20:52:42.128+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
 {"level":"INFO","timestamp":"2025-03-01T20:52:42.128+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
 {"level":"INFO","timestamp":"2025-03-01T20:52:42.128+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.471+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.797+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.797+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.797+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.798+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.806+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.activity_logs"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.807+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.permissions"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.807+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.807+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.807+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
+{"level":"INFO","timestamp":"2025-03-01T20:54:29.807+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:25.937+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.534+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.534+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.534+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.535+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.546+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.activity_logs"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.546+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.permissions"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.546+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.547+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.547+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
+{"level":"INFO","timestamp":"2025-03-02T15:11:26.547+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:30.925+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.193+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.193+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.193+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.194+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.203+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.activity_logs"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.203+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.permissions"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.203+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.204+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.204+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
+{"level":"INFO","timestamp":"2025-03-02T15:12:31.204+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:36.797+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.151+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.151+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.152+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.152+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.152+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.activity_logs"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.152+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.permissions"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.152+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.152+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.152+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:37.152+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:55.680+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.940+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.940+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.940+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.940+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.948+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.activity_logs"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.948+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.permissions"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.948+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.948+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.948+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
+{"level":"INFO","timestamp":"2025-03-02T15:13:56.948+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.272+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.584+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.584+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.584+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.585+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.593+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.activity_logs"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.594+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.permissions"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.594+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.594+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.594+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:24.594+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:50.692+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:50.994+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:50.994+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:50.994+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:25:50.994+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:51.004+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.activity_logs"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:51.004+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.permissions"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:51.004+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:51.004+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:51.004+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
+{"level":"INFO","timestamp":"2025-03-02T15:25:51.005+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:26.718+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.132+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.132+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.132+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.132+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.132+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.activity_logs"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.133+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.permissions"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.133+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.133+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.134+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
+{"level":"INFO","timestamp":"2025-03-02T15:26:27.134+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:06.847+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:07.176+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:07.176+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:07.176+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:27:07.176+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:42.559+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:42.841+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:42.841+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:42.841+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:27:52.751+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.070+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.070+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.071+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.071+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.071+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.activity_logs"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.071+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.permissions"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.071+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.071+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.roles"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.071+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.user_settings"}
+{"level":"INFO","timestamp":"2025-03-02T15:27:53.071+0700","caller":"event_consumer/debezium_consumer.go:45","msg":"Creating reader","topic":"dbserver1.user.users"}
+{"level":"INFO","timestamp":"2025-03-02T15:28:05.577+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:28:05.857+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:28:05.857+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:28:05.857+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:28:05.857+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:28:54.655+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:28:54.964+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:28:54.965+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:28:54.965+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:28:54.965+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:29:32.858+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:29:33.348+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:29:33.348+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:29:33.348+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:29:33.348+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:30:52.410+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:31:04.665+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:32:02.799+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:32:03.471+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:32:03.471+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:32:03.471+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:32:03.471+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:34:53.318+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:34:53.632+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:34:53.632+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:34:53.632+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:34:53.632+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:36:06.449+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:36:06.817+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:36:06.817+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:36:06.817+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:36:06.818+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:37:32.884+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:37:33.139+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:37:33.139+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:37:33.139+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:37:33.139+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:38:03.993+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:38:04.273+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:38:04.273+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:38:04.273+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:38:04.273+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:42:38.464+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:42:38.714+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:42:38.714+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:42:38.714+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:42:38.714+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:42:50.215+0700","caller":"event_consumer/debezium_consumer.go:125","msg":"Message received","topic":"dbserver1.user.refresh_tokens"}
+{"level":"INFO","timestamp":"2025-03-02T15:44:30.143+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:44:30.145+0700","caller":"initialize/consul.go:80","msg":"Registering service with Consul","registration":{"ID":"046c7cc8-d340-4349-ae37-7e1744d82ace","Name":"user-service","Tags":["api","user"],"Port":65233,"Address":"localhost:8500","Check":{"Interval":"10s","Timeout":"5s","HTTP":"http://172.19.140.10:65233/api/v1/health","Method":"GET","Notes":"Basic health check in user service http://172.19.140.10:65233/api/v1/health","DeregisterCriticalServiceAfter":"1m"},"Checks":null}}
+{"level":"INFO","timestamp":"2025-03-02T15:44:30.554+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:44:30.554+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:44:30.554+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:44:30.554+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}
+{"level":"INFO","timestamp":"2025-03-02T15:47:40.702+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-02T15:47:40.702+0700","caller":"initialize/consul.go:80","msg":"Registering service with Consul","registration":{"ID":"016b1eff-f0d4-4aa8-bea5-9eeb3485d04c","Name":"user-service","Tags":["api","user"],"Port":65285,"Address":"172.19.140.10","Check":{"Interval":"10s","Timeout":"5s","HTTP":"http://172.19.140.10:65285/api/v1/health","Method":"GET","Notes":"Basic health check in user service http://172.19.140.10:65285/api/v1/health","DeregisterCriticalServiceAfter":"1m"},"Checks":null}}
+{"level":"INFO","timestamp":"2025-03-02T15:47:40.986+0700","caller":"initialize/kafka.go:23","msg":"Kafka producer initialized","broker":"localhost","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:47:40.986+0700","caller":"initialize/kafka.go:33","msg":"Kafka consumer initialized","broker":"localhost","group_id":"user-group","topic":"user-events"}
+{"level":"INFO","timestamp":"2025-03-02T15:47:40.986+0700","caller":"initialize/kafka.go:55","msg":"Kafka initialized","KafkaConfig":{"Broker":"localhost","Port":9092,"Topic":"user-events","GroupID":"user-group"}}
+{"level":"INFO","timestamp":"2025-03-02T15:47:40.986+0700","caller":"initialize/read_database.go:22","msg":"Elasticsearch client initialized"}

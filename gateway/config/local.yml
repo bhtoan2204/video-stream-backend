@@ -37,3 +37,5 @@ security:
   jwt_refresh_secret: ROSyJWWHgSejTAEIemaSrLT59Evc2M9AUtp4O4sVHGpIFS9rLGGEx0GPAPiV
   jwt_access_expiration: 15m
   jwt_refresh_expiration: 24h
+jaeger:
+  endpoint: localhost:14250

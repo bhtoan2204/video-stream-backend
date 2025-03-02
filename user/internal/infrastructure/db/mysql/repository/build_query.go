@@ -6,8 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func BuildQuery(db *gorm.DB, query map[string]interface{}) *gorm.DB {
-	for key, value := range query {
+func BuildQuery(db *gorm.DB, query *map[string]interface{}) *gorm.DB {
+	for key, value := range *query {
 		if key == "$or" {
 
 			conds, ok := value.([]interface{})
@@ -21,7 +21,7 @@ func BuildQuery(db *gorm.DB, query map[string]interface{}) *gorm.DB {
 				}
 
 				db = db.Or(func(db *gorm.DB) *gorm.DB {
-					return BuildQuery(db, subCond)
+					return BuildQuery(db, &subCond)
 				})
 			}
 			continue
@@ -38,7 +38,7 @@ func BuildQuery(db *gorm.DB, query map[string]interface{}) *gorm.DB {
 					continue
 				}
 				db = db.Where(func(db *gorm.DB) *gorm.DB {
-					return BuildQuery(db, subCond)
+					return BuildQuery(db, &subCond)
 				})
 			}
 			continue

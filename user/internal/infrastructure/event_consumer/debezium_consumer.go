@@ -42,10 +42,9 @@ func NewDebezium(eventBus *event.EventBus) *DebeziumConsumer {
 	var readers []*kafka.Reader
 
 	for _, topic := range topics {
-		global.Logger.Info("Creating reader", zap.String("topic", topic))
 		reader := kafka.NewReader(kafka.ReaderConfig{
-			Brokers: []string{global.Config.KafkaConfig.Broker},
-			// Brokers: []string{"kafka:29092"},
+			// Brokers: []string{global.Config.KafkaConfig.Broker},
+			Brokers: []string{"kafka:29092"},
 			GroupID: "mysql-user-connector",
 			Topic:   topic,
 		})

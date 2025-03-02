@@ -13,6 +13,7 @@ func SetUpCommandBus(deps *shared.ServiceDependencies) *CommandBus {
 	createUserHandler := handler.NewCreateUserCommandHandler(deps.UserService)
 	loginHandler := handler.NewLoginCommandHandler(deps.UserService)
 	refreshTokenHandler := handler.NewRefreshTokenCommandHandler(deps.UserService)
+	logoutHandler := handler.NewLogoutCommandHandler(deps.UserService)
 
 	bus.RegisterHandler("CreateUserCommand", func(cmd Command) (interface{}, error) {
 		return createUserHandler.Handle(cmd.(*command.CreateUserCommand))
@@ -23,8 +24,9 @@ func SetUpCommandBus(deps *shared.ServiceDependencies) *CommandBus {
 	bus.RegisterHandler("RefreshTokenCommand", func(cmd Command) (interface{}, error) {
 		return refreshTokenHandler.Handle(cmd.(*command.RefreshTokenCommand))
 	})
-
-	// Register other command handlers here
+	bus.RegisterHandler("LogoutCommand", func(cmd Command) (interface{}, error) {
+		return logoutHandler.Handle(cmd.(*command.LogoutCommand))
+	})
 
 	return bus
 }

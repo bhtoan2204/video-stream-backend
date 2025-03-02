@@ -46,7 +46,7 @@ func (r *GormUserRepository) Create(user *entities.User) (*entities.User, error)
 	return &userEntity, nil
 }
 
-func (r *GormUserRepository) FindByQuery(q utils.QueryOptions) ([]entities.User, error) {
+func (r *GormUserRepository) FindByQuery(q *utils.QueryOptions) ([]entities.User, error) {
 	userListModel := mapper.UserEntitiesToModels([]entities.User{})
 	dbQuery := r.db
 	for key, value := range q.Filters {
@@ -70,7 +70,7 @@ func (r *GormUserRepository) FindByQuery(q utils.QueryOptions) ([]entities.User,
 	return mapper.UserModelsToEntities(userListModel), nil
 }
 
-func (r *GormUserRepository) FindOneByQuery(q utils.QueryOptions) (*entities.User, error) {
+func (r *GormUserRepository) FindOneByQuery(q *utils.QueryOptions) (*entities.User, error) {
 	var userModel model.User
 	dbQuery := r.db
 

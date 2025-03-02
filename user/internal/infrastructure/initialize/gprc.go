@@ -40,7 +40,7 @@ func InitGrpcServer(userRepository repository.UserRepository) {
 
 	serviceID := uuid.New().String()
 	servicePort := listener.Addr().(*net.TCPAddr).Port
-	serviceAddress, err := GetDockerInternalIP()
+	serviceAddress, err := GetInternalIP()
 	if err != nil {
 		global.Logger.Error("Failed to get internal IP address:", zap.Error(err))
 		panic(err)
@@ -70,7 +70,7 @@ func InitGrpcServer(userRepository repository.UserRepository) {
 
 	global.GrpcConsulClient = consulClient
 	err = global.GrpcConsulClient.Agent().ServiceRegister(registration)
-	fmt.Println("Registering service")
+
 	if err != nil {
 		global.Logger.Error("Failed to register service:", zap.Error(err))
 		panic(err)

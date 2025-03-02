@@ -29,6 +29,7 @@ func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus,
 	r.POST("/create", ctrl.CreateUser)
 	r.POST("/login", ctrl.Login)
 	r.POST("/refresh", ctrl.RefreshNewToken)
+	r.POST("/logout", ctrl.Logout)
 
 	// Query
 	r.GET("", ctrl.SearchUser)
@@ -134,6 +135,43 @@ func (controller *UserController) SearchUser(c *gin.Context) {
 	if err != nil {
 		global.Logger.Error(query.QueryName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
+		return
+	}
+	c.JSON(200, result)
+}
+
+func (controller *UserController) Logout(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		global.Logger.Error("Authorization header is missing")
+		response.ErrorBadRequestResponse(c, 4001, errors.New("authorization header is required"))
+		return
+	}
+
+	const bearerPrefix = "Bearer "
+	if !strings.HasPrefix(authHeader, bearerPrefix) {
+		global.Logger.Error("Invalid Authorization header format")
+		response.ErrorBadRequestResponse(c, 4001, errors.New("invalid authorization header format"))
+		return
+	}
+
+	refreshToken := strings.TrimPrefix(authHeader, bearerPrefix)
+	if refreshToken == "" {
+		global.Logger.Error("Refresh token is empty")
+		response.ErrorBadRequestResponse(c, 4001, errors.New("refresh token is empty"))
+		return
+	}
+	var command realCommand.LogoutCommand
+	command.RefreshToken = refreshToken
+	if err := c.ShouldBindJSON(&command); err != nil {
+		global.Logger.Error(command.CommandName(), zap.Error(err))
+		response.ErrorBadRequestResponse(c, 4001, err)
+		return
+	}
+	result, err := controller.commandBus.Dispatch(&command)
+	if err != nil {
+		global.Logger.Error(command.CommandName(), zap.Error(err))
+		response.ErrorBadRequestResponse(c, 4001, err.Error())
 		return
 	}
 	c.JSON(200, result)

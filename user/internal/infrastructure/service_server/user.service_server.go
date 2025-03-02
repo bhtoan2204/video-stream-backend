@@ -28,8 +28,6 @@ func (s *UserServiceServerImpl) ValidateUser(ctx context.Context, req *gprcUser.
 		return nil, fmt.Errorf("jwt token empty")
 	}
 
-	fmt.Println("jwt token: ", req.JwtToken)
-
 	parsedToken, err := jwt_utils.ExtractTokenClaims(req.JwtToken, global.Config.SecurityConfig.JWTAccessSecret)
 
 	if err != nil {
@@ -43,10 +41,12 @@ func (s *UserServiceServerImpl) ValidateUser(ctx context.Context, req *gprcUser.
 		global.Logger.Error("user_id not found in jwt token")
 		return nil, fmt.Errorf("user_id not found in jwt token")
 	}
-	var userQuery utils.QueryOptions = utils.QueryOptions{
-		Filters: map[string]interface{}{"id": userID},
-	}
-	user, err := s.userRepository.FindOneByQuery(userQuery)
+
+	user, err := s.userRepository.FindOneByQuery(
+		&utils.QueryOptions{
+			Filters: map[string]interface{}{"id": userID},
+		},
+	)
 
 	if err != nil {
 		global.Logger.Error("Failed to find user", zap.Error(err))

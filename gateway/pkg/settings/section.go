@@ -60,6 +60,10 @@ type KafkaConfig struct {
 	GroupID string `mapstructure:"group_id"`
 }
 
+type JaegerConfig struct {
+	Endpoint string `mapstructure:"endpoint"`
+}
+
 type Config struct {
 	Server         ServerConfig   `mapstructure:"server"`
 	MySQLConfig    MySQLConfig    `mapstructure:"mysql"`
@@ -69,4 +73,5 @@ type Config struct {
 	S3Config       S3Config       `mapstructure:"s3"`
 	ConsulConfig   ConsulConfig   `mapstructure:"consul"`
 	KafkaConfig    KafkaConfig    `mapstructure:"kafka"`
+	JaegerConfig   JaegerConfig   `mapstructure:"jaeger"`
 }

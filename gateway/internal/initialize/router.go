@@ -117,7 +117,7 @@ func serviceProxy(serviceName string) gin.HandlerFunc {
 		addresses, err := GetServiceAddresses(global.ConsulClient, serviceName)
 		if err != nil {
 			global.Logger.Error("Service not found", zap.Error(err))
-			response.ErrorNotFoundResponse(c, 404)
+			response.ErrorNotFoundResponse(c, response.ErrorServiceUnavailable)
 			return
 		}
 		clientIP := c.ClientIP()
@@ -179,10 +179,7 @@ func InitRouter() *gin.Engine {
 		V1ApiGroup.POST("/user-service/users/login", serviceProxy("user-service"))
 		V1ApiGroup.POST("/user-service/users/refresh", serviceProxy("user-service"))
 		V1ApiGroup.GET("/user-service/users", serviceProxy("user-service"))
-		// r.GET("/profile", ctrl.GetUserProfile)
-		// r.POST("/create", ctrl.CreateUser)
-		// r.POST("/login", ctrl.Login)
-		// r.POST("/refresh", ctrl.RefreshNewToken)
+		V1ApiGroup.POST("/user-service/users/logout", serviceProxy("user-service"))
 
 		// // Query
 		// r.GET("", ctrl.SearchUser)

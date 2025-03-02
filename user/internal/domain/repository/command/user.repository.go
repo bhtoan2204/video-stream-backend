@@ -7,6 +7,6 @@ import (
 
 type UserRepository interface {
 	Create(user *entities.User) (*entities.User, error)
-	FindOneByQuery(query utils.QueryOptions) (*entities.User, error)
-	FindByQuery(query utils.QueryOptions) ([]entities.User, error)
+	FindOneByQuery(query *utils.QueryOptions) (*entities.User, error)
+	FindByQuery(query *utils.QueryOptions) ([]entities.User, error)
 }
