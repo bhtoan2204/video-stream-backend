@@ -25,17 +25,3 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
     \"max_lifetime\": \"3600\"
   }
 }"
-
-
-# mysql:
-#   user: root
-#   pass: root
-#   host: mysql
-#   port: 3306
-#   name: user
-#   parse_time: true
-#   charset: utf8mb4
-#   loc: UTC
-#   max_idle_conns: 10
-#   max_open_conns: 100
-#   max_lifetime: 3600

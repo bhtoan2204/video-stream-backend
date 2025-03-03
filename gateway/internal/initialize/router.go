@@ -23,11 +23,9 @@ import (
 )
 
 var (
-	// Nếu fallback round-robin khi không lấy được client IP
 	serviceCounters = make(map[string]int)
 	mu              sync.Mutex
 
-	// Cache lưu danh sách các instance của mỗi service với TTL
 	serviceCache = make(map[string]serviceCacheItem)
 	cacheMu      sync.Mutex
 )

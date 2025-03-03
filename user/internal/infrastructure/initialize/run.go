@@ -22,7 +22,7 @@ func Run() {
 	eSUserRepository := eSRepository.NewESUserRepository(global.ESClient)
 	userRepository := repository.NewUserRepository(global.MDB)
 	userListener := listener.NewUserListener(userRepository, eSUserRepository)
-	// InitGrpcServer(userRepository)
+	InitGrpcServer(userRepository)
 	eventBus := *event.SetUpEventBus(&shared.ListenerDependencies{
 		UserListener: userListener,
 	})
