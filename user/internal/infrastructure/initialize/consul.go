@@ -68,7 +68,7 @@ func InitConsul() {
 		Port:    servicePort,
 		Tags:    []string{"api", "user"},
 		Check: &api.AgentServiceCheck{
-			HTTP:                           fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, servicePort),
+			HTTP:                           fmt.Sprintf("http://%s:%d/api/v1/user-service/health", serviceAddress, servicePort),
 			Method:                         "GET",
 			Interval:                       "10s",
 			Timeout:                        "5s",

@@ -16,13 +16,14 @@ func Run() {
 	// InitRedis()
 	// InitKafka()
 	InitUserGRPCClient()
-	tracerShutdown := InitTracer()
+	tracerShutdown := InitProvider()
 	defer tracerShutdown()
+
 	r := InitRouter()
+
 	global.Logger.Info("Initialize all services successfully")
 	if err := r.Run(":" + strconv.Itoa(global.Config.Server.Port)); err != nil {
 		global.Logger.Error("Failed to start server", zap.Error(err))
-		// Handle error
 		os.Exit(1)
 	}
 }

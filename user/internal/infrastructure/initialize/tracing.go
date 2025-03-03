@@ -26,7 +26,7 @@ func InitProvider() func() {
 		resource.WithTelemetrySDK(),
 		resource.WithHost(),
 		resource.WithAttributes(
-			semconv.ServiceNameKey.String("gateway-server"),
+			semconv.ServiceNameKey.String("user-server"),
 		),
 	)
 	handleErr(err, "failed to create resource")

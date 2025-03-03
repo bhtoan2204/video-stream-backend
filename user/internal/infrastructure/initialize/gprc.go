@@ -53,7 +53,7 @@ func InitGrpcServer(userRepository repository.UserRepository) {
 		Port:    servicePort,
 		Tags:    []string{"grpc", "user"},
 		Check: &api.AgentServiceCheck{
-			HTTP:                           fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, global.Listener.Addr().(*net.TCPAddr).Port),
+			HTTP:                           fmt.Sprintf("http://%s:%d/api/v1/user-service/health", serviceAddress, global.Listener.Addr().(*net.TCPAddr).Port),
 			Method:                         "GET",
 			Interval:                       "10s",
 			Timeout:                        "5s",

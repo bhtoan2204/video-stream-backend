@@ -1,6 +1,8 @@
 package global
 
 import (
+	"context"
+
 	"github.com/bhtoan2204/gateway/pkg/grpc/proto/user"
 	"github.com/bhtoan2204/gateway/pkg/logger"
 	"github.com/bhtoan2204/gateway/pkg/settings"
@@ -18,4 +20,5 @@ var (
 	KafkaProducer  *kafka.Writer
 	KafkaConsumer  *kafka.Reader
 	UserGRPCClient user.UserServiceClient
+	Ctx            = context.Background()
 )

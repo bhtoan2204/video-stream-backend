@@ -11,6 +11,11 @@ import (
 	realQuery "github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/pkg/response"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/baggage"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
@@ -19,17 +24,45 @@ type UserController struct {
 	queryBus   *query.QueryBus
 }
 
+func NewInstrumentedHandler(counter metric.Int64Counter, commonLabels []attribute.KeyValue) func(gin.HandlerFunc) gin.HandlerFunc {
+	return func(handler gin.HandlerFunc) gin.HandlerFunc {
+		return func(c *gin.Context) {
+			ctx := c.Request.Context()
+			counter.Add(ctx, 1, metric.WithAttributes(commonLabels...))
+
+			span := trace.SpanFromContext(ctx)
+			bag := baggage.FromContext(ctx)
+			var baggageAttributes []attribute.KeyValue
+			baggageAttributes = append(baggageAttributes, commonLabels...)
+			for _, member := range bag.Members() {
+				baggageAttributes = append(baggageAttributes, attribute.String("baggage key:"+member.Key(), member.Value()))
+			}
+			span.SetAttributes(baggageAttributes...)
+
+			handler(c)
+		}
+	}
+}
+
 func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus, r *gin.RouterGroup) *UserController {
 	ctrl := &UserController{
 		commandBus: commandBus,
 		queryBus:   queryBus,
 	}
+	meter := otel.Meter("user-server-meter")
+	serverAttribute := attribute.String("server-attribute", "foo")
+	commonLabels := []attribute.KeyValue{serverAttribute}
+	requestCount, _ := meter.Int64Counter(
+		"user_server/request_counts",
+		metric.WithDescription("The number of requests received"),
+	)
+	instrument := NewInstrumentedHandler(requestCount, commonLabels)
 	// Command
-	r.GET("/profile", ctrl.GetUserProfile)
-	r.POST("/create", ctrl.CreateUser)
-	r.POST("/login", ctrl.Login)
-	r.POST("/refresh", ctrl.RefreshNewToken)
-	r.POST("/logout", ctrl.Logout)
+	r.GET("/profile", instrument(ctrl.GetUserProfile))
+	r.POST("/create", instrument(ctrl.CreateUser))
+	r.POST("/login", instrument(ctrl.Login))
+	r.POST("/refresh", instrument(ctrl.RefreshNewToken))
+	r.POST("/logout", instrument(ctrl.Logout))
 
 	// Query
 	r.GET("", ctrl.SearchUser)

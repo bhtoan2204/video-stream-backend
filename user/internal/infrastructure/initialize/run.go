@@ -19,6 +19,10 @@ func Run() {
 	InitDB()
 	InitKafka()
 	InitElasticsearch()
+
+	tracerShutdown := InitProvider()
+	defer tracerShutdown()
+
 	eSUserRepository := eSRepository.NewESUserRepository(global.ESClient)
 	userRepository := repository.NewUserRepository(global.MDB)
 	userListener := listener.NewUserListener(userRepository, eSUserRepository)

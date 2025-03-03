@@ -3,11 +3,13 @@ package initialize
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
 	"github.com/bhtoan2204/user/global"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql/persistent_object"
+	"github.com/uptrace/opentelemetry-go-extra/otelgorm"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -184,6 +186,10 @@ func InitDB() error {
 	if err != nil {
 		global.Logger.Error("Failed to connect to MySQL", zap.Error(err))
 		panic(err)
+	}
+
+	if err := db.Use(otelgorm.NewPlugin()); err != nil {
+		log.Fatalf("Failed to use otelgorm plugin: %v", err)
 	}
 
 	global.MDB = db

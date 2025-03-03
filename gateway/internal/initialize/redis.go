@@ -1,7 +1,6 @@
 package initialize
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/bhtoan2204/gateway/global"
@@ -9,8 +8,6 @@ import (
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
-
-var ctx = context.Background()
 
 func InitRedis() {
 	rc := global.Config.RedisConfig
@@ -21,7 +18,7 @@ func InitRedis() {
 		PoolSize: 10,
 	})
 
-	_, err := rdb.Ping(ctx).Result()
+	_, err := rdb.Ping(global.Ctx).Result()
 	if err != nil {
 		global.Logger.Error("Failed to connect to Redis:", zap.Error(err))
 		panic(err)

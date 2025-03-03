@@ -25,6 +25,5 @@ var (
 	KafkaConsumer         *kafka.Reader
 	KafkaDebeziumConsumer *kafka.Reader
 	ESClient              *elasticsearch.Client
-	// UserGrpcServer        user.UserServiceClient
 	// S3Client *s3.Client
 )

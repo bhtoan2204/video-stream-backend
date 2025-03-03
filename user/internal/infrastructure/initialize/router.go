@@ -12,6 +12,7 @@ import (
 	eSRepository "github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch/repository"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql/repository"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func InitRouter() *gin.Engine {
@@ -35,7 +36,9 @@ func InitRouter() *gin.Engine {
 		UserService: userService,
 	})
 
-	apiV1 := r.Group("/api/v1")
+	r.Use(otelgin.Middleware("user-service"))
+
+	apiV1 := r.Group("/api/v1/user-service")
 	{
 		apiV1.GET("/health", func(c *gin.Context) {
 			c.JSON(200, gin.H{
