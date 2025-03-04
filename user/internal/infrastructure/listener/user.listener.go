@@ -1,6 +1,8 @@
 package listener
 
 import (
+	"context"
+
 	"github.com/bhtoan2204/user/global"
 	common "github.com/bhtoan2204/user/internal/application/common/event"
 	"github.com/bhtoan2204/user/internal/application/event/event"
@@ -10,18 +12,18 @@ import (
 )
 
 type UserListener struct {
-	userRepository   repository.UserRepository
-	esUserRepository eSRepository.ESUserRepository
+	userRepository   repository.UserRepositoryInterface
+	esUserRepository eSRepository.ESUserRepositoryInterface
 }
 
-func NewUserListener(userRepository repository.UserRepository, esUserRepository eSRepository.ESUserRepository) *UserListener {
+func NewUserListener(userRepository repository.UserRepositoryInterface, esUserRepository eSRepository.ESUserRepositoryInterface) *UserListener {
 	return &UserListener{
 		userRepository:   userRepository,
 		esUserRepository: esUserRepository,
 	}
 }
 
-func (l *UserListener) IndexUser(indexUserEvent *event.IndexUserEvent) (*common.IndexResult, error) {
+func (l *UserListener) IndexUser(ctx context.Context, indexUserEvent *event.IndexUserEvent) (*common.IndexResult, error) {
 	user := &entities.User{
 		AbstractModel: entities.AbstractModel{
 			ID:        indexUserEvent.ID,
@@ -41,7 +43,7 @@ func (l *UserListener) IndexUser(indexUserEvent *event.IndexUserEvent) (*common.
 		Status:       1,
 	}
 
-	if err := l.esUserRepository.Index(user); err != nil {
+	if err := l.esUserRepository.Index(ctx, user); err != nil {
 		return nil, err
 	}
 	global.Logger.Info("User indexed successfully")

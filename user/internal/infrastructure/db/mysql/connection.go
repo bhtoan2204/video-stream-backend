@@ -1,4 +1,4 @@
-package initialize
+package mysql
 
 import (
 	"errors"
@@ -197,4 +197,19 @@ func InitDB() error {
 	migrateTables()
 
 	return nil
+}
+
+func CloseDB() {
+	if global.MDB != nil {
+		sqlDB, err := global.MDB.DB()
+		if err != nil {
+			global.Logger.Error("Failed to get database connection", zap.Error(err))
+			return
+		}
+		if err := sqlDB.Close(); err != nil {
+			global.Logger.Error("Failed to close database connection", zap.Error(err))
+		} else {
+			global.Logger.Info("Database connection closed")
+		}
+	}
 }

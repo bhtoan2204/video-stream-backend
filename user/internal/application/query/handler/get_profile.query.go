@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"context"
+
 	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/domain/interfaces"
 )
@@ -13,6 +15,6 @@ func NewGetUserProfileQueryHandler(userService interfaces.UserServiceInterface) 
 	return &GetUserProfileQueryHandler{userService: userService}
 }
 
-func (h *GetUserProfileQueryHandler) Handle(q *query.GetUserProfileQuery) (*query.GetUserProfileQueryResult, error) {
-	return h.userService.GetUserProfile(q)
+func (h *GetUserProfileQueryHandler) Handle(ctx context.Context, q *query.GetUserProfileQuery) (*query.GetUserProfileQueryResult, error) {
+	return h.userService.GetUserProfile(ctx, q)
 }

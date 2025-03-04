@@ -14,6 +14,7 @@ import (
 	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch/model"
 	"github.com/bhtoan2204/user/utils"
 	"github.com/elastic/go-elasticsearch/v8"
+	"go.opentelemetry.io/otel"
 	"go.uber.org/zap"
 )
 
@@ -28,11 +29,11 @@ var keywordFields = map[string]bool{
 	"last_name":  true,
 }
 
-func NewESUserRepository(db *elasticsearch.Client) repository.ESUserRepository {
+func NewESUserRepository(db *elasticsearch.Client) repository.ESUserRepositoryInterface {
 	return &ESUserRepository{db: db}
 }
 
-func (r *ESUserRepository) Index(user *entities.User) error {
+func (r *ESUserRepository) Index(ctx context.Context, user *entities.User) error {
 	userModel := mapper.ESUserEntityToModel(*user)
 
 	jsonData, err := json.Marshal(userModel)
@@ -45,6 +46,7 @@ func (r *ESUserRepository) Index(user *entities.User) error {
 	res, err := r.db.Index(
 		"users",
 		bytes.NewReader(jsonData),
+		r.db.Index.WithContext(ctx),
 		r.db.Index.WithDocumentID(userModel.ID),
 		r.db.Index.WithRefresh("true"),
 	)
@@ -61,7 +63,11 @@ func (r *ESUserRepository) Index(user *entities.User) error {
 	return nil
 }
 
-func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*[]entities.User, *query.PaginateResult, error) {
+func (r *ESUserRepository) Search(ctx context.Context, params *query.SearchUserQuery) (*[]entities.User, *query.PaginateResult, error) {
+	tracer := otel.Tracer("ESUserRepository")
+	ctx, span := tracer.Start(ctx, "SearchUser")
+	defer span.End()
+
 	from := (params.Page - 1) * params.Limit
 
 	queryMap := map[string]interface{}{
@@ -80,9 +86,6 @@ func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*[]entities.Us
 
 	if params.SortBy != "" && params.SortDirection != "" {
 		sortField := params.SortBy
-		// if !strings.Contains(sortField, ".keyword") {
-		// 	sortField = sortField + ".keyword"
-		// }
 		if keywordFields[sortField] {
 			sortField = sortField + ".keyword"
 		}
@@ -98,38 +101,45 @@ func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*[]entities.Us
 
 	jsonQuery, err := json.Marshal(queryMap)
 	if err != nil {
+		span.RecordError(err)
 		global.Logger.Error("Failed to marshal search query", zap.Error(err))
 		return nil, nil, fmt.Errorf("failed to marshal search query: %w", err)
 	}
 
 	res, err := r.db.Search(
-		r.db.Search.WithContext(context.Background()),
+		r.db.Search.WithContext(ctx),
 		r.db.Search.WithIndex("users"),
 		r.db.Search.WithBody(bytes.NewReader(jsonQuery)),
 		r.db.Search.WithTrackTotalHits(true),
 		r.db.Search.WithPretty(),
 	)
 	if err != nil {
+		span.RecordError(err)
 		global.Logger.Error("Failed to execute search query", zap.Error(err))
 		return nil, nil, fmt.Errorf("failed to execute search query: %w", err)
 	}
 	defer res.Body.Close()
 
 	if res.IsError() {
+		errStr := res.String()
+		span.RecordError(fmt.Errorf(errStr))
 		global.Logger.Error("Error response from search", zap.String("response", res.String()))
 		return nil, nil, fmt.Errorf("error response from search: %s", res.String())
 	}
 
 	var result map[string]interface{}
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		span.RecordError(err)
 		global.Logger.Error("Failed to decode search response", zap.Error(err))
 		return nil, nil, fmt.Errorf("failed to decode search response: %w", err)
 	}
 
 	hits, ok := result["hits"].(map[string]interface{})
 	if !ok {
+		err := fmt.Errorf("unexpected search result format")
+		span.RecordError(err)
 		global.Logger.Error("Unexpected search result format")
-		return nil, nil, fmt.Errorf("unexpected search result format")
+		return nil, nil, err
 	}
 
 	var totalDocs int
@@ -146,7 +156,9 @@ func (r *ESUserRepository) Search(params *query.SearchUserQuery) (*[]entities.Us
 
 	hitsArray, ok := hits["hits"].([]interface{})
 	if !ok {
-		return nil, nil, fmt.Errorf("unexpected hits format")
+		err := fmt.Errorf("unexpected hits format")
+		span.RecordError(err)
+		return nil, nil, err
 	}
 
 	var users []model.ESUser

@@ -11,6 +11,7 @@ import (
 	"github.com/bhtoan2204/gateway/global"
 	"github.com/bhtoan2204/gateway/pkg/grpc/proto/user"
 	"github.com/hashicorp/consul/api"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -107,6 +108,8 @@ func InitUserGRPCClient() {
 		"consul:///user-grpc", // scheme "consul"
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
+		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
 	)
 
 	if err != nil {

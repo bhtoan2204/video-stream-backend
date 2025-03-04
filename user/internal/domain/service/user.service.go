@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -21,14 +22,14 @@ import (
 )
 
 type UserService struct {
-	userRepository      repository.UserRepository
-	esUserRepository    eSRepository.ESUserRepository
+	userRepository      repository.UserRepositoryInterface
+	esUserRepository    eSRepository.ESUserRepositoryInterface
 	refreshTokenService interfaces.RefreshTokenServiceInterface
 }
 
 func NewUserService(
-	userRepository repository.UserRepository,
-	esUserRepository eSRepository.ESUserRepository,
+	userRepository repository.UserRepositoryInterface,
+	esUserRepository eSRepository.ESUserRepositoryInterface,
 	refreshTokenService interfaces.RefreshTokenServiceInterface,
 ) *UserService {
 	return &UserService{
@@ -38,7 +39,7 @@ func NewUserService(
 	}
 }
 
-func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (*command.CreateUserCommandResult, error) {
+func (s *UserService) CreateUser(ctx context.Context, createUserCommand *command.CreateUserCommand) (*command.CreateUserCommandResult, error) {
 	if err := createUserCommand.Validate(); err != nil {
 		return nil, err
 	}
@@ -63,7 +64,7 @@ func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (
 		return nil, err
 	}
 
-	user, err := s.userRepository.Create(&entities.User{
+	user, err := s.userRepository.Create(ctx, &entities.User{
 		Username:     createUserCommand.Username,
 		PasswordHash: password.Hash(),
 		Email:        email.Value(),
@@ -91,12 +92,12 @@ func (s *UserService) CreateUser(createUserCommand *command.CreateUserCommand) (
 	}, nil
 }
 
-func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginCommandResult, error) {
+func (s *UserService) Login(ctx context.Context, loginCommand *command.LoginCommand) (*command.LoginCommandResult, error) {
 	if err := loginCommand.Validate(); err != nil {
 		return nil, err
 	}
 
-	user, err := s.userRepository.FindOneByQuery(
+	user, err := s.userRepository.FindOneByQuery(ctx,
 		&utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"email": loginCommand.Email,
@@ -120,7 +121,7 @@ func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginC
 
 	accessToken, refreshToken, accessExpiration, refreshExpiration, err := jwt_utils.GenerateToken(user)
 
-	if err := s.refreshTokenService.CreateRefreshToken(refreshToken, user.ID, time.UnixMilli(refreshExpiration)); err != nil {
+	if err := s.refreshTokenService.CreateRefreshToken(ctx, refreshToken, user.ID, time.UnixMilli(refreshExpiration)); err != nil {
 		return nil, err
 	}
 
@@ -138,7 +139,7 @@ func (s *UserService) Login(loginCommand *command.LoginCommand) (*command.LoginC
 	}, nil
 }
 
-func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) (*commonCommand.RefreshTokenCommandResult, error) {
+func (s *UserService) Refresh(ctx context.Context, refreshTokenCommand *command.RefreshTokenCommand) (*commonCommand.RefreshTokenCommandResult, error) {
 	if err := refreshTokenCommand.Validate(); err != nil {
 		return nil, err
 	}
@@ -148,7 +149,7 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 		return nil, err
 	}
 
-	user, err := s.userRepository.FindOneByQuery(
+	user, err := s.userRepository.FindOneByQuery(ctx,
 		&utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"id": claims["id"],
@@ -160,7 +161,7 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 		return nil, errors.New("user not found")
 	}
 
-	isRefreshTokenValid, err := s.refreshTokenService.CheckRefreshToken(refreshTokenCommand.RefreshToken)
+	isRefreshTokenValid, err := s.refreshTokenService.CheckRefreshToken(ctx, refreshTokenCommand.RefreshToken)
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +169,7 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 		return nil, errors.New("refresh token is invalid")
 	}
 
-	err = s.refreshTokenService.RevokedByQuery(map[string]interface{}{
+	err = s.refreshTokenService.RevokedByQuery(ctx, map[string]interface{}{
 		"refresh_token": refreshTokenCommand.RefreshToken,
 	})
 	if err != nil {
@@ -188,8 +189,8 @@ func (s *UserService) Refresh(refreshTokenCommand *command.RefreshTokenCommand) 
 	}, nil
 }
 
-func (s *UserService) GetUserById(getUserByIdCommand *command.GetUserByIdCommand) (*command.GetUserByIdCommandResult, error) {
-	user, err := s.userRepository.FindOneByQuery(
+func (s *UserService) GetUserById(ctx context.Context, getUserByIdCommand *command.GetUserByIdCommand) (*command.GetUserByIdCommandResult, error) {
+	user, err := s.userRepository.FindOneByQuery(ctx,
 		&utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"id": getUserByIdCommand.ID,
@@ -213,9 +214,9 @@ func (s *UserService) GetUserById(getUserByIdCommand *command.GetUserByIdCommand
 	}, nil
 }
 
-func (s *UserService) SearchUser(searchUserQuery *query.SearchUserQuery) (*query.SearchUserQueryResult, error) {
+func (s *UserService) SearchUser(ctx context.Context, searchUserQuery *query.SearchUserQuery) (*query.SearchUserQueryResult, error) {
 	searchUserQuery.SetDefaults()
-	searchUserQueryResult, pagination, err := s.esUserRepository.Search(searchUserQuery)
+	searchUserQueryResult, pagination, err := s.esUserRepository.Search(ctx, searchUserQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -244,8 +245,8 @@ func (s *UserService) SearchUser(searchUserQuery *query.SearchUserQuery) (*query
 	}, nil
 }
 
-func (s *UserService) GetUserProfile(getUserProfileQuery *query.GetUserProfileQuery) (*query.GetUserProfileQueryResult, error) {
-	user, err := s.userRepository.FindOneByQuery(
+func (s *UserService) GetUserProfile(ctx context.Context, getUserProfileQuery *query.GetUserProfileQuery) (*query.GetUserProfileQueryResult, error) {
+	user, err := s.userRepository.FindOneByQuery(ctx,
 		&utils.QueryOptions{
 			Filters: map[string]interface{}{
 				"id": getUserProfileQuery.ID,
@@ -275,12 +276,12 @@ func (s *UserService) GetUserProfile(getUserProfileQuery *query.GetUserProfileQu
 	}, nil
 }
 
-func (s *UserService) Logout(logoutCommand *command.LogoutCommand) (*commonCommand.LogoutCommandResult, error) {
+func (s *UserService) Logout(ctx context.Context, logoutCommand *command.LogoutCommand) (*commonCommand.LogoutCommandResult, error) {
 	if err := logoutCommand.Validate(); err != nil {
 		return nil, err
 	}
 
-	err := s.refreshTokenService.RevokedByQuery(map[string]interface{}{
+	err := s.refreshTokenService.RevokedByQuery(ctx, map[string]interface{}{
 		"refresh_token": logoutCommand.RefreshToken,
 	})
 	if err != nil {

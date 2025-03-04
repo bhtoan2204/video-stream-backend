@@ -71,11 +71,12 @@ func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus,
 
 func (controller *UserController) CreateUser(c *gin.Context) {
 	var command realCommand.CreateUserCommand
+	ctx := c.Request.Context()
 	if err := c.ShouldBindJSON(&command); err != nil {
 		response.ErrorBadRequestResponse(c, 4000, err)
 		return
 	}
-	result, err := controller.commandBus.Dispatch(&command)
+	result, err := controller.commandBus.Dispatch(ctx, &command)
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
@@ -86,12 +87,13 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 
 func (controller *UserController) Login(c *gin.Context) {
 	var command realCommand.LoginCommand
+	ctx := c.Request.Context()
 	if err := c.ShouldBindJSON(&command); err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err)
 		return
 	}
-	result, err := controller.commandBus.Dispatch(&command)
+	result, err := controller.commandBus.Dispatch(ctx, &command)
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
@@ -122,6 +124,7 @@ func (controller *UserController) RefreshNewToken(c *gin.Context) {
 		return
 	}
 	var command realCommand.RefreshTokenCommand
+	ctx := c.Request.Context()
 	command.RefreshToken = refreshToken
 
 	if err := c.ShouldBindJSON(&command); err != nil {
@@ -129,7 +132,7 @@ func (controller *UserController) RefreshNewToken(c *gin.Context) {
 		response.ErrorBadRequestResponse(c, 4001, err)
 		return
 	}
-	result, err := controller.commandBus.Dispatch(&command)
+	result, err := controller.commandBus.Dispatch(ctx, &command)
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4001, err.Error())
@@ -147,8 +150,9 @@ func (controller *UserController) GetUserProfile(c *gin.Context) {
 		return
 	}
 	var query realQuery.GetUserProfileQuery
+	ctx := c.Request.Context()
 	query.ID = userId
-	result, err := controller.queryBus.Dispatch(&query)
+	result, err := controller.queryBus.Dispatch(ctx, &query)
 	if err != nil {
 		global.Logger.Error(query.QueryName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
@@ -159,12 +163,13 @@ func (controller *UserController) GetUserProfile(c *gin.Context) {
 
 func (controller *UserController) SearchUser(c *gin.Context) {
 	var query realQuery.SearchUserQuery
+	ctx := c.Request.Context()
 	if err := c.ShouldBindQuery(&query); err != nil {
 		global.Logger.Error("Failed to bind query: ", zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err)
 		return
 	}
-	result, err := controller.queryBus.Dispatch(&query)
+	result, err := controller.queryBus.Dispatch(ctx, &query)
 	if err != nil {
 		global.Logger.Error(query.QueryName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
@@ -195,13 +200,14 @@ func (controller *UserController) Logout(c *gin.Context) {
 		return
 	}
 	var command realCommand.LogoutCommand
+	ctx := c.Request.Context()
 	command.RefreshToken = refreshToken
 	if err := c.ShouldBindJSON(&command); err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4001, err)
 		return
 	}
-	result, err := controller.commandBus.Dispatch(&command)
+	result, err := controller.commandBus.Dispatch(ctx, &command)
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4001, err.Error())

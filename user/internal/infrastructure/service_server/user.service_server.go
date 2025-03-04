@@ -14,10 +14,10 @@ import (
 
 type UserServiceServerImpl struct {
 	gprcUser.UnimplementedUserServiceServer
-	userRepository repository.UserRepository
+	userRepository repository.UserRepositoryInterface
 }
 
-func NewUserServiceServer(userRepository repository.UserRepository) gprcUser.UserServiceServer {
+func NewUserServiceServer(userRepository repository.UserRepositoryInterface) gprcUser.UserServiceServer {
 	return &UserServiceServerImpl{
 		userRepository: userRepository,
 	}
@@ -42,7 +42,7 @@ func (s *UserServiceServerImpl) ValidateUser(ctx context.Context, req *gprcUser.
 		return nil, fmt.Errorf("user_id not found in jwt token")
 	}
 
-	user, err := s.userRepository.FindOneByQuery(
+	user, err := s.userRepository.FindOneByQuery(ctx,
 		&utils.QueryOptions{
 			Filters: map[string]interface{}{"id": userID},
 		},

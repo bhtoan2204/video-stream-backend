@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"context"
+
 	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/domain/interfaces"
 )
@@ -13,6 +15,6 @@ func NewSearchUserQueryHandler(userService interfaces.UserServiceInterface) *Sea
 	return &SearchUserQueryHandler{userService: userService}
 }
 
-func (h *SearchUserQueryHandler) Handle(q *query.SearchUserQuery) (*query.SearchUserQueryResult, error) {
-	return h.userService.SearchUser(q)
+func (h *SearchUserQueryHandler) Handle(ctx context.Context, q *query.SearchUserQuery) (*query.SearchUserQueryResult, error) {
+	return h.userService.SearchUser(ctx, q)
 }

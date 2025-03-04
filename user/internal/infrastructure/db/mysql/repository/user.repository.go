@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 
 	"github.com/bhtoan2204/user/internal/domain/entities"
@@ -15,13 +16,13 @@ type GormUserRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) repository.UserRepository {
+func NewUserRepository(db *gorm.DB) repository.UserRepositoryInterface {
 	return &GormUserRepository{db: db}
 }
 
-func (r *GormUserRepository) Create(user *entities.User) (*entities.User, error) {
+func (r *GormUserRepository) Create(ctx context.Context, user *entities.User) (*entities.User, error) {
 	userModel := mapper.UserEntityToModel(*user)
-	err := r.db.Transaction(func(tx *gorm.DB) error {
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		execution := r.db.Create(&userModel)
 		if execution.Error != nil {
 			return execution.Error
@@ -46,9 +47,9 @@ func (r *GormUserRepository) Create(user *entities.User) (*entities.User, error)
 	return &userEntity, nil
 }
 
-func (r *GormUserRepository) FindByQuery(q *utils.QueryOptions) ([]entities.User, error) {
+func (r *GormUserRepository) FindByQuery(ctx context.Context, q *utils.QueryOptions) ([]entities.User, error) {
 	userListModel := mapper.UserEntitiesToModels([]entities.User{})
-	dbQuery := r.db
+	dbQuery := r.db.WithContext(ctx)
 	for key, value := range q.Filters {
 		dbQuery = dbQuery.Where(key+" = ?", value)
 	}
@@ -70,9 +71,9 @@ func (r *GormUserRepository) FindByQuery(q *utils.QueryOptions) ([]entities.User
 	return mapper.UserModelsToEntities(userListModel), nil
 }
 
-func (r *GormUserRepository) FindOneByQuery(q *utils.QueryOptions) (*entities.User, error) {
+func (r *GormUserRepository) FindOneByQuery(ctx context.Context, q *utils.QueryOptions) (*entities.User, error) {
 	var userModel model.User
-	dbQuery := r.db
+	dbQuery := r.db.WithContext(ctx)
 
 	for key, value := range q.Filters {
 		dbQuery = dbQuery.Where(key+" = ?", value)

@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/bhtoan2204/user/global"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
@@ -15,6 +16,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"go.uber.org/zap"
 )
 
 func InitProvider() func() {
@@ -89,6 +91,7 @@ func InitProvider() func() {
 
 func handleErr(err error, message string) {
 	if err != nil {
+		global.Logger.Error(message, zap.Error(err))
 		log.Fatalf("%s: %v", message, err)
 	}
 }

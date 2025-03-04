@@ -1,4 +1,4 @@
-package initialize
+package elasticsearch
 
 import (
 	"github.com/bhtoan2204/user/global"

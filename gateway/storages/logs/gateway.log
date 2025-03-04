@@ -7614,3 +7614,54 @@
 {"level":"INFO","timestamp":"2025-03-03T13:27:38.272+0700","caller":"initialize/router.go:183","msg":"Router initialized successfully"}
 {"level":"INFO","timestamp":"2025-03-03T13:27:38.272+0700","caller":"initialize/run.go:24","msg":"Initialize all services successfully"}
 {"level":"INFO","timestamp":"2025-03-03T13:27:48.201+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:55350"}
+{"level":"INFO","timestamp":"2025-03-04T10:15:19.576+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:62826"}
+{"level":"INFO","timestamp":"2025-03-04T11:25:19.232+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:49617"}
+{"level":"INFO","timestamp":"2025-03-04T11:31:18.841+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:51280"}
+{"level":"INFO","timestamp":"2025-03-04T11:38:56.433+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:51280"}
+{"level":"INFO","timestamp":"2025-03-04T11:39:25.396+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:51280"}
+{"level":"INFO","timestamp":"2025-03-04T12:02:59.280+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:60207"}
+{"level":"INFO","timestamp":"2025-03-04T12:11:11.378+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:62685"}
+{"level":"INFO","timestamp":"2025-03-04T13:12:32.852+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:63569"}
+{"level":"INFO","timestamp":"2025-03-04T13:16:30.935+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:64690"}
+{"level":"INFO","timestamp":"2025-03-04T13:18:37.582+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:18:37.582+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:18:37.582+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:18:37.585+0700","caller":"initialize/router.go:183","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:18:37.585+0700","caller":"initialize/run.go:24","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:18:44.261+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:64690"}
+{"level":"INFO","timestamp":"2025-03-04T13:20:18.011+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:20:18.012+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:20:18.012+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:20:18.015+0700","caller":"initialize/router.go:183","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:20:18.015+0700","caller":"initialize/run.go:24","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:21:35.443+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:21:35.443+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:21:35.443+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:21:35.446+0700","caller":"initialize/router.go:183","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:21:35.446+0700","caller":"initialize/run.go:24","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:27:47.952+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:27:47.953+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:27:47.953+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:27:47.957+0700","caller":"initialize/router.go:183","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:27:47.957+0700","caller":"initialize/run.go:24","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-03-04T13:28:06.553+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:51910"}
+{"level":"INFO","timestamp":"2025-03-04T14:06:03.456+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:06:03.456+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:06:03.457+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:06:03.464+0700","caller":"initialize/router.go:183","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:06:03.464+0700","caller":"initialize/run.go:24","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:06:32.944+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:63610"}
+{"level":"INFO","timestamp":"2025-03-04T14:06:41.653+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:63610"}
+{"level":"INFO","timestamp":"2025-03-04T14:09:27.991+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:09:27.991+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:09:27.991+0700","caller":"initialize/gprc.go:118","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:09:27.994+0700","caller":"initialize/router.go:183","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:09:27.994+0700","caller":"initialize/run.go:24","msg":"Initialize all services successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:09:42.802+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:64602"}
+{"level":"INFO","timestamp":"2025-03-04T14:10:19.199+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:64602"}
+{"level":"INFO","timestamp":"2025-03-04T14:20:21.170+0700","caller":"initialize/router.go:80","msg":"Consul SRV lookup result (round robin)","target":"c0a800a9.addr.dc1.consul:51434"}
+{"level":"INFO","timestamp":"2025-03-04T14:32:26.393+0700","caller":"initialize/logger.go:10","msg":"Logger initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:32:26.393+0700","caller":"initialize/consul.go:23","msg":"Connected to Consul successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:32:26.393+0700","caller":"initialize/gprc.go:121","msg":"Initialize user grpc client successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:32:26.397+0700","caller":"initialize/router.go:183","msg":"Router initialized successfully"}
+{"level":"INFO","timestamp":"2025-03-04T14:32:26.397+0700","caller":"initialize/run.go:24","msg":"Initialize all services successfully"}

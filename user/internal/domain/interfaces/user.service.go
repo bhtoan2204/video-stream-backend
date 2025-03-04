@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"context"
+
 	"github.com/bhtoan2204/user/internal/application/command/command"
 	common "github.com/bhtoan2204/user/internal/application/common/command"
 	"github.com/bhtoan2204/user/internal/application/query/query"
@@ -8,13 +10,13 @@ import (
 
 type UserServiceInterface interface {
 	// Command
-	CreateUser(createUserCommand *command.CreateUserCommand) (*command.CreateUserCommandResult, error)
-	Login(loginCommand *command.LoginCommand) (*command.LoginCommandResult, error)
-	Refresh(refreshCommand *command.RefreshTokenCommand) (*common.RefreshTokenCommandResult, error)
-	GetUserById(getUserByIdCommand *command.GetUserByIdCommand) (*command.GetUserByIdCommandResult, error)
-	Logout(logoutCommand *command.LogoutCommand) (*common.LogoutCommandResult, error)
+	CreateUser(ctx context.Context, createUserCommand *command.CreateUserCommand) (*command.CreateUserCommandResult, error)
+	Login(ctx context.Context, loginCommand *command.LoginCommand) (*command.LoginCommandResult, error)
+	Refresh(ctx context.Context, refreshCommand *command.RefreshTokenCommand) (*common.RefreshTokenCommandResult, error)
+	GetUserById(ctx context.Context, getUserByIdCommand *command.GetUserByIdCommand) (*command.GetUserByIdCommandResult, error)
+	Logout(ctx context.Context, logoutCommand *command.LogoutCommand) (*common.LogoutCommandResult, error)
 
 	// Query
-	SearchUser(searchUserQuery *query.SearchUserQuery) (*query.SearchUserQueryResult, error)
-	GetUserProfile(getUserProfileQuery *query.GetUserProfileQuery) (*query.GetUserProfileQueryResult, error)
+	SearchUser(ctx context.Context, searchUserQuery *query.SearchUserQuery) (*query.SearchUserQueryResult, error)
+	GetUserProfile(ctx context.Context, getUserProfileQuery *query.GetUserProfileQuery) (*query.GetUserProfileQueryResult, error)
 }

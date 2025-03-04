@@ -13,7 +13,8 @@ func NewDebezium(eventBus event.EventBus) *Debezium {
 	return &Debezium{eventBus: eventBus}
 }
 
-func (d *Debezium) Start() {
-	debeziumConsumer := consumer.NewDebezium(&d.eventBus)
+func (d *Debezium) Start() *consumer.DebeziumConsumer {
+	debeziumConsumer := consumer.NewDebeziumConsumer(&d.eventBus)
 	go debeziumConsumer.Consume()
+	return debeziumConsumer
 }

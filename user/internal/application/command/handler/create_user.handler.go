@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"context"
+
 	"github.com/bhtoan2204/user/internal/application/command/command"
 	"github.com/bhtoan2204/user/internal/domain/interfaces"
 )
@@ -15,6 +17,6 @@ func NewCreateUserCommandHandler(userService interfaces.UserServiceInterface) *C
 	}
 }
 
-func (h *CreateUserCommandHandler) Handle(cmd *command.CreateUserCommand) (*command.CreateUserCommandResult, error) {
-	return h.userService.CreateUser(cmd)
+func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd *command.CreateUserCommand) (*command.CreateUserCommandResult, error) {
+	return h.userService.CreateUser(ctx, cmd)
 }

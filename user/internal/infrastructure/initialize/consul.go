@@ -5,46 +5,13 @@ import (
 	"net"
 
 	"github.com/bhtoan2204/user/global"
+	"github.com/bhtoan2204/user/utils"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
 	"go.uber.org/zap"
 )
 
-func GetInternalIP() (string, error) {
-	interfaces, err := net.Interfaces()
-	if err != nil {
-		return "", err
-	}
-	for _, iface := range interfaces {
-		if iface.Flags&net.FlagUp == 0 || iface.Flags&net.FlagLoopback != 0 {
-			continue
-		}
-		addrs, err := iface.Addrs()
-		if err != nil {
-			continue
-		}
-		for _, addr := range addrs {
-			var ip net.IP
-			switch v := addr.(type) {
-			case *net.IPNet:
-				ip = v.IP
-			case *net.IPAddr:
-				ip = v.IP
-			}
-			if ip == nil || ip.IsLoopback() {
-				continue
-			}
-			ip = ip.To4()
-			if ip == nil {
-				continue
-			}
-			return ip.String(), nil
-		}
-	}
-	return "", fmt.Errorf("Could not find the internal IP address")
-}
-
-func InitConsul() {
+func InitConsul() func() {
 	globalConsulConfig := global.Config.ConsulConfig
 
 	consulConfig := api.DefaultConfig()
@@ -55,7 +22,7 @@ func InitConsul() {
 
 	serviceID := uuid.New().String()
 	servicePort := global.Listener.Addr().(*net.TCPAddr).Port
-	serviceAddress, err := GetInternalIP()
+	serviceAddress, err := utils.GetInternalIP()
 	if err != nil {
 		global.Logger.Error("Failed to get internal IP address:", zap.Error(err))
 		panic(err)
@@ -90,5 +57,13 @@ func InitConsul() {
 	if err != nil {
 		global.Logger.Error("Failed to register service:", zap.Error(err))
 		panic(err)
+	}
+
+	return func() {
+		if err := global.ConsulClient.Agent().ServiceDeregister(serviceID); err != nil {
+			global.Logger.Error("Failed to deregister service", zap.Error(err))
+		} else {
+			global.Logger.Info("Service deregistered")
+		}
 	}
 }

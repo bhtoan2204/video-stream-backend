@@ -1,10 +1,13 @@
 package interfaces
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type RefreshTokenServiceInterface interface {
-	CreateRefreshToken(token string, userId string, expires_at time.Time) error
-	HardDeleteByQuery(query map[string]interface{}) error
-	RevokedByQuery(query map[string]interface{}) error
-	CheckRefreshToken(token string) (bool, error)
+	CreateRefreshToken(ctx context.Context, token string, userId string, expires_at time.Time) error
+	HardDeleteByQuery(ctx context.Context, query map[string]interface{}) error
+	RevokedByQuery(ctx context.Context, query map[string]interface{}) error
+	CheckRefreshToken(ctx context.Context, token string) (bool, error)
 }

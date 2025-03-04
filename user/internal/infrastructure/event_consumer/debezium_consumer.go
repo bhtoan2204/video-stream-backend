@@ -29,7 +29,7 @@ type DebeziumConsumer struct {
 	eventBus *event.EventBus
 }
 
-func NewDebezium(eventBus *event.EventBus) *DebeziumConsumer {
+func NewDebeziumConsumer(eventBus *event.EventBus) *DebeziumConsumer {
 	topics := []string{
 		"dbserver1.user." + persistent_object.ActivityLog{}.TableName(),
 		"dbserver1.user." + persistent_object.Permission{}.TableName(),
@@ -57,7 +57,7 @@ func NewDebezium(eventBus *event.EventBus) *DebeziumConsumer {
 	}
 }
 
-func (d *DebeziumConsumer) ProcessMessage(msg kafka.Message, topic string) {
+func (d *DebeziumConsumer) ProcessMessage(ctx context.Context, msg kafka.Message, topic string) {
 	var message DebeziumMessage
 	if err := json.Unmarshal(msg.Value, &message); err != nil {
 		global.Logger.Error("Error unmarshalling message", zap.Error(err))
@@ -105,7 +105,7 @@ func (d *DebeziumConsumer) ProcessMessage(msg kafka.Message, topic string) {
 			Status:       1,
 		}
 
-		if _, err := d.eventBus.Dispatch(indexUserEvent); err != nil {
+		if _, err := d.eventBus.Dispatch(ctx, indexUserEvent); err != nil {
 			global.Logger.Error("Error dispatching event", zap.Error(err))
 			return
 		}
@@ -123,7 +123,7 @@ func (d *DebeziumConsumer) Consume() {
 					continue
 				}
 				global.Logger.Info("Message received", zap.String("topic", r.Config().Topic))
-				d.ProcessMessage(m, r.Config().Topic)
+				d.ProcessMessage(context.Background(), m, r.Config().Topic)
 			}
 		}(reader)
 	}
@@ -144,4 +144,14 @@ func getTableName(fullName string) string {
 		return parts[len(parts)-1]
 	}
 	return fullName
+}
+
+func (d *DebeziumConsumer) Close() {
+	for _, reader := range d.readers {
+		if err := reader.Close(); err != nil {
+			global.Logger.Error("Error closing kafka reader", zap.String("topic", reader.Config().Topic), zap.Error(err))
+		} else {
+			global.Logger.Info("Kafka reader closed successfully", zap.String("topic", reader.Config().Topic))
+		}
+	}
 }

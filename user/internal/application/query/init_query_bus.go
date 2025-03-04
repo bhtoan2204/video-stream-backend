@@ -1,6 +1,8 @@
 package query
 
 import (
+	"context"
+
 	"github.com/bhtoan2204/user/internal/application/query/handler"
 	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/application/shared"
@@ -13,12 +15,12 @@ func SetUpQueryBus(deps *shared.ServiceDependencies) *QueryBus {
 	searchUserHandler := handler.NewSearchUserQueryHandler(deps.UserService)
 	getUserProfileHandler := handler.NewGetUserProfileQueryHandler(deps.UserService)
 
-	bus.RegisterHandler("SearchUserQuery", func(q Query) (interface{}, error) {
-		return searchUserHandler.Handle(q.(*query.SearchUserQuery))
+	bus.RegisterHandler("SearchUserQuery", func(ctx context.Context, q Query) (interface{}, error) {
+		return searchUserHandler.Handle(ctx, q.(*query.SearchUserQuery))
 	})
 
-	bus.RegisterHandler("GetUserProfileQuery", func(q Query) (interface{}, error) {
-		return getUserProfileHandler.Handle(q.(*query.GetUserProfileQuery))
+	bus.RegisterHandler("GetUserProfileQuery", func(ctx context.Context, q Query) (interface{}, error) {
+		return getUserProfileHandler.Handle(ctx, q.(*query.GetUserProfileQuery))
 	})
 
 	// Register other command handlers here

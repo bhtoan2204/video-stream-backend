@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"context"
+
 	"github.com/bhtoan2204/user/internal/application/command/command"
 	"github.com/bhtoan2204/user/internal/domain/interfaces"
 )
@@ -15,6 +17,6 @@ func NewGetUserByIdCommandHandler(userService interfaces.UserServiceInterface) *
 	}
 }
 
-func (h *GetUserByIdCommandHandler) Handle(cmd *command.GetUserByIdCommand) (*command.GetUserByIdCommandResult, error) {
-	return h.userService.GetUserById(cmd)
+func (h *GetUserByIdCommandHandler) Handle(ctx context.Context, cmd *command.GetUserByIdCommand) (*command.GetUserByIdCommandResult, error) {
+	return h.userService.GetUserById(ctx, cmd)
 }

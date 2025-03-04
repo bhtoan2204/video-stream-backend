@@ -1,4 +1,4 @@
-package initialize
+package grpc
 
 import (
 	"fmt"
@@ -8,21 +8,24 @@ import (
 	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
 	"github.com/bhtoan2204/user/internal/infrastructure/grpc/proto/user"
 	service_server "github.com/bhtoan2204/user/internal/infrastructure/service_server"
+	"github.com/bhtoan2204/user/utils"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
-func InitGrpcServer(userRepository repository.UserRepository) {
+func StartGrpcServer(userRepository repository.UserRepositoryInterface) {
 	listener, err := net.Listen("tcp", ":0")
 	if err != nil {
 		global.Logger.Fatal("Failed to allocate port", zap.Error(err))
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
+
 	user.RegisterUserServiceServer(grpcServer, service_server.NewUserServiceServer(userRepository))
 
 	healthServer := health.NewServer()
@@ -40,7 +43,7 @@ func InitGrpcServer(userRepository repository.UserRepository) {
 
 	serviceID := uuid.New().String()
 	servicePort := listener.Addr().(*net.TCPAddr).Port
-	serviceAddress, err := GetInternalIP()
+	serviceAddress, err := utils.GetInternalIP()
 	if err != nil {
 		global.Logger.Error("Failed to get internal IP address:", zap.Error(err))
 		panic(err)

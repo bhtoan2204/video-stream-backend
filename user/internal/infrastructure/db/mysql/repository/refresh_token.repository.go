@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -15,18 +16,18 @@ type GormRefreshTokenRepository struct {
 	db *gorm.DB
 }
 
-func NewRefreshTokenRepository(db *gorm.DB) repository.RefreshTokenRepository {
+func NewRefreshTokenRepository(db *gorm.DB) repository.RefreshTokenRepositoryInterface {
 	return &GormRefreshTokenRepository{db: db}
 }
 
 // Create implements command.RefreshTokenRepository.
-func (r *GormRefreshTokenRepository) Create(refreshToken *entities.RefreshToken) error {
+func (r *GormRefreshTokenRepository) Create(ctx context.Context, refreshToken *entities.RefreshToken) error {
 	refreshTokenModel := model.RefreshToken{
 		UserID:    refreshToken.UserID,
 		Token:     refreshToken.Token,
 		ExpiresAt: refreshToken.ExpiresAt,
 	}
-	err := r.db.Transaction(func(tx *gorm.DB) error {
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		execution := r.db.Create(&refreshTokenModel)
 		if execution.Error != nil {
 			return execution.Error
@@ -43,7 +44,7 @@ func (r *GormRefreshTokenRepository) Create(refreshToken *entities.RefreshToken)
 }
 
 // DeleteByQuery implements command.RefreshTokenRepository.
-func (g *GormRefreshTokenRepository) DeleteByQuery(query *map[string]interface{}) error {
+func (g *GormRefreshTokenRepository) DeleteByQuery(ctx context.Context, query *map[string]interface{}) error {
 	now := time.Now()
 	err := g.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&model.RefreshToken{}).Where(query).Update("deleted_at", &now).Error; err != nil {
@@ -58,7 +59,7 @@ func (g *GormRefreshTokenRepository) DeleteByQuery(query *map[string]interface{}
 }
 
 // FindOneByQuery implements command.RefreshTokenRepository.
-func (g *GormRefreshTokenRepository) FindOneByQuery(query *map[string]interface{}) (*entities.RefreshToken, error) {
+func (g *GormRefreshTokenRepository) FindOneByQuery(ctx context.Context, query *map[string]interface{}) (*entities.RefreshToken, error) {
 	refreshTokenModel := model.RefreshToken{}
 	dbQuery := BuildQuery(g.db, query)
 	if err := dbQuery.First(&refreshTokenModel).Error; err != nil {
@@ -72,8 +73,8 @@ func (g *GormRefreshTokenRepository) FindOneByQuery(query *map[string]interface{
 }
 
 // UpdateByQuery implements command.RefreshTokenRepository.
-func (g *GormRefreshTokenRepository) UpdateByQuery(query *map[string]interface{}, update *map[string]interface{}) error {
-	err := g.db.Transaction(func(tx *gorm.DB) error {
+func (g *GormRefreshTokenRepository) UpdateByQuery(ctx context.Context, query *map[string]interface{}, update *map[string]interface{}) error {
+	err := g.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&model.RefreshToken{}).Where(query).Updates(update).Error; err != nil {
 			return err
 		}
@@ -85,7 +86,7 @@ func (g *GormRefreshTokenRepository) UpdateByQuery(query *map[string]interface{}
 	return nil
 }
 
-func (g *GormRefreshTokenRepository) HardDeleteByQuery(query *map[string]interface{}) error {
+func (g *GormRefreshTokenRepository) HardDeleteByQuery(ctx context.Context, query *map[string]interface{}) error {
 	err := g.db.Transaction(func(tx *gorm.DB) error {
 		if err := g.db.Where(query).Delete(&model.RefreshToken{}).Error; err != nil {
 			return err
