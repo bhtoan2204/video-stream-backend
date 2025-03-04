@@ -108,8 +108,7 @@ func InitUserGRPCClient() {
 		"consul:///user-grpc", // scheme "consul"
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
-		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
-		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 
 	if err != nil {

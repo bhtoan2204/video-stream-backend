@@ -15,6 +15,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/uptrace/opentelemetry-go-extra/otelgorm v0.3.2
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.59.0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.59.0
 	go.opentelemetry.io/otel v1.34.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.34.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.34.0
@@ -44,6 +45,7 @@ require (
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
+	github.com/gin-contrib/secure v1.1.1 // indirect
 	github.com/gin-contrib/sse v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -87,7 +89,6 @@ require (
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelsql v0.3.2 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.59.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.13.0 // indirect

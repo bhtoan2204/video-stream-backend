@@ -10,6 +10,7 @@ import (
 	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql"
 	"github.com/bhtoan2204/user/internal/infrastructure/grpc"
+	"github.com/bhtoan2204/user/internal/infrastructure/tracing"
 	"go.uber.org/zap"
 )
 
@@ -36,7 +37,7 @@ func Run() {
 	elasticsearch.InitElasticsearch()
 
 	// Initialize tracing
-	tracerShutdown := InitProvider()
+	tracerShutdown := tracing.InitProvider()
 	defer tracerShutdown()
 
 	// Initialize container
