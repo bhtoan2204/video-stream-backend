@@ -5,3 +5,8 @@ smtp:
   port: 587
   username:
   password:
+redis:
+  host: redis
+  port: 6379
+  password:
+  database: 0

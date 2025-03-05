@@ -13,7 +13,7 @@ func Run() {
 	InitLoadConfig()
 	InitLogger()
 	InitConsul()
-	// InitRedis()
+	InitRedis()
 	// InitKafka()
 	InitUserGRPCClient()
 	tracerShutdown := InitProvider()

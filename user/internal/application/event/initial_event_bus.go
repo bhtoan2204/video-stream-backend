@@ -12,7 +12,7 @@ func SetUpEventBus(deps *shared.ListenerDependencies) *EventBus {
 	bus := NewEventBus()
 
 	indexUserHandler := handler.NewIndexUserEventHandler(deps.UserListener)
-	//dbserver1.user.users
+	//user_database.user.users
 	bus.RegisterHandler("IndexUserEvent", func(ctx context.Context, e Event) (interface{}, error) {
 		return indexUserHandler.Handle(ctx, e.(*event.IndexUserEvent))
 	})

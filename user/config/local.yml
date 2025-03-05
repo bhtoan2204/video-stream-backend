@@ -43,3 +43,5 @@ security:
   jwt_refresh_secret: ROSyJWWHgSejTAEIemaSrLT59Evc2M9AUtp4O4sVHGpIFS9rLGGEx0GPAPiV
   jwt_access_expiration: 900 # number
   jwt_refresh_expiration: 86400 # number
+debezium:
+  group_id: mysql-user-connector

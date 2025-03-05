@@ -69,6 +69,10 @@ type ElasticSearchConfig struct {
 	Password string `mapstructure:"password"`
 }
 
+type DebeziumConfig struct {
+	GroupID string `mapstructure:"group_id"`
+}
+
 type Config struct {
 	Server              ServerConfig        `mapstructure:"server"`
 	MySQLConfig         MySQLConfig         `mapstructure:"mysql"`
@@ -78,5 +82,6 @@ type Config struct {
 	ConsulConfig        ConsulConfig        `mapstructure:"consul"`
 	KafkaConfig         KafkaConfig         `mapstructure:"kafka"`
 	ElasticSearchConfig ElasticSearchConfig `mapstructure:"elasticsearch"`
+	DebeziumConfig      DebeziumConfig      `mapstructure:"debezium"`
 	// S3Config       S3Config       `mapstructure:"s3"`
 }
