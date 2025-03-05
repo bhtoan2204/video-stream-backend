@@ -38,10 +38,10 @@ func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus,
 	)
 	instrument := middleware.NewInstrumentedHandler(requestCount, commonLabels)
 	// Command
-	r.GET("/profile", instrument(ctrl.GetUserProfile))
-	r.POST("/create", instrument(ctrl.CreateUser))
-
+	r.POST("", instrument(ctrl.CreateUser))
+	r.PUT("", instrument(ctrl.UpdateUserProfile))
 	// Query
+	r.GET("", instrument(ctrl.GetUserProfile))
 	r.GET("", ctrl.SearchUser)
 	return ctrl
 }
@@ -96,4 +96,8 @@ func (controller *UserController) SearchUser(c *gin.Context) {
 		return
 	}
 	c.JSON(200, result)
+}
+
+func (controller *UserController) UpdateUserProfile(c *gin.Context) {
+	c.JSON(200, nil)
 }

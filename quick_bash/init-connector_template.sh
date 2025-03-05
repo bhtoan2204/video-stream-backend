@@ -11,7 +11,7 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
     \"database.password\": \"root\",
     \"database.server.id\": \"184054\",
     \"database.server.name\": \"dbserver1\",
-    \"database.whitelist\": \"user,refresh_tokens\",
+    \"database.whitelist\": \"user,refresh_tokens,user_settings,activity_logs,permissions,roles,user_roles,role_permissions\",
     \"database.history.kafka.bootstrap.servers\": \"kafka:29092\",
     \"database.history.kafka.topic\": \"dbhistory.user\",
     \"schema.history.internal.kafka.topic\": \"schemahistory.user\",

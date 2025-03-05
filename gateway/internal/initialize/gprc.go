@@ -58,7 +58,7 @@ func (r *ConsulResolver) watch() {
 		case <-ticker.C:
 			addresses, err := r.getAddresses()
 			if err != nil {
-				fmt.Printf("Failed to get addresses: %v\n", err)
+				global.Logger.Error("Failed to get addresses from consul", zap.Error(err))
 				continue
 			}
 			r.updateState(addresses)

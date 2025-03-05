@@ -10,6 +10,7 @@ import (
 	"github.com/bhtoan2204/video/global"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
+	"go.uber.org/zap"
 )
 
 func InitConsul() {
@@ -62,11 +63,9 @@ func handleShutdown(serviceID string) {
 
 	err := global.ConsulClient.Agent().ServiceDeregister(serviceID)
 	if err != nil {
-		// global.Logger.Error("Failed to unregister service from Consul", zap.Error(err))
-		fmt.Print("Failed to unregister service from Consul")
+		global.Logger.Error("Failed to unregister service from Consul", zap.Error(err))
 	} else {
-		// global.Logger.Info("Service unregistered successfully from Consul")
-		fmt.Print("Service unregistered successfully from Consul")
+		global.Logger.Info("Service unregistered successfully from Consul")
 	}
 
 	os.Exit(0)

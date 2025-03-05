@@ -11,6 +11,9 @@ type MySQLConfig struct {
 	Host         string `mapstructure:"host"`
 	Port         int    `mapstructure:"port"`
 	Name         string `mapstructure:"name"`
+	Charset      string `mapstructure:"charset"`
+	ParseTime    bool   `mapstructure:"parse_time"`
+	Loc          string `mapstructure:"loc"`
 	MaxIdleConns int    `mapstructure:"max_idle_conns"`
 	MaxOpenConns int    `mapstructure:"max_open_conns"`
 	MaxLifetime  int    `mapstructure:"max_lifetime"`

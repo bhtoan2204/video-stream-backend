@@ -18,7 +18,7 @@ func InitLoadConfig() {
 		configName = "local"
 	}
 	viper.SetConfigName(configName)
-	fmt.Print(viper.ConfigFileUsed())
+
 	// Read the config file
 	err := viper.ReadInConfig()
 	if err != nil {

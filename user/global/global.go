@@ -7,6 +7,7 @@ import (
 	"github.com/bhtoan2204/user/pkg/settings"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/hashicorp/consul/api"
+	"github.com/hibiken/asynq"
 	"github.com/segmentio/kafka-go"
 	"gorm.io/gorm"
 
@@ -25,5 +26,6 @@ var (
 	KafkaConsumer         *kafka.Reader
 	KafkaDebeziumConsumer *kafka.Reader
 	ESClient              *elasticsearch.Client
+	AsynqClient           *asynq.Client
 	// S3Client *s3.Client
 )
