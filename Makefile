@@ -22,4 +22,12 @@ run-video-dev:
 	@echo "Running Video Service"
 	@cd video && go run ./cmd/main/main.go -dev
 
-.PHONY: run-gateway run-user run-video run-gateway-dev run-user-dev run-video-dev
+run-worker:
+	@echo "Running Worker"
+	@cd worker && go run ./cmd/main/main.go
+
+run-worker-dev:
+	@echo "Running Worker"
+	@cd worker && go run ./cmd/main/main.go -dev
+
+.PHONY: run-gateway run-user run-video run-gateway-dev run-user-dev run-video-dev run-worker run-worker-dev

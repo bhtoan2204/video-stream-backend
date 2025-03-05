@@ -9,6 +9,7 @@ import (
 	"github.com/bhtoan2204/user/internal/application/middleware"
 	"github.com/bhtoan2204/user/internal/application/query"
 	realQuery "github.com/bhtoan2204/user/internal/application/query/query"
+	"github.com/bhtoan2204/user/internal/infrastructure/grpc/proto/user"
 	"github.com/bhtoan2204/user/pkg/response"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel"
@@ -42,7 +43,7 @@ func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus,
 	r.PUT("", instrument(ctrl.UpdateUserProfile))
 	// Query
 	r.GET("", instrument(ctrl.GetUserProfile))
-	r.GET("", ctrl.SearchUser)
+	r.GET("", instrument(ctrl.SearchUser))
 	return ctrl
 }
 
@@ -63,12 +64,21 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 }
 
 func (controller *UserController) GetUserProfile(c *gin.Context) {
-	userId := c.Request.Header.Get("X-User-ID")
-	if userId == "" {
-		global.Logger.Error("User ID is missing")
+	userData, exists := c.Get("user")
+	if !exists {
+		global.Logger.Error("User data not found in context")
 		response.ErrorUnauthorizedResponse(c, 401)
 		return
 	}
+
+	userObj, ok := userData.(*user.UserResponse)
+	if !ok {
+		global.Logger.Error("Invalid user data type in context")
+		response.ErrorUnauthorizedResponse(c, 401)
+		return
+	}
+	userId := userObj.Id
+
 	var query realQuery.GetUserProfileQuery
 	ctx := c.Request.Context()
 	query.ID = userId
