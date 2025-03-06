@@ -14,7 +14,7 @@ import (
 
 func AuthenticationMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		encodedUser := c.GetHeader("X-User-Data")
+		encodedUser := c.Request.Header.Get("X-User-Data")
 		if encodedUser == "" {
 			global.Logger.Error("X-User-Data header is missing")
 			response.ErrorUnauthorizedResponse(c, http.StatusUnauthorized)
@@ -24,14 +24,14 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 		userData, err := base64.StdEncoding.DecodeString(encodedUser)
 		if err != nil {
 			global.Logger.Error("Failed to decode user data: ", zap.Error(err))
-			response.ErrorUnauthorizedResponse(c, http.StatusUnauthorized)
+			response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
 			c.Abort()
 			return
 		}
 		var userObj user.UserResponse
 		if err := json.Unmarshal(userData, &userObj); err != nil {
 			global.Logger.Error("Failed to unmarshal user data", zap.Error(err))
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
 			return
 		}
 		if userObj.Id == "" {
@@ -39,7 +39,7 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 			response.ErrorUnauthorizedResponse(c, 401)
 			return
 		}
-		c.Set("user", userData)
+		c.Set("user", &userObj)
 		c.Next()
 	}
 }

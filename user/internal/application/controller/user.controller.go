@@ -42,8 +42,8 @@ func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus,
 	r.POST("", instrument(ctrl.CreateUser))
 	r.PUT("", instrument(ctrl.UpdateUserProfile))
 	// Query
-	r.GET("", instrument(ctrl.GetUserProfile))
-	r.GET("", instrument(ctrl.SearchUser))
+	r.GET("", middleware.AuthenticationMiddleware(), instrument(ctrl.GetUserProfile))
+	r.GET("/search", instrument(ctrl.SearchUser))
 	return ctrl
 }
 
@@ -64,25 +64,23 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 }
 
 func (controller *UserController) GetUserProfile(c *gin.Context) {
-	userData, exists := c.Get("user")
+	userVal, exists := c.Get("user")
 	if !exists {
 		global.Logger.Error("User data not found in context")
-		response.ErrorUnauthorizedResponse(c, 401)
+		response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
 		return
 	}
 
-	userObj, ok := userData.(*user.UserResponse)
-	if !ok {
-		global.Logger.Error("Invalid user data type in context")
-		response.ErrorUnauthorizedResponse(c, 401)
+	userResp, ok := userVal.(*user.UserResponse)
+	if !ok || userResp.Id == "" {
+		global.Logger.Error("Invalid user data in context")
+		response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
 		return
 	}
-	userId := userObj.Id
 
-	var query realQuery.GetUserProfileQuery
-	ctx := c.Request.Context()
-	query.ID = userId
-	result, err := controller.queryBus.Dispatch(ctx, &query)
+	query := realQuery.GetUserProfileQuery{ID: userResp.Id}
+	result, err := controller.queryBus.Dispatch(c.Request.Context(), &query)
+
 	if err != nil {
 		global.Logger.Error(query.QueryName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4000, err.Error())

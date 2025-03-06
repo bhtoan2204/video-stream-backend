@@ -1,26 +1,77 @@
 package initialize
 
 import (
+	"log"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
 	"github.com/bhtoan2204/gateway/global"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"go.uber.org/zap"
 )
 
 var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-func InitWebSocket() {
-	// Subscribe to a channel
-	pubsub := global.Redis.Subscribe(global.Ctx, "socket_channel")
-	// Initialize WebSocket
-	defer pubsub.Close()
-
-	_, err := pubsub.Receive(global.Ctx)
-	if err != nil {
-		panic(err)
+func ProxyWebsocketWithConsul(c *gin.Context, serviceName string, pathPrefix string) {
+	dialer := websocket.Dialer{
+		NetDialContext:   ConsulDialContext(serviceName),
+		HandshakeTimeout: 10 * time.Second,
 	}
+	targetURL, err := url.Parse("ws://" + serviceName)
+	if err != nil {
+		log.Printf("Error parsing target URL: %v", err)
+		return
+	}
+	targetURL.Path = strings.TrimPrefix(c.Request.URL.Path, pathPrefix)
 
-	// ch := pubsub.Channel()
+	targetConn, resp, err := dialer.Dial(targetURL.String(), c.Request.Header)
+	if err != nil {
+		global.Logger.Error("Error dialing target websocket", zap.Error(err), zap.Any("response", resp))
+		return
+	}
+	defer targetConn.Close()
+	clientConn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		global.Logger.Error("Error upgrading client websocket", zap.Error(err))
+		return
+	}
+	defer clientConn.Close()
+
+	errChan := make(chan error, 2)
+
+	go func() {
+		for {
+			messageType, message, err := clientConn.ReadMessage()
+			if err != nil {
+				errChan <- err
+				return
+			}
+			if err := targetConn.WriteMessage(messageType, message); err != nil {
+				errChan <- err
+				return
+			}
+		}
+	}()
+
+	go func() {
+		for {
+			messageType, message, err := targetConn.ReadMessage()
+			if err != nil {
+				errChan <- err
+				return
+			}
+			if err := clientConn.WriteMessage(messageType, message); err != nil {
+				errChan <- err
+				return
+			}
+		}
+	}()
+
+	<-errChan
 
 }

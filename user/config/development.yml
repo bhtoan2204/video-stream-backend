@@ -31,7 +31,7 @@ consul:
   token:
 kafka:
   broker: kafka
-  port: 9092
+  port: 29092
   topic: user-events
   group_id: user-group
 elasticsearch:

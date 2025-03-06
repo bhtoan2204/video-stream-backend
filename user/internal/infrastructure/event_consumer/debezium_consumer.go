@@ -32,11 +32,11 @@ type DebeziumConsumer struct {
 
 func NewDebeziumConsumer(eventBus *event.EventBus) *DebeziumConsumer {
 	topics := []string{
-		// "user_database.user." + persistent_object.ActivityLog{}.TableName(),
-		// "user_database.user." + persistent_object.Permission{}.TableName(),
-		// "user_database.user." + persistent_object.RefreshToken{}.TableName(),
-		// "user_database.user." + persistent_object.Role{}.TableName(),
-		// "user_database.user." + persistent_object.UserSettings{}.TableName(),
+		"user_database.user." + persistent_object.ActivityLog{}.TableName(),
+		"user_database.user." + persistent_object.Permission{}.TableName(),
+		"user_database.user." + persistent_object.RefreshToken{}.TableName(),
+		"user_database.user." + persistent_object.Role{}.TableName(),
+		"user_database.user." + persistent_object.UserSettings{}.TableName(),
 		"user_database.user." + persistent_object.User{}.TableName(),
 	}
 

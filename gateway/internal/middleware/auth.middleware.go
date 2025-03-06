@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/bhtoan2204/gateway/global"
+	"github.com/bhtoan2204/gateway/internal/redis"
 	"github.com/bhtoan2204/gateway/pkg/grpc/proto/user"
 	"github.com/bhtoan2204/gateway/pkg/response"
-	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
 )
 
-const cacheExpiration = 5 * time.Minute // adjust TTL as needed
+const cacheExpiration = 15 * time.Minute // adjust TTL as needed
 
 func AuthenticationMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -28,16 +28,14 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 		}
 		accessToken := parts[1]
 		cacheKey := "auth:user:" + accessToken
-
 		ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 		defer cancel()
 
 		var validatedUser *user.UserResponse
 
 		// Attempt to retrieve user data from Redis
-		cachedData, err := global.Redis.Get(ctx, cacheKey).Result()
+		cachedData, err := redis.GetData(ctx, cacheKey)
 		if err == nil && cachedData != "" {
-			// If found, unmarshal the JSON into a user struct.
 			var cachedUser user.UserResponse
 			if err := json.Unmarshal([]byte(cachedData), &cachedUser); err == nil {
 				validatedUser = &cachedUser
@@ -65,9 +63,7 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 
 			// Cache the validated user data
 			if userData, err := json.Marshal(validatedUser); err == nil {
-				if err := global.Redis.Set(ctx, cacheKey, userData, cacheExpiration).Err(); err != nil {
-					global.Logger.Error("Failed to cache user data: %v", zap.Error(err))
-				}
+				redis.CacheData(ctx, cacheKey, string(userData), int(cacheExpiration.Seconds()))
 			}
 		}
 
@@ -78,7 +74,6 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 			return
 		}
 		encodedUser := base64.StdEncoding.EncodeToString(userData)
-
 		c.Request.Header.Set("X-User-Data", encodedUser)
 		c.Next()
 	}
