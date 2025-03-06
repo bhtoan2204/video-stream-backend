@@ -3,6 +3,7 @@ package consumer
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
@@ -31,21 +32,20 @@ type DebeziumConsumer struct {
 
 func NewDebeziumConsumer(eventBus *event.EventBus) *DebeziumConsumer {
 	topics := []string{
-		"dbserver1.user." + persistent_object.ActivityLog{}.TableName(),
-		"dbserver1.user." + persistent_object.Permission{}.TableName(),
-		"dbserver1.user." + persistent_object.RefreshToken{}.TableName(),
-		"dbserver1.user." + persistent_object.Role{}.TableName(),
-		"dbserver1.user." + persistent_object.UserSettings{}.TableName(),
-		"dbserver1.user." + persistent_object.User{}.TableName(),
+		"user_database.user." + persistent_object.ActivityLog{}.TableName(),
+		"user_database.user." + persistent_object.Permission{}.TableName(),
+		"user_database.user." + persistent_object.RefreshToken{}.TableName(),
+		"user_database.user." + persistent_object.Role{}.TableName(),
+		"user_database.user." + persistent_object.UserSettings{}.TableName(),
+		"user_database.user." + persistent_object.User{}.TableName(),
 	}
 
 	var readers []*kafka.Reader
-
 	for _, topic := range topics {
 		reader := kafka.NewReader(kafka.ReaderConfig{
-			Brokers: []string{global.Config.KafkaConfig.Broker},
+			Brokers: []string{fmt.Sprintf("%s:%d", global.Config.KafkaConfig.Broker, global.Config.KafkaConfig.Port)},
 			// Brokers: []string{"kafka:29092"},
-			GroupID: "mysql-user-connector",
+			GroupID: global.Config.DebeziumConfig.GroupID,
 			Topic:   topic,
 		})
 		readers = append(readers, reader)
@@ -119,7 +119,7 @@ func (d *DebeziumConsumer) Consume() {
 			for {
 				m, err := r.ReadMessage(context.Background())
 				if err != nil {
-					global.Logger.Error("Error reading message", zap.String("topic", r.Config().Topic), zap.Error(err))
+					global.Logger.Error("Error reading message: ", zap.String("topic", r.Config().Topic), zap.Error(err))
 					continue
 				}
 				global.Logger.Info("Message received", zap.String("topic", r.Config().Topic))

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/bhtoan2204/gateway/global"
+	"github.com/bhtoan2204/gateway/internal/redis"
 
 	"go.uber.org/zap"
 )
@@ -13,7 +14,7 @@ func Run() {
 	InitLoadConfig()
 	InitLogger()
 	InitConsul()
-	// InitRedis()
+	redis.InitRedis()
 	// InitKafka()
 	InitUserGRPCClient()
 	tracerShutdown := InitProvider()

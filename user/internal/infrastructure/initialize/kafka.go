@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/bhtoan2204/user/global"
 	"github.com/segmentio/kafka-go"
@@ -15,7 +16,7 @@ type KafkaMessage struct {
 
 func InitKafkaProducer() {
 	global.KafkaProducer = &kafka.Writer{
-		Addr:     kafka.TCP(global.Config.KafkaConfig.Broker),
+		Addr:     kafka.TCP(fmt.Sprintf("%s:%d", global.Config.KafkaConfig.Broker, global.Config.KafkaConfig.Port)),
 		Topic:    global.Config.KafkaConfig.Topic,
 		Balancer: &kafka.LeastBytes{},
 	}
@@ -25,7 +26,7 @@ func InitKafkaProducer() {
 
 func InitKafkaConsumer() {
 	global.KafkaConsumer = kafka.NewReader(kafka.ReaderConfig{
-		Brokers: []string{global.Config.KafkaConfig.Broker},
+		Brokers: []string{fmt.Sprintf("%s:%d", global.Config.KafkaConfig.Broker, global.Config.KafkaConfig.Port)},
 		GroupID: global.Config.KafkaConfig.GroupID,
 		Topic:   global.Config.KafkaConfig.Topic,
 	})

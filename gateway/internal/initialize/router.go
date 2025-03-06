@@ -48,17 +48,17 @@ func NewInstrumentedHandler(counter metric.Int64Counter, commonLabels []attribut
 	}
 }
 
-func customResolverDial(ctx context.Context, network, address string) (net.Conn, error) {
+func CustomResolverDial(ctx context.Context, network, address string) (net.Conn, error) {
 	if global.Config.Server.Mode == "local" {
 		return net.Dial("udp", "127.0.0.1:8600")
 	}
 	return net.Dial("udp", "consul:8600")
 }
 
-func consulDialContext(serviceName string) func(ctx context.Context, network, addr string) (net.Conn, error) {
+func ConsulDialContext(serviceName string) func(ctx context.Context, network, addr string) (net.Conn, error) {
 	resolver := &net.Resolver{
 		PreferGo: true,
-		Dial:     customResolverDial,
+		Dial:     CustomResolverDial,
 	}
 	return func(ctx context.Context, network, addr string) (net.Conn, error) {
 		_, srvs, err := resolver.LookupSRV(ctx, serviceName, "tcp", "service.consul")
@@ -95,7 +95,7 @@ func newReverseProxyWithSRV(serviceName, pathPrefix string) (*httputil.ReversePr
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
 
 	transport := &http.Transport{
-		DialContext:         consulDialContext(serviceName),
+		DialContext:         ConsulDialContext(serviceName),
 		TLSHandshakeTimeout: 10 * time.Second,
 		MaxIdleConns:        100,
 		MaxIdleConnsPerHost: 10,
@@ -139,6 +139,8 @@ func InitRouter() *gin.Engine {
 		r.Use(gin.Recovery())
 	}
 
+	r.RedirectTrailingSlash = false
+
 	secMiddleware := secure.New(secure.Config{
 		FrameDeny:          true,
 		ContentTypeNosniff: true,
@@ -174,6 +176,16 @@ func InitRouter() *gin.Engine {
 		SetupVideoRoutes(apiV1)
 	}
 
+	wsGroup := r.Group("/ws")
+	{
+		wsGroup.GET("/user/*any", func(c *gin.Context) {
+			ProxyWebsocketWithConsul(c, "user-service", "/ws/user")
+		})
+		wsGroup.GET("/video/*any", func(c *gin.Context) {
+			ProxyWebsocketWithConsul(c, "video-service", "/ws/video")
+		})
+	}
+
 	global.Logger.Info("Router initialized successfully")
 	return r
 }
@@ -189,9 +201,10 @@ func SetupHealthRoutes(api *gin.RouterGroup) {
 func SetupUserRoutes(api *gin.RouterGroup, instrument func(gin.HandlerFunc) gin.HandlerFunc) {
 	userGroup := api.Group("/user-service/users")
 	{
-		userGroup.GET("/profile", middleware.AuthenticationMiddleware(), instrument(serviceProxy("user-service")))
-		userGroup.POST("/create", instrument(serviceProxy("user-service")))
-		userGroup.GET("", instrument(serviceProxy("user-service")))
+		userGroup.GET("", middleware.AuthenticationMiddleware(), instrument(serviceProxy("user-service")))
+		userGroup.PUT("", middleware.AuthenticationMiddleware(), instrument(serviceProxy("user-service")))
+		userGroup.POST("", instrument(serviceProxy("user-service")))
+		userGroup.GET("/search", instrument(serviceProxy("user-service")))
 	}
 }
 

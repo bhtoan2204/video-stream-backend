@@ -31,7 +31,7 @@ consul:
   token:
 kafka:
   broker: kafka
-  port: 9092
+  port: 29092
   topic: user-events
   group_id: user-group
 elasticsearch:
@@ -43,3 +43,5 @@ security:
   jwt_refresh_secret: ROSyJWWHgSejTAEIemaSrLT59Evc2M9AUtp4O4sVHGpIFS9rLGGEx0GPAPiV
   jwt_access_expiration: 900 # number
   jwt_refresh_expiration: 86400 # number
+debezium:
+  group_id: mysql-user-connector
