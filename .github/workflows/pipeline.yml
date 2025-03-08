@@ -71,7 +71,7 @@ jobs:
           IFS=' ' read -r -a projects <<< "${{ steps.projects.outputs.projects }}"
           for project in "${projects[@]}"; do
             echo "Docker building project: $project"
-            docker-compose build $project
+            docker compose build $project
           done
 
       - name: Docker Push changed projects to docker registry
