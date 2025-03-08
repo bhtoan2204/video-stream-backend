@@ -74,7 +74,7 @@ func TestUserService_CreateUser(t *testing.T) {
 				ctx: context.Background(),
 				createUserCommand: &command.CreateUserCommand{
 					Username:  username,
-					Password:  "mV5~fOtohYQp1",
+					Password:  "Toan@12345",
 					Email:     email,
 					Phone:     "+84971308623",
 					FirstName: "Bray",
@@ -138,7 +138,7 @@ func TestUserService_CreateUser(t *testing.T) {
 // 			args: args{
 // 				ctx: context.Background(),
 // 				loginCommand: &command.LoginCommand{
-// 					Password: "mV5~fOtohYQp1",
+// 					Password: "Toan@12345",
 // 					Email:    "AxXBXgzP@example.com",
 // 				},
 // 			},
