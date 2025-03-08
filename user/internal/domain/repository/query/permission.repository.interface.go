@@ -1,4 +1,4 @@
-package query
+package es_repository_interface
 
 import (
 	"context"

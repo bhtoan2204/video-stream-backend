@@ -23,6 +23,63 @@ services:
     depends_on:
       - zookeeper
 
+  # mysql1:
+  #   image: mysql:latest
+  #   container_name: mysql1
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpass
+  #   ports:
+  #     - "33061:3306"
+  #   volumes:
+  #     - ./mysql1.cnf:/etc/mysql/conf.d/mysql.cnf
+  #   command:
+  #     - "--server-id=1"
+  #     - "--log-bin=mysql-bin"
+  #     - "--binlog-format=ROW"
+  #     - "--gtid_mode=ON"
+  #     - "--enforce_gtid_consistency=ON"
+  #     - "--group_replication_start_on_boot=OFF"
+  #     - "--group_replication_local_address=mysql1:33061"
+  #     - "--group_replication_group_seeds=mysql1:33061,mysql2:33061,mysql3:33061"
+
+  # mysql2:
+  #   image: mysql:latest
+  #   container_name: mysql2
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpass
+  #   ports:
+  #     - "33062:3306"
+  #   volumes:
+  #     - ./mysql2.cnf:/etc/mysql/conf.d/mysql.cnf
+  #   command:
+  #     - "--server-id=2"
+  #     - "--log-bin=mysql-bin"
+  #     - "--binlog-format=ROW"
+  #     - "--gtid_mode=ON"
+  #     - "--enforce_gtid_consistency=ON"
+  #     - "--group_replication_start_on_boot=OFF"
+  #     - "--group_replication_local_address=mysql2:33061"
+  #     - "--group_replication_group_seeds=mysql1:33061,mysql2:33061,mysql3:33061"
+
+  # mysql3:
+  #   image: mysql:latest
+  #   container_name: mysql3
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpass
+  #   ports:
+  #     - "33063:3306"
+  #   volumes:
+  #     - ./mysql3.cnf:/etc/mysql/conf.d/mysql.cnf
+  #   command:
+  #     - "--server-id=3"
+  #     - "--log-bin=mysql-bin"
+  #     - "--binlog-format=ROW"
+  #     - "--gtid_mode=ON"
+  #     - "--enforce_gtid_consistency=ON"
+  #     - "--group_replication_start_on_boot=OFF"
+  #     - "--group_replication_local_address=mysql3:33061"
+  #     - "--group_replication_group_seeds=mysql1:33061,mysql2:33061,mysql3:33061"
+
   mysql:
     image: mysql:latest
     ports:
@@ -32,6 +89,21 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --server-id=184054 --log-bin=mysql-bin --binlog-format=ROW
+
+  # mysql-router:
+  #   image: mysql/mysql-router:latest
+  #   container_name: mysql-router
+  #   depends_on:
+  #     - mysql1
+  #     - mysql2
+  #     - mysql3
+  #   ports:
+  #     - "7001:7001"
+  #     - "7002:7002"
+  #   volumes:
+  #     - ./router-config:/etc/mysqlrouter
+  #   command: >
+  #     --bootstrap root@mysql1:3306 --user=mysqlrouter --directory=/etc/mysqlrouter
 
   redis:
     image: redis:latest
@@ -188,9 +260,14 @@ services:
       - VALUE_CONVERTER_SCHEMAS_ENABLE=false
     restart: always
 
+  sqlite:
+    image: sqlite:latest
+    environment:
+      - name=value
+
 volumes:
+  # qdrant_data:
+  #   driver: local
   mysql_data:
-  qdrant_data:
-    driver: local
   elastic_data:
     driver: local

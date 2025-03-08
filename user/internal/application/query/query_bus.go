@@ -3,6 +3,8 @@ package query
 import (
 	"context"
 	"errors"
+
+	"go.opentelemetry.io/otel"
 )
 
 type Query interface {
@@ -26,9 +28,22 @@ func (bus *QueryBus) RegisterHandler(queryName string, handler HandlerFunc) {
 }
 
 func (bus *QueryBus) Dispatch(ctx context.Context, query Query) (interface{}, error) {
-	handler, exists := bus.handlers[query.QueryName()]
+	queryName := query.QueryName()
+
+	tracer := otel.Tracer("query-bus")
+	ctx, commandSpan := tracer.Start(ctx, queryName)
+	defer commandSpan.End()
+
+	handler, exists := bus.handlers[queryName]
 	if !exists {
-		return nil, errors.New("no handler registered for query: " + query.QueryName())
+		err := errors.New("no handler registered for event: " + queryName)
+		commandSpan.RecordError(err)
+		return nil, err
 	}
-	return handler(ctx, query)
+
+	result, err := handler(ctx, query)
+	if err != nil {
+		commandSpan.RecordError(err)
+	}
+	return result, err
 }

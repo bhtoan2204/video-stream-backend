@@ -1,4 +1,4 @@
-package command
+package repository_interface
 
 type ActivityLogRepositoryInterface interface {
 }
