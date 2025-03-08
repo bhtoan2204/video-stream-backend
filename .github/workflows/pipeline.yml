@@ -34,7 +34,7 @@ jobs:
             video:
               - 'video/**'
 
-              - name: Determine projects to process
+      - name: Determine projects to process
         id: projects
         run: |
           projects=()
@@ -48,7 +48,6 @@ jobs:
             projects+=("video")
           fi
           echo "Projects to process: ${projects[@]}"
-          # Ghi output dưới dạng chuỗi cách nhau bởi dấu cách
           echo "projects=${projects[*]}" >> $GITHUB_OUTPUT
 
       - name: Test changed projects
