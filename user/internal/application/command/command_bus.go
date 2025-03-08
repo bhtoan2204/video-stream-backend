@@ -3,6 +3,8 @@ package command
 import (
 	"context"
 	"errors"
+
+	"go.opentelemetry.io/otel"
 )
 
 type Command interface {
@@ -26,9 +28,22 @@ func (bus *CommandBus) RegisterHandler(commandName string, handler HandlerFunc) 
 }
 
 func (bus *CommandBus) Dispatch(ctx context.Context, cmd Command) (interface{}, error) {
-	handler, exists := bus.handlers[cmd.CommandName()]
+	commandName := cmd.CommandName()
+
+	tracer := otel.Tracer("command-bus")
+	ctx, commandSpan := tracer.Start(ctx, commandName)
+	defer commandSpan.End()
+
+	handler, exists := bus.handlers[commandName]
 	if !exists {
-		return nil, errors.New("no handler registered for command: " + cmd.CommandName())
+		err := errors.New("no handler registered for command: " + commandName)
+		commandSpan.RecordError(err)
+		return nil, err
 	}
-	return handler(ctx, cmd)
+
+	result, err := handler(ctx, cmd)
+	if err != nil {
+		commandSpan.RecordError(err)
+	}
+	return result, err
 }

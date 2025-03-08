@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"github.com/bhtoan2204/user/internal/domain/entities"
-	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
+	repository_interface "github.com/bhtoan2204/user/internal/domain/repository/command"
 )
 
 type RefreshTokenService struct {
-	refreshTokenRepository repository.RefreshTokenRepositoryInterface
+	refreshTokenRepository repository_interface.RefreshTokenRepositoryInterface
 }
 
-func NewRefreshTokenService(refreshTokenRepository repository.RefreshTokenRepositoryInterface) *RefreshTokenService {
+func NewRefreshTokenService(refreshTokenRepository repository_interface.RefreshTokenRepositoryInterface) *RefreshTokenService {
 	return &RefreshTokenService{
 		refreshTokenRepository: refreshTokenRepository,
 	}

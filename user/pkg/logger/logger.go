@@ -1,11 +1,10 @@
 package logger
 
 import (
-	"context"
 	"os"
 
 	"github.com/bhtoan2204/user/pkg/settings"
-	"go.opentelemetry.io/otel/trace"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
@@ -13,7 +12,7 @@ import (
 )
 
 type LoggerZap struct {
-	*zap.Logger
+	*otelzap.Logger
 }
 
 func getEncoderLog() zapcore.Encoder {
@@ -66,33 +65,7 @@ func NewLogger(config settings.LogConfig) *LoggerZap {
 		),
 		level,
 	)
-	return &LoggerZap{zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))}
-}
-
-func (l *LoggerZap) InfoWithContext(ctx context.Context, msg string, fields ...zap.Field) {
-	span := trace.SpanFromContext(ctx)
-	if span != nil {
-		sc := span.SpanContext()
-		if sc.IsValid() {
-			fields = append(fields,
-				zap.String("trace_id", sc.TraceID().String()),
-				zap.String("span_id", sc.SpanID().String()),
-			)
-		}
-	}
-	l.Info(msg, fields...)
-}
-
-func (l *LoggerZap) ErrorWithContext(ctx context.Context, msg string, fields ...zap.Field) {
-	span := trace.SpanFromContext(ctx)
-	if span != nil {
-		sc := span.SpanContext()
-		if sc.IsValid() {
-			fields = append(fields,
-				zap.String("trace_id", sc.TraceID().String()),
-				zap.String("span_id", sc.SpanID().String()),
-			)
-		}
-	}
-	l.Error(msg, fields...)
+	zapLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+	otelLogger := otelzap.New(zapLogger)
+	return &LoggerZap{Logger: otelLogger}
 }

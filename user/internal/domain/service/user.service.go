@@ -13,8 +13,8 @@ import (
 	"github.com/bhtoan2204/user/internal/application/query/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	"github.com/bhtoan2204/user/internal/domain/interfaces"
-	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
-	eSRepository "github.com/bhtoan2204/user/internal/domain/repository/query"
+	repository_interface "github.com/bhtoan2204/user/internal/domain/repository/command"
+	es_repository_interface "github.com/bhtoan2204/user/internal/domain/repository/query"
 	value_object "github.com/bhtoan2204/user/internal/domain/value_object/user"
 	"github.com/bhtoan2204/user/pkg/encrypt_password"
 	"github.com/bhtoan2204/user/pkg/jwt_utils"
@@ -22,14 +22,14 @@ import (
 )
 
 type UserService struct {
-	userRepository      repository.UserRepositoryInterface
-	esUserRepository    eSRepository.ESUserRepositoryInterface
+	userRepository      repository_interface.UserRepositoryInterface
+	esUserRepository    es_repository_interface.ESUserRepositoryInterface
 	refreshTokenService interfaces.RefreshTokenServiceInterface
 }
 
 func NewUserService(
-	userRepository repository.UserRepositoryInterface,
-	esUserRepository eSRepository.ESUserRepositoryInterface,
+	userRepository repository_interface.UserRepositoryInterface,
+	esUserRepository es_repository_interface.ESUserRepositoryInterface,
 	refreshTokenService interfaces.RefreshTokenServiceInterface,
 ) *UserService {
 	return &UserService{
