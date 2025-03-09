@@ -194,9 +194,14 @@ services:
     environment:
       - GO_ENV=development
     command: ["./user"]
-    deploy:
-      mode: replicated
-      replicas: 1
+
+  video:
+    build:
+      context: ./video
+      dockerfile: Dockerfile
+    environment:
+      - GO_ENV=development
+    command: ["./video"]
 
   gateway-dev:
     build:
@@ -222,14 +227,6 @@ services:
       replicas: 1
     volumes:
       - /usr/app:/Users/toanbanh/youtube-backend/user
-
-  video:
-    build:
-      context: ./video
-      dockerfile: Dockerfile
-    environment:
-      - GO_ENV=development
-    command: ["./video"]
 
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
