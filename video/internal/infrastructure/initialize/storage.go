@@ -6,14 +6,14 @@ import (
 
 	"github.com/bhtoan2204/video/global"
 	"github.com/bhtoan2204/video/third_party"
+	"go.uber.org/zap"
 )
 
 func InitStorageService() {
-	ctx := context.Background()
-	s3Client, err := third_party.NewS3Client(ctx, "youtube-golang", "ap-southeast-1")
+	s3Client, err := third_party.NewS3Client(context.Background(), global.Config.S3Config.Bucket, global.Config.S3Config.Region)
 	if err != nil {
-		fmt.Println("Error: ", err)
+		global.Logger.Error("Failed to create S3 client", zap.Error(err))
+		panic(fmt.Sprintf("Failed to create S3 client: %v", err))
 	}
 	global.S3Client = s3Client
-	fmt.Println(s3Client)
 }

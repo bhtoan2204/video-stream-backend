@@ -39,3 +39,5 @@ security:
   jwt_refresh_expiration: 24h
 jaeger:
   endpoint: jaeger:4317
+opentelemetry:
+  endpoint: otel-collector:4317

@@ -1,15 +1,15 @@
 package initialize
 
 import (
-	"github.com/bhtoan2204/user/internal/application/event"
+	"github.com/bhtoan2204/user/internal/application/event_bus"
 	consumer "github.com/bhtoan2204/user/internal/infrastructure/event_consumer"
 )
 
 type Debezium struct {
-	eventBus event.EventBus
+	eventBus event_bus.EventBus
 }
 
-func NewDebezium(eventBus event.EventBus) *Debezium {
+func NewDebezium(eventBus event_bus.EventBus) *Debezium {
 	return &Debezium{eventBus: eventBus}
 }
 

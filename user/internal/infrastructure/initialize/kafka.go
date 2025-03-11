@@ -31,7 +31,7 @@ func InitKafkaConsumer() {
 		Topic:   global.Config.KafkaConfig.Topic,
 	})
 
-	global.Logger.Info("Kafka consumer initialized", zap.String("broker", global.Config.KafkaConfig.Broker), zap.String("group_id", global.Config.KafkaConfig.GroupID), zap.String("topic", global.Config.KafkaConfig.Topic))
+	global.Logger.Info("Kafka consumer initialized", zap.Any("Kafka config", global.Config.KafkaConfig.Broker), zap.String("group_id", global.Config.KafkaConfig.GroupID), zap.String("topic", global.Config.KafkaConfig.Topic))
 
 }
 

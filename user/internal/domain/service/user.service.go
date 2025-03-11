@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/bhtoan2204/user/global"
-	"github.com/bhtoan2204/user/internal/application/command/command"
+	"github.com/bhtoan2204/user/internal/application/command_bus/command"
 	commonCommand "github.com/bhtoan2204/user/internal/application/common/command"
 	common "github.com/bhtoan2204/user/internal/application/common/query"
-	"github.com/bhtoan2204/user/internal/application/query/query"
+	"github.com/bhtoan2204/user/internal/application/query_bus/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	"github.com/bhtoan2204/user/internal/domain/interfaces"
 	repository_interface "github.com/bhtoan2204/user/internal/domain/repository/command"

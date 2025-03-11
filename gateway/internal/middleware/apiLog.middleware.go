@@ -29,7 +29,7 @@ func ApiLogMiddleware() gin.HandlerFunc {
 			zap.String("path", path),
 			zap.String("clientIP", clientIP),
 			zap.String("userAgent", userAgent),
-			zap.ByteString("requestBody", requestBody),
+			zap.Any("requestBody", requestBody),
 		)
 
 		blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
@@ -48,7 +48,7 @@ func ApiLogMiddleware() gin.HandlerFunc {
 				zap.String("path", path),
 				zap.Int("statusCode", statusCode),
 				zap.Duration("latency", latency),
-				zap.String("responseBody", responseBody),
+				zap.Any("responseBody", responseBody),
 			)
 
 		case statusCode == 400 || statusCode == 401 || statusCode == 403: // 400, 401, 403
@@ -57,7 +57,7 @@ func ApiLogMiddleware() gin.HandlerFunc {
 				zap.String("path", path),
 				zap.Int("statusCode", statusCode),
 				zap.Duration("latency", latency),
-				zap.String("responseBody", responseBody),
+				zap.Any("responseBody", responseBody),
 			)
 
 		case statusCode == 404 || statusCode == 429: // 404, 429
@@ -66,7 +66,7 @@ func ApiLogMiddleware() gin.HandlerFunc {
 				zap.String("path", path),
 				zap.Int("statusCode", statusCode),
 				zap.Duration("latency", latency),
-				zap.String("responseBody", responseBody),
+				zap.Any("responseBody", responseBody),
 			)
 
 		case statusCode >= 500: // 5xx
@@ -75,7 +75,7 @@ func ApiLogMiddleware() gin.HandlerFunc {
 				zap.String("path", path),
 				zap.Int("statusCode", statusCode),
 				zap.Duration("latency", latency),
-				zap.String("responseBody", responseBody),
+				zap.Any("responseBody", responseBody),
 			)
 		}
 	}

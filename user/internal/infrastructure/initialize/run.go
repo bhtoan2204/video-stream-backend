@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/bhtoan2204/user/global"
-	"github.com/bhtoan2204/user/internal/application/event"
+	"github.com/bhtoan2204/user/internal/application/event_bus"
 	"github.com/bhtoan2204/user/internal/application/shared"
 	"github.com/bhtoan2204/user/internal/dependency"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch"
@@ -57,7 +57,7 @@ func Run() {
 	grpc.StartGrpcServer(userContainer.UserRepository)
 
 	// Initialize event bus
-	eventBus := *event.SetUpEventBus(&shared.ListenerDependencies{
+	eventBus := *event_bus.SetUpEventBus(&shared.ListenerDependencies{
 		UserListener: userContainer.UserListener,
 	})
 

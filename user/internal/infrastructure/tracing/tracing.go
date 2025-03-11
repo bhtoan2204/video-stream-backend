@@ -3,7 +3,6 @@ package tracing
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
 	"github.com/bhtoan2204/user/global"
@@ -33,9 +32,9 @@ func InitProvider() func() {
 	)
 	handleErr(err, "failed to create resource")
 
-	otelAgentAddr, ok := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
-	if !ok {
-		otelAgentAddr = "0.0.0.0:4317"
+	otelAgentAddr := global.Config.OpentelemetryConfig.Endpoint
+	if otelAgentAddr == "" {
+		panic("otel agent address is empty")
 	}
 
 	metricExp, err := otlpmetricgrpc.New(

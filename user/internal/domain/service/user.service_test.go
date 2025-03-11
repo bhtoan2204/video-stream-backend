@@ -6,13 +6,16 @@ import (
 	"math/rand"
 	"reflect"
 	"testing"
+	"time"
 
-	"github.com/bhtoan2204/user/internal/application/command/command"
+	"github.com/bhtoan2204/user/internal/application/command_bus/command"
+	"github.com/bhtoan2204/user/internal/domain/entities"
 	"github.com/bhtoan2204/user/internal/domain/interfaces"
 	repository_interface "github.com/bhtoan2204/user/internal/domain/repository/command"
 	es_repository_interface "github.com/bhtoan2204/user/internal/domain/repository/query"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/in_memory_db"
 	repository_test "github.com/bhtoan2204/user/internal/infrastructure/db/in_memory_db/repository"
+	"github.com/bhtoan2204/user/pkg/encrypt_password"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -107,63 +110,107 @@ func TestUserService_CreateUser(t *testing.T) {
 	}
 }
 
-// func TestUserService_Login(t *testing.T) {
-// 	type fields struct {
-// 		userRepository      repository_interface.UserRepositoryInterface
-// 		esUserRepository    es_repository_interface.ESUserRepositoryInterface
-// 		refreshTokenService interfaces.RefreshTokenServiceInterface
-// 	}
-// 	type args struct {
-// 		ctx          context.Context
-// 		loginCommand *command.LoginCommand
-// 	}
+func TestUserService_Login(t *testing.T) {
+	type fields struct {
+		userRepository      repository_interface.UserRepositoryInterface
+		esUserRepository    es_repository_interface.ESUserRepositoryInterface
+		refreshTokenService interfaces.RefreshTokenServiceInterface
+	}
+	type args struct {
+		ctx          context.Context
+		loginCommand *command.LoginCommand
+	}
 
-// 	gormClient := in_memory_db.CreateTestDb()
-// 	userRepository := repository_test.NewUserRepository(gormClient)
+	gormClient := in_memory_db.CreateTestDb()
+	userRepository := repository_test.NewUserRepository(gormClient)
+	refreshTokenRepository := repository_test.NewRefreshTokenRepository(gormClient)
+	testNewRefreshTokenService := NewRefreshTokenService(refreshTokenRepository)
+	// create user for test
+	createdEmail := RandomEmail()
+	createdUsername := RandomUsername()
+	password := "Toan@12345"
+	passwordHash, _ := encrypt_password.HashPassword(password)
 
-// 	tests := []struct {
-// 		name    string
-// 		fields  fields
-// 		args    args
-// 		want    *command.LoginCommandResult
-// 		wantErr bool
-// 	}{
-// 		{
-// 			name: "Create user successfully",
-// 			fields: fields{
-// 				userRepository:      userRepository,
-// 				esUserRepository:    nil,
-// 				refreshTokenService: nil,
-// 			},
-// 			args: args{
-// 				ctx: context.Background(),
-// 				loginCommand: &command.LoginCommand{
-// 					Password: "Toan@12345",
-// 					Email:    "AxXBXgzP@example.com",
-// 				},
-// 			},
-// 			want:    nil,
-// 			wantErr: true,
-// 		},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			s := &UserService{
-// 				userRepository:      tt.fields.userRepository,
-// 				esUserRepository:    tt.fields.esUserRepository,
-// 				refreshTokenService: tt.fields.refreshTokenService,
-// 			}
-// 			got, err := s.Login(tt.args.ctx, tt.args.loginCommand)
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("UserService.Login() error = %v, wantErr %v", err, tt.wantErr)
-// 				return
-// 			}
-// 			if !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("UserService.Login() = %v, want %v", got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
+	createUserEntities := &entities.User{
+		Username:     createdUsername,
+		PasswordHash: passwordHash,
+		Email:        createdEmail,
+		Phone:        "+84971308623",
+		FirstName:    "Bray",
+		LastName:     "Drose",
+		BirthDate:    func() *time.Time { t, _ := time.Parse("2006-01-02", "2002-02-02"); return &t }(),
+		Address:      "nga 3 hoang mai thanh 3 phu tho",
+	}
+
+	_, err := userRepository.Create(context.Background(), createUserEntities)
+
+	if err != nil {
+		t.Errorf("UserService.Login() error = %v", err)
+		return
+	}
+
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *command.LoginCommandResult
+		wantErr bool
+	}{
+		{
+			name: "Create user successfully",
+			fields: fields{
+				userRepository:      userRepository,
+				esUserRepository:    nil,
+				refreshTokenService: testNewRefreshTokenService,
+			},
+			args: args{
+				ctx: context.Background(),
+				loginCommand: &command.LoginCommand{
+					Email:    createdEmail,
+					Password: password,
+				},
+			},
+			want:    &command.LoginCommandResult{},
+			wantErr: false,
+		},
+		{
+			name: "Login failed - wrong password",
+			fields: fields{
+				userRepository:      userRepository,
+				esUserRepository:    nil,
+				refreshTokenService: testNewRefreshTokenService,
+			},
+			args: args{
+				ctx: context.Background(),
+				loginCommand: &command.LoginCommand{
+					Email:    createdEmail,
+					Password: "WrongPassword123",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &UserService{
+				userRepository:      tt.fields.userRepository,
+				esUserRepository:    tt.fields.esUserRepository,
+				refreshTokenService: tt.fields.refreshTokenService,
+			}
+			got, err := s.Login(tt.args.ctx, tt.args.loginCommand)
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("UserService.Login() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if !tt.wantErr && got == nil {
+				t.Errorf("UserService.Login() expected a result but got nil")
+			}
+		})
+	}
+}
 
 // func TestUserService_Refresh(t *testing.T) {
 // 	type fields struct {

@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/bhtoan2204/user/global"
-	"github.com/bhtoan2204/user/internal/application/command"
+	"github.com/bhtoan2204/user/internal/application/command_bus"
 	"github.com/bhtoan2204/user/internal/application/controller"
-	"github.com/bhtoan2204/user/internal/application/query"
+	"github.com/bhtoan2204/user/internal/application/query_bus"
 	"github.com/bhtoan2204/user/internal/application/shared"
 	"github.com/bhtoan2204/user/internal/dependency"
 	"github.com/bhtoan2204/user/internal/domain/service"
@@ -18,41 +18,12 @@ import (
 	"go.uber.org/zap"
 )
 
-func SetupUserRoutes(api *gin.RouterGroup) {
-	refreshTokenRepository := repository.NewRefreshTokenRepository(global.MDB)
-	refreshTokenService := service.NewRefreshTokenService(refreshTokenRepository)
-	userContainer, err := dependency.BuildUserContainer()
-	if err != nil {
-		global.Logger.Fatal("Failed to build user container", zap.Error(err))
-		os.Exit(1)
-	}
-	userService := service.NewUserService(userContainer.UserRepository, userContainer.ESUserRepository, refreshTokenService)
-
-	commandBus := command.SetUpCommandBus(&shared.ServiceDependencies{
-		UserService: userService,
-	})
-	queryBus := query.SetUpQueryBus(&shared.ServiceDependencies{
-		UserService: userService,
-	})
-
+func SetupUserRoutes(api *gin.RouterGroup, commandBus *command_bus.CommandBus, queryBus *query_bus.QueryBus) {
 	userGroup := api.Group("/users")
 	controller.NewUserController(commandBus, queryBus, userGroup)
 }
 
-func SetupAuthRoutes(api *gin.RouterGroup) {
-	refreshTokenRepository := repository.NewRefreshTokenRepository(global.MDB)
-	refreshTokenService := service.NewRefreshTokenService(refreshTokenRepository)
-	userContainer, err := dependency.BuildUserContainer()
-	if err != nil {
-		global.Logger.Fatal("Failed to build user container", zap.Error(err))
-		os.Exit(1)
-	}
-	userService := service.NewUserService(userContainer.UserRepository, userContainer.ESUserRepository, refreshTokenService)
-
-	commandBus := command.SetUpCommandBus(&shared.ServiceDependencies{
-		UserService: userService,
-	})
-
+func SetupAuthRoutes(api *gin.RouterGroup, commandBus *command_bus.CommandBus, queryBus *query_bus.QueryBus) {
 	authGroup := api.Group("/auth")
 	controller.NewAuthController(commandBus, authGroup)
 }
@@ -67,7 +38,7 @@ func SetupHealthRoutes(api *gin.RouterGroup) {
 }
 
 func InitRouter() *gin.Engine {
-	ginMode := os.Getenv("GIN_MODE")
+	ginMode := global.Config.Server.GinMode
 	if ginMode == "" {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
@@ -85,11 +56,32 @@ func InitRouter() *gin.Engine {
 	r.Use(secMiddleware)
 	r.Use(otelgin.Middleware("user-service"))
 
+	userContainer, err := dependency.BuildUserContainer()
+	if err != nil {
+		global.Logger.Fatal("Failed to build user container", zap.Error(err))
+		os.Exit(1)
+	}
+	refreshTokenRepository := repository.NewRefreshTokenRepository(global.MDB)
+	refreshTokenService := service.NewRefreshTokenService(refreshTokenRepository)
+
+	userService := service.NewUserService(userContainer.UserRepository, userContainer.ESUserRepository, refreshTokenService)
+
+	userSettingRepository := repository.NewUserSettingRepository(global.MDB)
+	userSettingService := service.NewUserSettingService(userSettingRepository)
+
+	commandBus := command_bus.SetUpCommandBus(&shared.ServiceDependencies{
+		UserService:        userService,
+		UserSettingService: userSettingService,
+	})
+	queryBus := query_bus.SetUpQueryBus(&shared.ServiceDependencies{
+		UserService: userService,
+	})
+
 	apiV1 := r.Group("/api/v1/user-service")
 	{
 		SetupHealthRoutes(apiV1)
-		SetupUserRoutes(apiV1)
-		SetupAuthRoutes(apiV1)
+		SetupUserRoutes(apiV1, commandBus, queryBus)
+		SetupAuthRoutes(apiV1, commandBus, queryBus)
 	}
 	return r
 }

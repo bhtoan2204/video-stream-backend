@@ -5,7 +5,7 @@ import (
 
 	"github.com/bhtoan2204/user/global"
 	common "github.com/bhtoan2204/user/internal/application/common/event"
-	"github.com/bhtoan2204/user/internal/application/event/event"
+	"github.com/bhtoan2204/user/internal/application/event_bus/event"
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
 	eSRepository "github.com/bhtoan2204/user/internal/domain/repository/query"

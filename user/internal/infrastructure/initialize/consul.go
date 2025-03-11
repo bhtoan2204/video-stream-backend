@@ -39,7 +39,7 @@ func InitConsul() func() {
 			Method:                         "GET",
 			Interval:                       "10s",
 			Timeout:                        "5s",
-			Notes:                          "Basic health check in user service " + fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, servicePort),
+			Notes:                          "Basic health check in user service " + fmt.Sprintf("http://%s:%d/api/v1/user-service/health", serviceAddress, servicePort),
 			DeregisterCriticalServiceAfter: "1m",
 		},
 	}

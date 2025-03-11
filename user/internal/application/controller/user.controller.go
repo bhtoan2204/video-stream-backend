@@ -4,11 +4,11 @@ import (
 	"reflect"
 
 	"github.com/bhtoan2204/user/global"
-	"github.com/bhtoan2204/user/internal/application/command"
-	realCommand "github.com/bhtoan2204/user/internal/application/command/command"
+	"github.com/bhtoan2204/user/internal/application/command_bus"
+	"github.com/bhtoan2204/user/internal/application/command_bus/command"
 	"github.com/bhtoan2204/user/internal/application/middleware"
-	"github.com/bhtoan2204/user/internal/application/query"
-	realQuery "github.com/bhtoan2204/user/internal/application/query/query"
+	"github.com/bhtoan2204/user/internal/application/query_bus"
+	"github.com/bhtoan2204/user/internal/application/query_bus/query"
 	"github.com/bhtoan2204/user/internal/infrastructure/grpc/proto/user"
 	"github.com/bhtoan2204/user/pkg/response"
 	"github.com/gin-gonic/gin"
@@ -19,11 +19,11 @@ import (
 )
 
 type UserController struct {
-	commandBus *command.CommandBus
-	queryBus   *query.QueryBus
+	commandBus *command_bus.CommandBus
+	queryBus   *query_bus.QueryBus
 }
 
-func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus, r *gin.RouterGroup) *UserController {
+func NewUserController(commandBus *command_bus.CommandBus, queryBus *query_bus.QueryBus, r *gin.RouterGroup) *UserController {
 	ctrl := &UserController{
 		commandBus: commandBus,
 		queryBus:   queryBus,
@@ -48,7 +48,7 @@ func NewUserController(commandBus *command.CommandBus, queryBus *query.QueryBus,
 }
 
 func (controller *UserController) CreateUser(c *gin.Context) {
-	var command realCommand.CreateUserCommand
+	var command command.CreateUserCommand
 	ctx := c.Request.Context()
 	if err := c.ShouldBindJSON(&command); err != nil {
 		response.ErrorBadRequestResponse(c, 4000, err)
@@ -60,7 +60,7 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}
-	c.JSON(200, result)
+	response.SuccessResponse(c, 2010, result)
 }
 
 func (controller *UserController) GetUserProfile(c *gin.Context) {
@@ -78,7 +78,7 @@ func (controller *UserController) GetUserProfile(c *gin.Context) {
 		return
 	}
 
-	query := realQuery.GetUserProfileQuery{ID: userResp.Id}
+	query := query.GetUserProfileQuery{ID: userResp.Id}
 	result, err := controller.queryBus.Dispatch(c.Request.Context(), &query)
 
 	if err != nil {
@@ -86,11 +86,11 @@ func (controller *UserController) GetUserProfile(c *gin.Context) {
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}
-	c.JSON(200, result)
+	response.SuccessResponse(c, 2000, result)
 }
 
 func (controller *UserController) SearchUser(c *gin.Context) {
-	var query realQuery.SearchUserQuery
+	var query query.SearchUserQuery
 	ctx := c.Request.Context()
 	if err := c.ShouldBindQuery(&query); err != nil {
 		global.Logger.Error("Failed to bind query: ", zap.Error(err))
@@ -103,9 +103,9 @@ func (controller *UserController) SearchUser(c *gin.Context) {
 		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}
-	c.JSON(200, result)
+	response.SuccessResponse(c, 2000, result)
 }
 
 func (controller *UserController) UpdateUserProfile(c *gin.Context) {
-	c.JSON(200, nil)
+	response.SuccessResponse(c, 2000, nil)
 }

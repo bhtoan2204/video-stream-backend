@@ -214,6 +214,8 @@ func SetupAuthRoutes(api *gin.RouterGroup, instrument func(gin.HandlerFunc) gin.
 		authGroup.POST("/login", instrument(serviceProxy("user-service")))
 		authGroup.POST("/refresh", instrument(serviceProxy("user-service")))
 		authGroup.POST("/logout", instrument(serviceProxy("user-service")))
+		authGroup.GET("/2fa/setup", instrument(serviceProxy("user-service")))
+		authGroup.POST("/2fa/verify", instrument(serviceProxy("user-service")))
 	}
 }
 

@@ -26,7 +26,6 @@ func NewS3Client(ctx context.Context, bucket string, region string) (*S3Client, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to load AWS configuration: %w", err)
 	}
-	fmt.Println(cfg.Region)
 	s3Svc := s3.NewFromConfig(cfg)
 
 	return &S3Client{
@@ -80,6 +79,30 @@ func (s *S3Client) GeneratePresignedUploadURL(ctx context.Context, key string, e
 	}, s3.WithPresignExpires(expires))
 	if err != nil {
 		return "", fmt.Errorf("failed to generate presigned upload URL: %w", err)
+	}
+	return presignResult.URL, nil
+}
+
+func (s *S3Client) GeneratePresignedDownloadURL(ctx context.Context, key string, expires time.Duration) (string, error) {
+	presigner := s3.NewPresignClient(s.client)
+	presignResult, err := presigner.PresignGetObject(ctx, &s3.GetObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+	}, s3.WithPresignExpires(expires))
+	if err != nil {
+		return "", fmt.Errorf("failed to generate presigned download URL: %w", err)
+	}
+	return presignResult.URL, nil
+}
+
+func (s *S3Client) GeneratePresignedDeleteURL(ctx context.Context, key string, expires time.Duration) (string, error) {
+	presigner := s3.NewPresignClient(s.client)
+	presignResult, err := presigner.PresignDeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+	}, s3.WithPresignExpires(expires))
+	if err != nil {
+		return "", fmt.Errorf("failed to generate presigned delete URL: %w", err)
 	}
 	return presignResult.URL, nil
 }

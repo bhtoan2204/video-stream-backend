@@ -1,8 +1,8 @@
 package settings
 
 type ServerConfig struct {
-	Port int    `mapstructure:"port"`
-	Mode string `mapstructure:"mode"`
+	Mode    string `mapstructure:"mode"`
+	GinMode string `mapstructure:"gin_mode"`
 }
 
 type MySQLConfig struct {
@@ -73,6 +73,10 @@ type DebeziumConfig struct {
 	GroupID string `mapstructure:"group_id"`
 }
 
+type OpentelemetryConfig struct {
+	Endpoint string `mapstructure:"endpoint"`
+}
+
 type Config struct {
 	Server              ServerConfig        `mapstructure:"server"`
 	MySQLConfig         MySQLConfig         `mapstructure:"mysql"`
@@ -83,5 +87,6 @@ type Config struct {
 	KafkaConfig         KafkaConfig         `mapstructure:"kafka"`
 	ElasticSearchConfig ElasticSearchConfig `mapstructure:"elasticsearch"`
 	DebeziumConfig      DebeziumConfig      `mapstructure:"debezium"`
+	OpentelemetryConfig OpentelemetryConfig `mapstructure:"opentelemetry"`
 	// S3Config       S3Config       `mapstructure:"s3"`
 }

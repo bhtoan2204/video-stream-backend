@@ -3,7 +3,7 @@ package interfaces
 import (
 	"context"
 
-	"github.com/bhtoan2204/video/internal/application/command/command"
+	"github.com/bhtoan2204/video/internal/application/command_bus/command"
 )
 
 type VideoServiceInterface interface {

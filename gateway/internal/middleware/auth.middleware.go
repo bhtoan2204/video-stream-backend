@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/bhtoan2204/gateway/global"
-	"github.com/bhtoan2204/gateway/internal/redis"
 	"github.com/bhtoan2204/gateway/pkg/grpc/proto/user"
 	"github.com/bhtoan2204/gateway/pkg/response"
 
@@ -27,20 +26,20 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 			return
 		}
 		accessToken := parts[1]
-		cacheKey := "auth:user:" + accessToken
-		ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
-		defer cancel()
+		// cacheKey := "auth:user:" + accessToken
+		// ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+		// defer cancel()
 
 		var validatedUser *user.UserResponse
 
 		// Attempt to retrieve user data from Redis
-		cachedData, err := redis.GetData(ctx, cacheKey)
-		if err == nil && cachedData != "" {
-			var cachedUser user.UserResponse
-			if err := json.Unmarshal([]byte(cachedData), &cachedUser); err == nil {
-				validatedUser = &cachedUser
-			}
-		}
+		// cachedData, err := redis.GetData(ctx, cacheKey)
+		// if err == nil && cachedData != "" {
+		// 	var cachedUser user.UserResponse
+		// 	if err := json.Unmarshal([]byte(cachedData), &cachedUser); err == nil {
+		// 		validatedUser = &cachedUser
+		// 	}
+		// }
 
 		if validatedUser == nil {
 			if global.UserGRPCClient == nil {
@@ -62,9 +61,9 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 			validatedUser = usr
 
 			// Cache the validated user data
-			if userData, err := json.Marshal(validatedUser); err == nil {
-				redis.CacheData(ctx, cacheKey, string(userData), int(cacheExpiration.Seconds()))
-			}
+			// if userData, err := json.Marshal(validatedUser); err == nil {
+			// 	redis.CacheData(ctx, cacheKey, string(userData), int(cacheExpiration.Seconds()))
+			// }
 		}
 
 		userData, err := json.Marshal(validatedUser)

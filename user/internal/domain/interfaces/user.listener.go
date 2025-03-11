@@ -4,7 +4,7 @@ import (
 	"context"
 
 	common "github.com/bhtoan2204/user/internal/application/common/event"
-	"github.com/bhtoan2204/user/internal/application/event/event"
+	"github.com/bhtoan2204/user/internal/application/event_bus/event"
 )
 
 type UserListenerInterface interface {

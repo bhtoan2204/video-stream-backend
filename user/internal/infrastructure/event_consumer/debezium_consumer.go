@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/bhtoan2204/user/global"
-	"github.com/bhtoan2204/user/internal/application/event"
-	publishedEvent "github.com/bhtoan2204/user/internal/application/event/event"
+	"github.com/bhtoan2204/user/internal/application/event_bus"
+	publishedEvent "github.com/bhtoan2204/user/internal/application/event_bus/event"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql/persistent_object"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
@@ -27,10 +27,10 @@ type DebeziumMessage struct {
 
 type DebeziumConsumer struct {
 	readers  []*kafka.Reader
-	eventBus *event.EventBus
+	eventBus *event_bus.EventBus
 }
 
-func NewDebeziumConsumer(eventBus *event.EventBus) *DebeziumConsumer {
+func NewDebeziumConsumer(eventBus *event_bus.EventBus) *DebeziumConsumer {
 	topics := []string{
 		"user_database.user." + persistent_object.ActivityLog{}.TableName(),
 		"user_database.user." + persistent_object.Permission{}.TableName(),

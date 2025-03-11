@@ -19,4 +19,5 @@ type UserSettings struct {
 	Theme                Theme            `json:"theme,omitempty"`
 	NotificationsEnabled bool             `json:"notifications_enabled,omitempty"`
 	Privacy              *PrivacySettings `json:"privacy,omitempty"`
+	Is2FAEnabled         bool             `json:"is_2fa_enabled,omitempty"`
 }

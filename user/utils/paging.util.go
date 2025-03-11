@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/bhtoan2204/user/internal/application/query/query"
+import "github.com/bhtoan2204/user/internal/application/query_bus/query"
 
 func BuildPaginateResult(totalDocs int, page int, limit int) *query.PaginateResult {
 	totalPages := totalDocs / limit

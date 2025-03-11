@@ -16,7 +16,7 @@ type GormVideoRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) repository_interface.VideoRepositoryInterface {
+func NewVideoRepository(db *gorm.DB) repository_interface.VideoRepositoryInterface {
 	return &GormVideoRepository{db: db}
 }
 

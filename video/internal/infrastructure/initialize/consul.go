@@ -3,17 +3,15 @@ package initialize
 import (
 	"fmt"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/bhtoan2204/video/global"
+	"github.com/bhtoan2204/video/utils"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
 	"go.uber.org/zap"
 )
 
-func InitConsul() {
+func InitConsul() func() {
 	globalConsulConfig := global.Config.ConsulConfig
 
 	consulConfig := api.DefaultConfig()
@@ -23,21 +21,31 @@ func InitConsul() {
 	consulConfig.Token = globalConsulConfig.Token
 
 	serviceID := uuid.New().String()
-	serviceAddress := global.Listener.Addr().(*net.TCPAddr).IP.String()
 	servicePort := global.Listener.Addr().(*net.TCPAddr).Port
+	serviceAddress, err := utils.GetInternalIP()
+	if err != nil {
+		global.Logger.Error("Failed to get internal IP address:", zap.Error(err))
+		panic(err)
+	}
 
 	registration := &api.AgentServiceRegistration{
 		ID:      serviceID,
 		Name:    "video-service",
-		Address: consulConfig.Address,
-		Port:    global.Listener.Addr().(*net.TCPAddr).Port,
+		Address: serviceAddress,
+		Port:    servicePort,
 		Tags:    []string{"api", "video"},
 		Check: &api.AgentServiceCheck{
-			HTTP:     fmt.Sprintf("http://%s:%d/api/v1/health", serviceAddress, servicePort),
-			Interval: "10s",
-			Timeout:  "5s",
+			HTTP:                           fmt.Sprintf("http://%s:%d/api/v1/video-service/health", serviceAddress, servicePort),
+			Method:                         "GET",
+			Interval:                       "10s",
+			Timeout:                        "5s",
+			Notes:                          "Basic health check in video service " + fmt.Sprintf("http://%s:%d/api/v1/video-service/health", serviceAddress, servicePort),
+			DeregisterCriticalServiceAfter: "1m",
 		},
 	}
+
+	global.Logger.Info("Registering service with Consul", zap.Any("registration", registration))
+
 	consulClient, err := api.NewClient(consulConfig)
 	if err != nil {
 		// global.Logger.Error("Failed to connect to Consul:", zap.Error(err))
@@ -47,26 +55,15 @@ func InitConsul() {
 
 	err = global.ConsulClient.Agent().ServiceRegister(registration)
 	if err != nil {
-		// global.Logger.Error("Failed to register service:", zap.Error(err))
+		global.Logger.Error("Failed to register service:", zap.Error(err))
 		panic(err)
 	}
-	go handleShutdown(serviceID)
-}
 
-func handleShutdown(serviceID string) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
-	<-c
-
-	// global.Logger.Info("Shutting down service, unregistering from Consul...", zap.String("serviceID", serviceID))
-
-	err := global.ConsulClient.Agent().ServiceDeregister(serviceID)
-	if err != nil {
-		global.Logger.Error("Failed to unregister service from Consul", zap.Error(err))
-	} else {
-		global.Logger.Info("Service unregistered successfully from Consul")
+	return func() {
+		if err := global.ConsulClient.Agent().ServiceDeregister(serviceID); err != nil {
+			global.Logger.Error("Failed to deregister service", zap.Error(err))
+		} else {
+			global.Logger.Info("Service deregistered")
+		}
 	}
-
-	os.Exit(0)
 }

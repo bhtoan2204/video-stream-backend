@@ -3,9 +3,9 @@ package controller
 import (
 	"reflect"
 
-	"github.com/bhtoan2204/user/internal/application/command"
+	"github.com/bhtoan2204/user/internal/application/command_bus"
 	"github.com/bhtoan2204/user/internal/application/middleware"
-	"github.com/bhtoan2204/user/internal/application/query"
+	"github.com/bhtoan2204/user/internal/application/query_bus"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -13,11 +13,11 @@ import (
 )
 
 type UserSettingController struct {
-	commandBus *command.CommandBus
-	queryBus   *query.QueryBus
+	commandBus *command_bus.CommandBus
+	queryBus   *query_bus.QueryBus
 }
 
-func NewUserSettingController(commandBus *command.CommandBus, queryBus *query.QueryBus, r *gin.RouterGroup) *UserSettingController {
+func NewUserSettingController(commandBus *command_bus.CommandBus, queryBus *query_bus.QueryBus, r *gin.RouterGroup) *UserSettingController {
 	ctrl := &UserSettingController{
 		commandBus: commandBus,
 		queryBus:   queryBus,

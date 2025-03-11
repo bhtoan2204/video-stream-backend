@@ -19,6 +19,8 @@ type UserSettings struct {
 	Theme                Theme            `json:"theme,omitempty" gorm:"type:enum('light','dark');default:'light'"`
 	NotificationsEnabled bool             `json:"notifications_enabled,omitempty"`
 	Privacy              *PrivacySettings `json:"privacy,omitempty" gorm:"embedded"`
+	Is2FAEnabled         bool             `json:"is_2fa_enabled" gorm:"default:false"`
+	TOTPSecret           string           `json:"-" gorm:"column:totp_secret"`
 }
 
 func (UserSettings) TableName() string {

@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/bhtoan2204/video/pkg/settings"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
@@ -11,7 +12,7 @@ import (
 )
 
 type LoggerZap struct {
-	*zap.Logger
+	*otelzap.Logger
 }
 
 func getEncoderLog() zapcore.Encoder {
@@ -64,5 +65,7 @@ func NewLogger(config settings.LogConfig) *LoggerZap {
 		),
 		level,
 	)
-	return &LoggerZap{zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))}
+	zapLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+	otelLogger := otelzap.New(zapLogger)
+	return &LoggerZap{Logger: otelLogger}
 }

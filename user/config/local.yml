@@ -1,5 +1,6 @@
 server:
   mode: local
+  gin_mode: debug
 mysql:
   user: root
   pass: root
@@ -45,3 +46,5 @@ security:
   jwt_refresh_expiration: 86400 # number
 debezium:
   group_id: mysql-user-connector
+opentelemetry:
+  endpoint: localhost:4317

@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/bhtoan2204/user/global"
-	"github.com/bhtoan2204/user/internal/application/command"
-	realCommand "github.com/bhtoan2204/user/internal/application/command/command"
+	"github.com/bhtoan2204/user/internal/application/command_bus"
+	"github.com/bhtoan2204/user/internal/application/command_bus/command"
 	"github.com/bhtoan2204/user/internal/application/middleware"
 
 	"github.com/bhtoan2204/user/pkg/response"
@@ -19,10 +19,10 @@ import (
 )
 
 type AuthController struct {
-	commandBus *command.CommandBus
+	commandBus *command_bus.CommandBus
 }
 
-func NewAuthController(commandBus *command.CommandBus, r *gin.RouterGroup) *AuthController {
+func NewAuthController(commandBus *command_bus.CommandBus, r *gin.RouterGroup) *AuthController {
 	ctrl := &AuthController{
 		commandBus: commandBus,
 	}
@@ -40,12 +40,13 @@ func NewAuthController(commandBus *command.CommandBus, r *gin.RouterGroup) *Auth
 	r.POST("/login", instrument(ctrl.Login))
 	r.POST("/refresh", instrument(ctrl.RefreshNewToken))
 	r.POST("/logout", instrument(ctrl.Logout))
+	r.GET("/2fa/setup", instrument(ctrl.Setup2FA))
 
 	return ctrl
 }
 
 func (controller *AuthController) Login(c *gin.Context) {
-	var command realCommand.LoginCommand
+	var command command.LoginCommand
 	ctx := c.Request.Context()
 	if err := c.ShouldBindJSON(&command); err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
@@ -82,7 +83,7 @@ func (controller *AuthController) RefreshNewToken(c *gin.Context) {
 		response.ErrorBadRequestResponse(c, 4001, errors.New("refresh token is empty"))
 		return
 	}
-	var command realCommand.RefreshTokenCommand
+	var command command.RefreshTokenCommand
 	ctx := c.Request.Context()
 	command.RefreshToken = refreshToken
 
@@ -122,7 +123,7 @@ func (controller *AuthController) Logout(c *gin.Context) {
 		response.ErrorBadRequestResponse(c, 4001, errors.New("refresh token is empty"))
 		return
 	}
-	var command realCommand.LogoutCommand
+	var command command.LogoutCommand
 	ctx := c.Request.Context()
 	command.RefreshToken = refreshToken
 	if err := c.ShouldBindJSON(&command); err != nil {
@@ -134,6 +135,24 @@ func (controller *AuthController) Logout(c *gin.Context) {
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
 		response.ErrorBadRequestResponse(c, 4001, err.Error())
+		return
+	}
+	c.JSON(200, result)
+}
+
+func (controller *AuthController) Setup2FA(c *gin.Context) {
+	var command command.Setup2FACommand
+	ctx := c.Request.Context()
+	// if err := c.ShouldBindJSON(&command); err != nil {
+	// 	global.Logger.Error(command.CommandName(), zap.Error(err))
+	// 	response.ErrorBadRequestResponse(c, 4000, err)
+	// 	return
+	// }
+	command.UserID = "afdec9b1-b8f6-442e-8a94-46ac570c95a8"
+	result, err := controller.commandBus.Dispatch(ctx, &command)
+	if err != nil {
+		global.Logger.Error(command.CommandName(), zap.Error(err))
+		response.ErrorBadRequestResponse(c, 4000, err.Error())
 		return
 	}
 	c.JSON(200, result)

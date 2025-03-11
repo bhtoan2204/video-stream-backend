@@ -1,18 +1,21 @@
 server:
-  port: 8080
   mode: local
+  gin_mode: debug
 mysql:
-  host: localhost
-  port: 3306
   user: root
   pass: root
-  name: veeflow
+  host: localhost
+  port: 3306
+  name: video
+  parse_time: true
+  charset: utf8mb4
+  loc: UTC
   max_idle_conns: 10
   max_open_conns: 100
   max_lifetime: 3600
 log:
   log_level: debug
-  file_path: storages/logs/gateway.log
+  file_path: storages/logs/video.log
   max_size: 100
   max_backups: 3
   max_age: 28
@@ -35,3 +38,5 @@ security:
 s3:
   bucket: youtube-golang
   region: ap-southeast-1
+opentelemetry:
+  endpoint: localhost:4317

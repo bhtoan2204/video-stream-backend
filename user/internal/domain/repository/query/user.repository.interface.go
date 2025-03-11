@@ -3,7 +3,7 @@ package es_repository_interface
 import (
 	"context"
 
-	"github.com/bhtoan2204/user/internal/application/query/query"
+	"github.com/bhtoan2204/user/internal/application/query_bus/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
 )
 

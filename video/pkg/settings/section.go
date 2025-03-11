@@ -1,8 +1,8 @@
 package settings
 
 type ServerConfig struct {
-	Port int    `mapstructure:"port"`
-	Mode string `mapstructure:"mode"`
+	Mode    string `mapstructure:"mode"`
+	GinMode string `mapstructure:"gin_mode"`
 }
 
 type MySQLConfig struct {
@@ -54,12 +54,17 @@ type ConsulConfig struct {
 	Token      string `mapstructure:"token"`
 }
 
+type OpentelemetryConfig struct {
+	Endpoint string `mapstructure:"endpoint"`
+}
+
 type Config struct {
-	Server         ServerConfig   `mapstructure:"server"`
-	MySQLConfig    MySQLConfig    `mapstructure:"mysql"`
-	LogConfig      LogConfig      `mapstructure:"log"`
-	SecurityConfig SecurityConfig `mapstructure:"security"`
-	RedisConfig    RedisConfig    `mapstructure:"redis"`
-	S3Config       S3Config       `mapstructure:"s3"`
-	ConsulConfig   ConsulConfig   `mapstructure:"consul"`
+	Server              ServerConfig        `mapstructure:"server"`
+	MySQLConfig         MySQLConfig         `mapstructure:"mysql"`
+	LogConfig           LogConfig           `mapstructure:"log"`
+	SecurityConfig      SecurityConfig      `mapstructure:"security"`
+	RedisConfig         RedisConfig         `mapstructure:"redis"`
+	S3Config            S3Config            `mapstructure:"s3"`
+	ConsulConfig        ConsulConfig        `mapstructure:"consul"`
+	OpentelemetryConfig OpentelemetryConfig `mapstructure:"opentelemetry"`
 }

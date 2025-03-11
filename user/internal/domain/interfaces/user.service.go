@@ -3,9 +3,9 @@ package interfaces
 import (
 	"context"
 
-	"github.com/bhtoan2204/user/internal/application/command/command"
+	"github.com/bhtoan2204/user/internal/application/command_bus/command"
 	common "github.com/bhtoan2204/user/internal/application/common/command"
-	"github.com/bhtoan2204/user/internal/application/query/query"
+	"github.com/bhtoan2204/user/internal/application/query_bus/query"
 )
 
 type UserServiceInterface interface {

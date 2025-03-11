@@ -47,6 +47,7 @@ func (u *User) AfterCreate(tx *gorm.DB) (err error) {
 			ShowEmail:       false,
 			ShowSubscribers: true,
 		},
+		Is2FAEnabled: false,
 	}
 	if err := tx.Create(&defaultSettings).Error; err != nil {
 		return err

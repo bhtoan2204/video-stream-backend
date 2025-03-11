@@ -1,61 +1,64 @@
 package initialize
 
 import (
-	"context"
-	"log"
-	"net/http"
-	"time"
+	"net"
 
 	"github.com/bhtoan2204/video/global"
-	"github.com/bhtoan2204/video/utils"
+	"github.com/bhtoan2204/video/internal/application/command_bus"
+	"github.com/bhtoan2204/video/internal/application/controller"
+	"github.com/bhtoan2204/video/internal/application/shared"
+	"github.com/bhtoan2204/video/internal/domain/services"
+	"github.com/bhtoan2204/video/internal/infrastructure/db/mysql/repository"
+	"github.com/gin-contrib/secure"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
+func SetupVideoRoutes(api *gin.RouterGroup) {
+	videoRepository := repository.NewVideoRepository(global.MDB)
+	videoService := services.NewVideoService(videoRepository)
+
+	commandBus := command_bus.SetUpCommandBus(&shared.ServiceDependencies{
+		VideoService: videoService,
+	})
+
+	videoGroup := api.Group("/videos")
+	controller.NewVideoController(commandBus, videoGroup)
+}
+
+func SetupHealthRoutes(api *gin.RouterGroup) {
+	api.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "OK",
+			"port":    global.Listener.Addr().(*net.TCPAddr).Port,
+		})
+	})
+}
+
 func InitRouter() *gin.Engine {
-	r := gin.Default()
-	MainGroup := r.Group("/api/v1")
-	{
-		MainGroup.GET("/health", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"message": "OK",
-			})
-		})
-		MainGroup.POST("/upload", func(c *gin.Context) {
-			fileHeader, err := c.FormFile("file")
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "File is required"})
-				return
-			}
-
-			file, err := fileHeader.Open()
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Can not open file"})
-				return
-			}
-			defer file.Close()
-
-			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			defer cancel()
-
-			if err != nil {
-				log.Printf("Error: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Can not connect to S3"})
-				return
-			}
-
-			fileKey := utils.GenFileKey(fileHeader.Filename, "video")
-
-			if err = global.S3Client.UploadFile(ctx, fileKey, file); err != nil {
-				log.Printf("Error: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Upload file failed"})
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{
-				"message":  "Upload file successfully",
-				"file_key": fileKey,
-			})
-		})
+	ginMode := global.Config.Server.GinMode
+	if ginMode == "" {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(ginMode)
 	}
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+
+	secMiddleware := secure.New(secure.Config{
+		FrameDeny:          true,
+		ContentTypeNosniff: true,
+		BrowserXssFilter:   true,
+	})
+	r.Use(secMiddleware)
+	r.Use(otelgin.Middleware("video-service"))
+
+	apiV1 := r.Group("/api/v1/video-service")
+	{
+		SetupHealthRoutes(apiV1)
+		SetupVideoRoutes(apiV1)
+	}
+
 	return r
 }

@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/bhtoan2204/user/global"
-	"github.com/bhtoan2204/user/internal/application/query/query"
+	"github.com/bhtoan2204/user/internal/application/query_bus/query"
 	"github.com/bhtoan2204/user/internal/domain/entities"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/query"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch/mapper"

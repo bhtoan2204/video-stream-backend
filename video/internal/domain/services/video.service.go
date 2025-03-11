@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/bhtoan2204/video/internal/application/command/command"
+	"github.com/bhtoan2204/video/internal/application/command_bus/command"
 	repository_interface "github.com/bhtoan2204/video/internal/domain/repository/command"
 )
 
@@ -17,15 +17,18 @@ func NewVideoService(videoRepository repository_interface.VideoRepositoryInterfa
 	}
 }
 
-func UploadVideo(ctx context.Context, uploadVideoCommand *command.UploadVideoCommand) (*command.UploadVideoCommandResult, error) {
-	return nil, nil
+func (r *VideoService) UploadVideo(ctx context.Context, uploadVideoCommand *command.UploadVideoCommand) (*command.UploadVideoCommandResult, error) {
+	panic("not implemented") // TODO: Implement
 }
-func GetVideoById(ctx context.Context, getVideoByIdCommand *command.GetVideoByIdCommand) (*command.GetVideoByIdCommandResult, error) {
-	return nil, nil
+
+func (r *VideoService) GetVideoById(ctx context.Context, getVideoByIdCommand *command.GetVideoByIdCommand) (*command.GetVideoByIdCommandResult, error) {
+	panic("not implemented") // TODO: Implement
 }
-func GetVideoByUserId(ctx context.Context, getVideoByUserIdCommand *command.GetVideoByUserIdCommand) (*command.GetVideoByUserIdCommandResult, error) {
-	return nil, nil
+
+func (r *VideoService) GetVideoByUserId(ctx context.Context, getVideoByUserIdCommand *command.GetVideoByUserIdCommand) (*command.GetVideoByUserIdCommandResult, error) {
+	panic("not implemented") // TODO: Implement
 }
-func DeleteVideo(ctx context.Context, deleteVideoCommand *command.DeleteVideoCommand) (*command.DeleteVideoCommandResult, error) {
-	return nil, nil
+
+func (r *VideoService) DeleteVideo(ctx context.Context, deleteVideoCommand *command.DeleteVideoCommand) (*command.DeleteVideoCommandResult, error) {
+	panic("not implemented") // TODO: Implement
 }
