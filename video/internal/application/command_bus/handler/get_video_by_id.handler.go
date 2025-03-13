@@ -7,16 +7,16 @@ import (
 	"github.com/bhtoan2204/video/internal/domain/interfaces"
 )
 
-type GetVideoByIdCommandHandler struct {
+type GetVideoByURLCommandHandler struct {
 	videoService interfaces.VideoServiceInterface
 }
 
-func NewGetVideoByIdCommandHandler(videoService interfaces.VideoServiceInterface) *GetVideoByIdCommandHandler {
-	return &GetVideoByIdCommandHandler{
+func NewGetVideoByURLCommandHandler(videoService interfaces.VideoServiceInterface) *GetVideoByURLCommandHandler {
+	return &GetVideoByURLCommandHandler{
 		videoService: videoService,
 	}
 }
 
-func (h *GetVideoByIdCommandHandler) Handle(ctx context.Context, cmd *command.GetVideoByIdCommand) (*command.GetVideoByIdCommandResult, error) {
-	return h.videoService.GetVideoById(ctx, cmd)
+func (h *GetVideoByURLCommandHandler) Handle(ctx context.Context, cmd *command.GetVideoByURLCommand) (*command.GetVideoByURLCommandResult, error) {
+	return h.videoService.GetVideoByURL(ctx, cmd)
 }

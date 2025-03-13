@@ -1,4 +1,4 @@
-package initialize
+package websocket
 
 import (
 	"log"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/bhtoan2204/gateway/global"
+	"github.com/bhtoan2204/gateway/internal/consul"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
@@ -19,7 +20,7 @@ var upgrader = websocket.Upgrader{
 
 func ProxyWebsocketWithConsul(c *gin.Context, serviceName string, pathPrefix string) {
 	dialer := websocket.Dialer{
-		NetDialContext:   ConsulDialContext(serviceName),
+		NetDialContext:   consul.ConsulDialContext(serviceName),
 		HandshakeTimeout: 10 * time.Second,
 	}
 	targetURL, err := url.Parse("ws://" + serviceName)

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"net/http"
@@ -39,7 +40,9 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 			response.ErrorUnauthorizedResponse(c, 401)
 			return
 		}
-		c.Set("user", &userObj)
+
+		ctx := context.WithValue(c.Request.Context(), "user", &userObj)
+		c.Request = c.Request.WithContext(ctx)
 		c.Next()
 	}
 }

@@ -106,3 +106,29 @@ func (s *S3Client) GeneratePresignedDeleteURL(ctx context.Context, key string, e
 	}
 	return presignResult.URL, nil
 }
+
+func (s *S3Client) VerifyFileExists(ctx context.Context, key string) error {
+	_, err := s.client.HeadObject(ctx, &s3.HeadObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to verify file exists on S3: %w", err)
+	}
+	return nil
+}
+
+func (s *S3Client) GetFileURL(bucket, key string) string {
+	return fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, key)
+}
+
+func (s *S3Client) GetFileMetadata(ctx context.Context, key string) (*s3.HeadObjectOutput, error) {
+	output, err := s.client.HeadObject(ctx, &s3.HeadObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get file metadata from S3: %w", err)
+	}
+	return output, nil
+}

@@ -41,30 +41,30 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 		// 	}
 		// }
 
-		if validatedUser == nil {
-			if global.UserGRPCClient == nil {
-				response.ErrorInternalServerResponse(c, response.ErrorInternalServer)
-				c.Abort()
-				return
-			}
-
-			grpcCtx, grpcCancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
-			defer grpcCancel()
-
-			req := &user.ValidateUserRequest{JwtToken: accessToken}
-			usr, err := global.UserGRPCClient.ValidateUser(grpcCtx, req)
-			if err != nil {
-				response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
-				c.Abort()
-				return
-			}
-			validatedUser = usr
-
-			// Cache the validated user data
-			// if userData, err := json.Marshal(validatedUser); err == nil {
-			// 	redis.CacheData(ctx, cacheKey, string(userData), int(cacheExpiration.Seconds()))
-			// }
+		// if validatedUser != nil {
+		if global.UserGRPCClient == nil {
+			response.ErrorInternalServerResponse(c, response.ErrorInternalServer)
+			c.Abort()
+			return
 		}
+
+		grpcCtx, grpcCancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+		defer grpcCancel()
+
+		req := &user.ValidateUserRequest{JwtToken: accessToken}
+		usr, err := global.UserGRPCClient.ValidateUser(grpcCtx, req)
+		if err != nil {
+			response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
+			c.Abort()
+			return
+		}
+		validatedUser = usr
+
+		// Cache the validated user data
+		// if userData, err := json.Marshal(validatedUser); err == nil {
+		// 	redis.CacheData(ctx, cacheKey, string(userData), int(cacheExpiration.Seconds()))
+		// }
+		// }
 
 		userData, err := json.Marshal(validatedUser)
 		if err != nil {

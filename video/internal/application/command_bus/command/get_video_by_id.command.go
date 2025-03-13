@@ -1,11 +1,23 @@
 package command
 
-type GetVideoByIdCommand struct {
+import (
+	"github.com/bhtoan2204/video/internal/domain/entities"
+	"github.com/go-playground/validator"
+)
+
+type GetVideoByURLCommand struct {
+	URL string `json:"url" validate:"required"`
 }
 
-type GetVideoByIdCommandResult struct {
+type GetVideoByURLCommandResult struct {
+	Result *entities.Video `json:"result"`
 }
 
-func (*GetVideoByIdCommand) CommandName() string {
-	return "GetVideoByIdCommand"
+func (*GetVideoByURLCommand) CommandName() string {
+	return "GetVideoByURLCommand"
+}
+
+func (c *GetVideoByURLCommand) Validate() error {
+	validate := validator.New()
+	return validate.Struct(c)
 }

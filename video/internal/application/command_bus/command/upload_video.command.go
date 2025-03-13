@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/bhtoan2204/video/internal/common"
+	"github.com/bhtoan2204/video/internal/domain/entities"
 	"github.com/go-playground/validator"
 )
 
@@ -18,7 +18,7 @@ type UploadVideoCommand struct {
 }
 
 type UploadVideoCommandResult struct {
-	Result *common.UploadVideoResult `json:"result"`
+	Result *entities.Video `json:"result"`
 }
 
 func (*UploadVideoCommand) CommandName() string {

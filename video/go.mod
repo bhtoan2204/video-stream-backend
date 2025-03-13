@@ -12,6 +12,7 @@ require (
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/consul/api v1.31.1
+	github.com/hashicorp/go-uuid v1.0.3
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/spf13/viper v1.19.0

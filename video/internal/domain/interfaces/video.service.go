@@ -8,7 +8,7 @@ import (
 
 type VideoServiceInterface interface {
 	UploadVideo(ctx context.Context, uploadVideoCommand *command.UploadVideoCommand) (*command.UploadVideoCommandResult, error)
-	GetVideoById(ctx context.Context, getVideoByIdCommand *command.GetVideoByIdCommand) (*command.GetVideoByIdCommandResult, error)
+	GetVideoByURL(ctx context.Context, GetVideoByURLCommand *command.GetVideoByURLCommand) (*command.GetVideoByURLCommandResult, error)
 	GetVideoByUserId(ctx context.Context, getVideoByUserIdCommand *command.GetVideoByUserIdCommand) (*command.GetVideoByUserIdCommandResult, error)
 	DeleteVideo(ctx context.Context, deleteVideoCommand *command.DeleteVideoCommand) (*command.DeleteVideoCommandResult, error)
 }
