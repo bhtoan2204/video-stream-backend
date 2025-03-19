@@ -1,0 +1,35 @@
+server:
+  port: 8080
+  mode: development
+log:
+  log_level: debug
+  file_path: storages/logs/gateway.log
+  max_size: 100
+  max_backups: 3
+  max_age: 28
+  compress: true
+redis:
+  host: redis
+  port: 6379
+  password:
+  database: 0
+consul:
+  address: consul:8500
+  scheme: http
+  data_center: dc1
+  token:
+kafka:
+  broker: kafka
+  port: 9092
+  topic: gateway-events
+  group_id: gateway-group
+security:
+  jwt_access_secret: 8RgPPwhw6BKHRHT68vfpZpTnpWEJqRV3lUQd4QJlrs12RNiLFtk1QpvGQoB1
+  jwt_refresh_secret: ROSyJWWHgSejTAEIemaSrLT59Evc2M9AUtp4O4sVHGpIFS9rLGGEx0GPAPiV
+  jwt_access_expiration: 15m
+  jwt_refresh_expiration: 24h
+  hmac_secret: 2b1080b6192d8c0fad991c54a6a3ae3ec60cf886ae4e9d4721d73d0e37713823
+jaeger:
+  endpoint: jaeger:4317
+opentelemetry:
+  endpoint: otel-collector:4317
