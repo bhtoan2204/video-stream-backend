@@ -5,6 +5,7 @@ go 1.23.2
 require (
 	github.com/gin-contrib/secure v1.1.1
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-playground/validator/v10 v10.24.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/consul/api v1.31.1
 	github.com/natefinch/lumberjack v2.0.0+incompatible
@@ -53,7 +54,6 @@ require (
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.24.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.25.1 // indirect

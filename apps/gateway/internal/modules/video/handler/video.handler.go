@@ -15,10 +15,10 @@ import (
 // @Accept json
 // @Produce json
 // @Param video body dto.UploadVideoRequest true "Video details"
-// @Success 200 {object} dto.UploadVideoResponse
+// @Success 200 {object} response.ResponseData
 // @Failure 400 {object} response.ResponseData
 // @Failure 500 {object} response.ResponseData
-// @Router /videos [post]
+// @Router /video-service/videos [post]
 func UploadVideo(c *gin.Context) {
 	var req dto.UploadVideoRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -41,10 +41,10 @@ func UploadVideo(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param url query string true "URL"
-// @Success 200 {object} dto.GetVideoByURLResponse
+// @Success 200 {object} response.ResponseData
 // @Failure 400 {object} response.ResponseData
 // @Failure 500 {object} response.ResponseData
-// @Router /videos/url [get]
+// @Router /video-service/videos/url [get]
 func GetVideoByURL(c *gin.Context) {
 	consul.ServiceProxy("video-service")(c)
 }
@@ -56,10 +56,10 @@ func GetVideoByURL(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param url query string true "URL"
-// @Success 200 {object} dto.GetPresignedURLResponse
+// @Success 200 {object} response.ResponseData
 // @Failure 400 {object} response.ResponseData
 // @Failure 500 {object} response.ResponseData
-// @Router /videos/presigned-url [get]
+// @Router /video-service/videos/presigned-url [get]
 func GetPresignedURL(c *gin.Context) {
 	consul.ServiceProxy("video-service")(c)
 }

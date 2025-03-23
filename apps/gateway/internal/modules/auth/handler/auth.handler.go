@@ -14,9 +14,9 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        request body dto.LoginRequest true "Login Request"
-// @Success      200  {object}  response.SuccessResponse
+// @Success      200  {object}  response.ResponseData
 // @Failure      400  {object}  response.ResponseData
-// @Router       /auth/login [post]
+// @Router       /user-service/auth/login [post]
 func Login(c *gin.Context) {
 	var request dto.LoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -39,9 +39,9 @@ func Login(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request body dto.RefreshTokenRequest true "Refresh Token Request"
-// @Success      200  {object}  response.SuccessResponse
+// @Success      200  {object}  response.ResponseData
 // @Failure      400  {object}  response.ResponseData
-// @Router       /auth/refresh [post]
+// @Router       /user-service/auth/refresh [post]
 func RefreshToken(c *gin.Context) {
 	var request dto.RefreshTokenRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -64,9 +64,9 @@ func RefreshToken(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request body dto.LogoutRequest true "Logout Request"
-// @Success      200  {object}  response.SuccessResponse
+// @Success      200  {object}  response.ResponseData
 // @Failure      400  {object}  response.ResponseData
-// @Router       /auth/logout [post]
+// @Router       /user-service/auth/logout [post]
 func Logout(c *gin.Context) {
 	var request dto.LogoutRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -88,10 +88,9 @@ func Logout(c *gin.Context) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        request body dto.Setup2FARequest true "Setup 2FA Request"
-// @Success      200  {object}  response.SuccessResponse
+// @Success      200  {object}  response.ResponseData
 // @Failure      400  {object}  response.ResponseData
-// @Router       /auth/2fa/setup [post]
+// @Router       /user-service/auth/2fa/setup [post]
 func Setup2FA(c *gin.Context) {
 	consul.ServiceProxy("user-service")(c)
 }
@@ -102,6 +101,9 @@ func Setup2FA(c *gin.Context) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
+// @Success      200  {object}  response.ResponseData
+// @Failure      400  {object}  response.ResponseData
+// @Router       /user-service/auth/2fa/verify [post]
 func Verify2FA(c *gin.Context) {
 	consul.ServiceProxy("user-service")(c)
 }

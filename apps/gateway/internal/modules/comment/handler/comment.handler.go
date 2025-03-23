@@ -15,7 +15,7 @@ import (
 // @Produce      json
 // @Security     BearerAuth
 // @Param        request body dto.CreateCommentRequest true "Create Comment Request"
-// @Success      201  {object}  response.SuccessResponse
+// @Success      201  {object}  response.ResponseData
 // @Failure      400  {object}  response.ResponseData
 // @Failure      401  {object}  response.ResponseData
 // @Router       /comment-service/comments [post]

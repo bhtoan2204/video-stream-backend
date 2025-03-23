@@ -14,7 +14,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        user  body      dto.CreateUserRequest  true  "User details"
-// @Success      201   {object}  dto.CreateUserResponse
+// @Success      201   {object}  response.ResponseData
 // @Failure      400   {object}  response.ResponseData
 // @Failure      500   {object}  response.ResponseData
 // @Router       /user-service/users [post]
@@ -40,7 +40,7 @@ func CreateUser(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        user  body      dto.UpdateProfileRequest  true  "User details"
-// @Success      200   {object}  dto.UpdateProfileResponse
+// @Success      200   {object}  response.ResponseData
 // @Failure      400   {object}  response.ResponseData
 // @Failure      500   {object}  response.ResponseData
 // @Router       /user-service/users [put]
@@ -70,7 +70,7 @@ func UpdateUser(c *gin.Context) {
 // @Param        limit          query     int     false  "Limit"
 // @Param        sort_by        query     string  false  "Sort by"
 // @Param        sort_direction query     string  false  "Sort direction"
-// @Success      200 {object} dto.SearchUserResponse
+// @Success      200 {object} response.ResponseData
 // @Failure      400 {object} response.ResponseData
 // @Failure      500 {object} response.ResponseData
 // @Router       /user-service/users/search [get]
@@ -89,10 +89,10 @@ func GetUserProfile(c *gin.Context) {
 // @Param limit query int false "Limit"
 // @Param sort_by query string false "Sort by"
 // @Param sort_direction query string false "Sort direction"
-// @Success 200 {object} dto.SearchUserResponse
+// @Success 200 {object} response.ResponseData
 // @Failure 400 {object} response.ResponseData
 // @Failure 500 {object} response.ResponseData
-// @Router /users/search [get]
+// @Router /user-service/users/search [get]
 func SearchUser(c *gin.Context) {
 	var req dto.SearchUserRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
