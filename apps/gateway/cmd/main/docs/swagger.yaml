@@ -1,4 +1,15 @@
+basePath: /api/v1
+host: localhost:8080
 info:
-  contact: {}
+  contact:
+    email: banhhaotoan2002@gmail.com
+    name: Banh Hao Toan
+  description: This is the API Gateway service for YouTube Clone project
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Gateway Service API
+  version: "1.0"
 paths: {}
 swagger: "2.0"

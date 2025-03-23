@@ -50,16 +50,16 @@ func (controller *AuthController) Login(c *gin.Context) {
 	ctx := c.Request.Context()
 	if err := c.ShouldBindJSON(&command); err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err)
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
 	result, err := controller.commandBus.Dispatch(ctx, &command)
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err.Error())
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err.Error())
 		return
 	}
-	c.JSON(200, result)
+	response.SuccessResponse(c, 2000, result)
 }
 
 func (controller *AuthController) RefreshNewToken(c *gin.Context) {
@@ -98,8 +98,7 @@ func (controller *AuthController) RefreshNewToken(c *gin.Context) {
 		response.ErrorBadRequestResponse(c, 4001, err.Error())
 		return
 	}
-
-	c.JSON(200, result)
+	response.SuccessResponse(c, 2000, result)
 }
 
 func (controller *AuthController) Logout(c *gin.Context) {
@@ -137,7 +136,7 @@ func (controller *AuthController) Logout(c *gin.Context) {
 		response.ErrorBadRequestResponse(c, 4001, err.Error())
 		return
 	}
-	c.JSON(200, result)
+	response.SuccessResponse(c, 2000, result)
 }
 
 func (controller *AuthController) Setup2FA(c *gin.Context) {
@@ -145,15 +144,15 @@ func (controller *AuthController) Setup2FA(c *gin.Context) {
 	ctx := c.Request.Context()
 	// if err := c.ShouldBindJSON(&command); err != nil {
 	// 	global.Logger.Error(command.CommandName(), zap.Error(err))
-	// 	response.ErrorBadRequestResponse(c, 4000, err)
+	// 	response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 	// 	return
 	// }
 	command.UserID = "afdec9b1-b8f6-442e-8a94-46ac570c95a8"
 	result, err := controller.commandBus.Dispatch(ctx, &command)
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err.Error())
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err.Error())
 		return
 	}
-	c.JSON(200, result)
+	response.SuccessResponse(c, 2000, result)
 }

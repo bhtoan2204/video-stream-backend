@@ -7,7 +7,7 @@ import (
 	"github.com/bhtoan2204/user/global"
 	repository "github.com/bhtoan2204/user/internal/domain/repository/command"
 	"github.com/bhtoan2204/user/internal/infrastructure/grpc/proto/user"
-	service_server "github.com/bhtoan2204/user/internal/infrastructure/service_server"
+	service_server "github.com/bhtoan2204/user/internal/infrastructure/grpc/service_server"
 	"github.com/bhtoan2204/user/utils"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"

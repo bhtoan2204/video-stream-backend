@@ -292,3 +292,38 @@ func (s *UserService) Logout(ctx context.Context, logoutCommand *command.LogoutC
 		Success: true,
 	}, nil
 }
+
+func (s *UserService) UpdateUser(ctx context.Context, updateUserCommand *command.UpdateUserCommand) (*command.UpdateUserCommandResult, error) {
+	if err := updateUserCommand.Validate(); err != nil {
+		return nil, err
+	}
+
+	user, err := s.userRepository.FindOneByQuery(ctx,
+		&utils.QueryOptions{
+			Filters: map[string]interface{}{
+				"id": updateUserCommand.ID,
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	user.FirstName = updateUserCommand.FirstName
+	user.LastName = updateUserCommand.LastName
+	user.Phone = updateUserCommand.Phone
+	user.Address = updateUserCommand.Address
+	birthDate, err := time.Parse("2006-01-02", updateUserCommand.BirthDate)
+	if err != nil {
+		return nil, err
+	}
+	user.BirthDate = &birthDate
+	user.Avatar = updateUserCommand.Avatar
+
+	err = s.userRepository.UpdateOne(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &command.UpdateUserCommandResult{Success: true}, nil
+}

@@ -26,6 +26,7 @@ type User struct {
 	Address      string        `json:"address,omitempty"`
 	PasswordHash string        `json:"password_hash" gorm:"not null"`
 	PinCode      string        `json:"pin_code,omitempty"`
+	Avatar       string        `json:"avatar,omitempty"`
 	Status       Status        `json:"status" gorm:"default:1"` // Default to Active
 	Roles        []*Role       `json:"roles" gorm:"many2many:user_roles;"`
 	Settings     *UserSettings `json:"settings,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;"`

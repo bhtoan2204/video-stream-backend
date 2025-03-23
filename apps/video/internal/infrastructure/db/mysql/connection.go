@@ -20,6 +20,7 @@ func migrateTables() {
 		&persistent_object.Playlist{},
 		&persistent_object.UserVideoMetadata{},
 		&persistent_object.VideoMetadata{},
+		&persistent_object.Tag{},
 		&persistent_object.Video{},
 	}
 	err := global.MDB.AutoMigrate(models...)

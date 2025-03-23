@@ -25,8 +25,6 @@ func testScript() {
 }
 
 func InitDB() {
-	global.Logger.Info("Connecting to Scylla: ", zap.Any("config", global.Config.ScyllaConfig))
-
 	cluster := gocql.NewCluster(global.Config.ScyllaConfig.Host)
 	cluster.Port = global.Config.ScyllaConfig.Port
 	cluster.Consistency = gocql.Quorum
@@ -46,7 +44,8 @@ func InitDB() {
 	err = tempSession.Query(fmt.Sprintf(`
 	CREATE KEYSPACE IF NOT EXISTS %s 
 	WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
-`, global.Config.ScyllaConfig.Keyspace)).Exec()
+	`, global.Config.ScyllaConfig.Keyspace)).Exec()
+
 	if err != nil {
 		global.Logger.Error("Failed to create keyspace", zap.Error(err))
 		panic(err)

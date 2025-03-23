@@ -1,10 +1,7 @@
 package router
 
 import (
-	"net/http"
-
 	"github.com/bhtoan2204/gateway/global"
-	"github.com/bhtoan2204/gateway/internal/consul"
 	"github.com/bhtoan2204/gateway/internal/middleware"
 	"github.com/bhtoan2204/gateway/internal/websocket"
 	"github.com/gin-contrib/secure"
@@ -17,6 +14,13 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	authRouter "github.com/bhtoan2204/gateway/internal/modules/auth/router"
+	commentRouter "github.com/bhtoan2204/gateway/internal/modules/comment/router"
+	userRouter "github.com/bhtoan2204/gateway/internal/modules/user/router"
+	videoRouter "github.com/bhtoan2204/gateway/internal/modules/video/router"
 )
 
 func NewInstrumentedHandler(counter metric.Int64Counter, commonLabels []attribute.KeyValue) func(gin.HandlerFunc) gin.HandlerFunc {
@@ -51,6 +55,7 @@ func InitRouter() *gin.Engine {
 	}
 
 	r.RedirectTrailingSlash = false
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	secMiddleware := secure.New(secure.Config{
 		FrameDeny:          true,
@@ -69,7 +74,9 @@ func InitRouter() *gin.Engine {
 	rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
 	r.Use(middleware.RateLimitMiddleware(rl))
 	r.Use(middleware.ApiLogMiddleware())
-	r.Use(middleware.HMACMiddleware())
+	if global.Config.Server.Mode != "local" {
+		r.Use(middleware.HMACMiddleware())
+	}
 
 	meter := otel.Meter("gateway-server-meter")
 	serverAttribute := attribute.String("controller", "gateway")
@@ -82,10 +89,10 @@ func InitRouter() *gin.Engine {
 
 	apiV1 := r.Group("/api/v1")
 	{
-		SetupHealthRoutes(apiV1)
-		SetupUserRoutes(apiV1, instrument)
-		SetupAuthRoutes(apiV1, instrument)
-		SetupVideoRoutes(apiV1)
+		userRouter.SetupUserRoutes(apiV1, instrument)
+		authRouter.SetupAuthRoutes(apiV1, instrument)
+		videoRouter.SetupVideoRoutes(apiV1, instrument)
+		commentRouter.SetupCommentRoutes(apiV1, instrument)
 	}
 
 	wsGroup := r.Group("/ws")
@@ -100,42 +107,4 @@ func InitRouter() *gin.Engine {
 
 	global.Logger.Info("Router initialized successfully")
 	return r
-}
-
-func SetupHealthRoutes(api *gin.RouterGroup) {
-	api.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "OK",
-		})
-	})
-}
-
-func SetupUserRoutes(api *gin.RouterGroup, instrument func(gin.HandlerFunc) gin.HandlerFunc) {
-	userGroup := api.Group("/user-service/users")
-	{
-		userGroup.GET("", middleware.AuthenticationMiddleware(), instrument(consul.ServiceProxy("user-service")))
-		userGroup.PUT("", middleware.AuthenticationMiddleware(), instrument(consul.ServiceProxy("user-service")))
-		userGroup.POST("", instrument(consul.ServiceProxy("user-service")))
-		userGroup.GET("/search", instrument(consul.ServiceProxy("user-service")))
-	}
-}
-
-func SetupAuthRoutes(api *gin.RouterGroup, instrument func(gin.HandlerFunc) gin.HandlerFunc) {
-	authGroup := api.Group("/user-service/auth")
-	{
-		authGroup.POST("/login", instrument(consul.ServiceProxy("user-service")))
-		authGroup.POST("/refresh", instrument(consul.ServiceProxy("user-service")))
-		authGroup.POST("/logout", instrument(consul.ServiceProxy("user-service")))
-		authGroup.GET("/2fa/setup", instrument(consul.ServiceProxy("user-service")))
-		authGroup.POST("/2fa/verify", instrument(consul.ServiceProxy("user-service")))
-	}
-}
-
-func SetupVideoRoutes(api *gin.RouterGroup) {
-	videoGroup := api.Group("/video-service/videos")
-	{
-		videoGroup.GET("/:url", consul.ServiceProxy("video-service"))
-		videoGroup.POST("", middleware.AuthenticationMiddleware(), consul.ServiceProxy("video-service"))
-		videoGroup.GET("/presigned_url", middleware.AuthenticationMiddleware(), consul.ServiceProxy("video-service"))
-	}
 }

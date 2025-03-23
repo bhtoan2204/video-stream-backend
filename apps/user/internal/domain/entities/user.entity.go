@@ -23,6 +23,7 @@ type User struct {
 	BirthDate    *time.Time `json:"birth_date,omitempty"`
 	Address      string     `json:"address,omitempty"`
 	PasswordHash string     `json:"password_hash"`
+	Avatar       string     `json:"avatar,omitempty"`
 	PinCode      string     `json:"pin_code,omitempty"`
 	Status       Status     `json:"status"` // Default to Active
 	Roles        []*Role    `json:"roles,omitempty"`

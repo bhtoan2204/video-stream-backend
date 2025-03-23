@@ -40,7 +40,7 @@ func NewUserController(commandBus *command_bus.CommandBus, queryBus *query_bus.Q
 	instrument := middleware.NewInstrumentedHandler(requestCount, commonLabels)
 	// Command
 	r.POST("", instrument(ctrl.CreateUser))
-	r.PUT("", instrument(ctrl.UpdateUserProfile))
+	r.PUT("", middleware.AuthenticationMiddleware(), instrument(ctrl.UpdateUserProfile))
 	// Query
 	r.GET("", middleware.AuthenticationMiddleware(), instrument(ctrl.GetUserProfile))
 	r.GET("/search", instrument(ctrl.SearchUser))
@@ -51,13 +51,13 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 	var command command.CreateUserCommand
 	ctx := c.Request.Context()
 	if err := c.ShouldBindJSON(&command); err != nil {
-		response.ErrorBadRequestResponse(c, 4000, err)
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
 	result, err := controller.commandBus.Dispatch(ctx, &command)
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err.Error())
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err.Error())
 		return
 	}
 	response.SuccessResponse(c, 2010, result)
@@ -83,7 +83,7 @@ func (controller *UserController) GetUserProfile(c *gin.Context) {
 
 	if err != nil {
 		global.Logger.Error(query.QueryName(), zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err.Error())
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err.Error())
 		return
 	}
 	response.SuccessResponse(c, 2000, result)
@@ -94,18 +94,43 @@ func (controller *UserController) SearchUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	if err := c.ShouldBindQuery(&query); err != nil {
 		global.Logger.Error("Failed to bind query: ", zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err)
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
 	result, err := controller.queryBus.Dispatch(ctx, &query)
 	if err != nil {
 		global.Logger.Error(query.QueryName(), zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err.Error())
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err.Error())
 		return
 	}
 	response.SuccessResponse(c, 2000, result)
 }
 
 func (controller *UserController) UpdateUserProfile(c *gin.Context) {
-	response.SuccessResponse(c, 2000, nil)
+	var command command.UpdateUserCommand
+	if err := c.ShouldBindJSON(&command); err != nil {
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
+		return
+	}
+	ctx := c.Request.Context()
+	userVal, exists := c.Get("user")
+	if !exists {
+		global.Logger.Error("User data not found in context")
+		response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
+		return
+	}
+	userResp, ok := userVal.(*user.UserResponse)
+	if !ok || userResp.Id == "" {
+		global.Logger.Error("Invalid user data in context")
+		response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
+		return
+	}
+	command.ID = userResp.Id
+	result, err := controller.commandBus.Dispatch(ctx, &command)
+	if err != nil {
+		global.Logger.Error(command.CommandName(), zap.Error(err))
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err.Error())
+		return
+	}
+	response.SuccessResponse(c, 2000, result)
 }

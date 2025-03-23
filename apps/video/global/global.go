@@ -15,14 +15,15 @@ import (
 )
 
 var (
-	Listener      net.Listener
-	Config        settings.Config
-	Logger        *logger.LoggerZap
-	Redis         *redis.Client
-	ConsulClient  *api.Client
-	MDB           *gorm.DB
-	S3Client      *third_party.S3Client
-	ScyllaSession *gocql.Session
-	KafkaProducer *kafka.Writer
-	KafkaConsumer *kafka.Reader
+	Listener         net.Listener
+	Config           settings.Config
+	Logger           *logger.LoggerZap
+	Redis            *redis.Client
+	ConsulClient     *api.Client
+	MDB              *gorm.DB
+	S3Client         *third_party.S3Client
+	ScyllaSession    *gocql.Session
+	KafkaProducer    *kafka.Writer
+	KafkaConsumer    *kafka.Reader
+	GrpcConsulClient *api.Client
 )

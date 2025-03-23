@@ -51,20 +51,20 @@ func HMACMiddleware() gin.HandlerFunc {
 		nonce := c.GetHeader("X-Nonce")
 
 		if signature == "" || timestamp == "" || nonce == "" {
-			response.ErrorBadRequestResponse(c, 4000, "Missing required headers (X-Signature, X-Timestamp, X-Nonce)")
+			response.ErrorBadRequestResponse(c, response.ErrorBadRequest, "Missing required headers (X-Signature, X-Timestamp, X-Nonce)")
 			c.Abort()
 			return
 		}
 
 		reqTime, err := time.Parse(time.RFC3339, timestamp)
 		if err != nil || time.Since(reqTime) > NonceTTL {
-			response.ErrorBadRequestResponse(c, 4000, "Invalid or expired X-Timestamp header")
+			response.ErrorBadRequestResponse(c, response.ErrorBadRequest, "Invalid or expired X-Timestamp header")
 			c.Abort()
 			return
 		}
 
 		if !ValidateNonce(nonce) {
-			response.ErrorBadRequestResponse(c, 4000, "Invalid or expired X-Nonce header")
+			response.ErrorBadRequestResponse(c, response.ErrorBadRequest, "Invalid or expired X-Nonce header")
 			c.Abort()
 			return
 		}
@@ -72,7 +72,7 @@ func HMACMiddleware() gin.HandlerFunc {
 		expectedSignature := GenerateHMACSignature(timestamp + nonce)
 
 		if signature != expectedSignature {
-			response.ErrorBadRequestResponse(c, 4000, "Invalid X-Signature header")
+			response.ErrorBadRequestResponse(c, response.ErrorBadRequest, "Invalid X-Signature header")
 			c.Abort()
 			return
 		}

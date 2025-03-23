@@ -25,6 +25,7 @@ type User struct {
 	BirthDate    *time.Time    `json:"birth_date,omitempty"`
 	Address      string        `json:"address,omitempty"`
 	PasswordHash string        `json:"password_hash" gorm:"not null"`
+	Avatar       string        `json:"avatar,omitempty"`
 	PinCode      string        `json:"pin_code,omitempty"`
 	Status       Status        `json:"status" gorm:"default:1"` // Default to Active
 	Roles        []*Role       `json:"roles" gorm:"many2many:user_roles;"`

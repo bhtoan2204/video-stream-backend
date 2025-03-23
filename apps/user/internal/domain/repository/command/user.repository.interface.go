@@ -11,4 +11,5 @@ type UserRepositoryInterface interface {
 	Create(ctx context.Context, user *entities.User) (*entities.User, error)
 	FindOneByQuery(ctx context.Context, query *utils.QueryOptions) (*entities.User, error)
 	FindByQuery(ctx context.Context, query *utils.QueryOptions) ([]entities.User, error)
+	UpdateOne(ctx context.Context, user *entities.User) error
 }

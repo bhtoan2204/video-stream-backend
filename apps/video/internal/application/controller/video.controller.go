@@ -64,13 +64,13 @@ func (controller *VideoController) UploadVideo(c *gin.Context) {
 	var command command.UploadVideoCommand
 	ctx := c.Request.Context()
 	if err := c.ShouldBindJSON(&command); err != nil {
-		response.ErrorBadRequestResponse(c, 4000, err)
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
 	fileMetadata, err := global.S3Client.GetFileMetadata(c.Request.Context(), command.FileKey)
 	if err != nil {
 		global.Logger.Error("Failed to get file metadata", zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err)
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
 
@@ -81,7 +81,7 @@ func (controller *VideoController) UploadVideo(c *gin.Context) {
 	result, err := controller.commandBus.Dispatch(ctx, &command)
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err.Error())
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err.Error())
 		return
 	}
 	response.SuccessResponse(c, 2010, result)
@@ -106,13 +106,13 @@ func (controller *VideoController) GetPresignedURL(c *gin.Context) {
 	presignedDownloadUrl, err := global.S3Client.GeneratePresignedDownloadURL(c.Request.Context(), key, 15*time.Minute)
 	if err != nil {
 		global.Logger.Error("Failed to generate presigned URL", zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err)
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
 	presignedUploadUrl, err := global.S3Client.GeneratePresignedUploadURL(c.Request.Context(), key, 15*time.Minute)
 	if err != nil {
 		global.Logger.Error("Failed to generate presigned URL", zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err)
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
 	response.SuccessResponse(c, 2000, gin.H{
@@ -129,7 +129,7 @@ func (controller *VideoController) GetVideoByURL(c *gin.Context) {
 	result, err := controller.commandBus.Dispatch(ctx, &command)
 	if err != nil {
 		global.Logger.Error(command.CommandName(), zap.Error(err))
-		response.ErrorBadRequestResponse(c, 4000, err.Error())
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err.Error())
 		return
 	}
 	response.SuccessResponse(c, 2000, result)

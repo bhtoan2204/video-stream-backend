@@ -92,3 +92,8 @@ func (r *GormUserRepository) FindOneByQuery(ctx context.Context, q *utils.QueryO
 	userEntity := mapper_test.UserModelToEntity(userModel)
 	return &userEntity, nil
 }
+
+func (r *GormUserRepository) UpdateOne(ctx context.Context, user *entities.User) error {
+	userModel := mapper_test.UserEntityToModel(*user)
+	return r.db.WithContext(ctx).Model(&model_test.User{}).Where("id = ?", user.ID).Updates(userModel).Error
+}
