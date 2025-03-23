@@ -10,6 +10,7 @@ import (
 	"github.com/bhtoan2204/user/internal/infrastructure/db/elasticsearch"
 	"github.com/bhtoan2204/user/internal/infrastructure/db/mysql"
 	"github.com/bhtoan2204/user/internal/infrastructure/grpc"
+	"github.com/bhtoan2204/user/internal/infrastructure/hystrix"
 	"github.com/bhtoan2204/user/internal/infrastructure/kafka"
 	"github.com/bhtoan2204/user/internal/infrastructure/task_queue"
 	"github.com/bhtoan2204/user/internal/infrastructure/tracing"
@@ -65,6 +66,8 @@ func Run() {
 	debezium := NewDebezium(eventBus)
 	debeziumConsumer := debezium.Start()
 	defer debeziumConsumer.Close()
+
+	hystrix.InitHystrix()
 
 	r := InitRouter()
 	if err := r.RunListener(global.Listener); err != nil {
