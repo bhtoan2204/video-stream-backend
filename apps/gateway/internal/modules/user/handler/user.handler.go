@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"net/url"
 
 	"github.com/bhtoan2204/gateway/internal/consul"
 	"github.com/bhtoan2204/gateway/internal/modules/user/dto"
@@ -107,25 +106,25 @@ func GetUserProfile(c *gin.Context) {
 // @Failure 500 {object} response.ResponseData
 // @Router /user-service/users/search [get]
 func SearchUser(c *gin.Context) {
-	var buf bytes.Buffer
-	tee := io.TeeReader(c.Request.URL.Query(), &buf)
+	// var buf bytes.Buffer
+	// tee := io.TeeReader(c.Request.URL.Query(), &buf)
 
-	var req dto.SearchUserRequest
-	if err := json.NewDecoder(tee).Decode(&req); err != nil {
-		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
-		return
-	}
+	// var req dto.SearchUserRequest
+	// if err := json.NewDecoder(tee).Decode(&req); err != nil {
+	// 	response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
+	// 	return
+	// }
 
-	if err := req.Validate(); err != nil {
-		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
-		return
-	}
+	// if err := req.Validate(); err != nil {
+	// 	response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
+	// 	return
+	// }
 
-	req.SetDefaults()
+	// req.SetDefaults()
 
-	c.Request.URL = &url.URL{
-		Path:     c.Request.URL.Path,
-		RawQuery: buf.String(),
-	}
+	// c.Request.URL = &url.URL{
+	// 	Path:     c.Request.URL.Path,
+	// 	RawQuery: buf.String(),
+	// }
 	consul.ServiceProxy("user-service")(c)
 }
