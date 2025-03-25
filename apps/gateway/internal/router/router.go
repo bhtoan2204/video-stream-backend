@@ -11,7 +11,6 @@ import (
 	"go.opentelemetry.io/otel/baggage"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
-	"golang.org/x/time/rate"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -69,10 +68,12 @@ func InitRouter() *gin.Engine {
 	r.Use(middleware.CORSMiddleware())
 
 	// Rate limiter
-	requestsPerSecond := rate.Limit(50)
-	burstSize := 10
-	rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
-	r.Use(middleware.RateLimitMiddleware(rl))
+	// requestsPerSecond := rate.Limit(50)
+	// burstSize := 10
+	// rl := middleware.NewRateLimiter(requestsPerSecond, burstSize)
+	// r.Use(middleware.RateLimitMiddleware(rl))
+
+	// Log middleware
 	r.Use(middleware.ApiLogMiddleware())
 	if global.Config.Server.Mode != "local" {
 		r.Use(middleware.HMACMiddleware())

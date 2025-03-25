@@ -114,6 +114,11 @@ func ServiceProxy(serviceName string) gin.HandlerFunc {
 			response.ErrorInternalServerResponse(c, http.StatusInternalServerError)
 			return
 		}
+
+		proxy.ErrorHandler = func(rw http.ResponseWriter, req *http.Request, err error) {
+			global.Logger.Error("Reverse proxy error", zap.Error(err))
+			http.Error(rw, "Bad Gateway", http.StatusBadGateway)
+		}
 		proxy.ServeHTTP(c.Writer, c.Request)
 	}
 }

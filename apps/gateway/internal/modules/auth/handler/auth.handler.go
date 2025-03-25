@@ -1,6 +1,10 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
+
 	"github.com/bhtoan2204/gateway/internal/consul"
 	"github.com/bhtoan2204/gateway/internal/modules/auth/dto"
 	"github.com/bhtoan2204/gateway/pkg/response"
@@ -18,17 +22,19 @@ import (
 // @Failure      400  {object}  response.ResponseData
 // @Router       /user-service/auth/login [post]
 func Login(c *gin.Context) {
-	var request dto.LoginRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var buf bytes.Buffer
+	tee := io.TeeReader(c.Request.Body, &buf)
+
+	var req dto.LoginRequest
+	if err := json.NewDecoder(tee).Decode(&req); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
-
-	if err := request.Validate(); err != nil {
+	if err := req.Validate(); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
-
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(buf.Bytes()))
 	consul.ServiceProxy("user-service")(c)
 }
 
@@ -43,17 +49,20 @@ func Login(c *gin.Context) {
 // @Failure      400  {object}  response.ResponseData
 // @Router       /user-service/auth/refresh [post]
 func RefreshToken(c *gin.Context) {
-	var request dto.RefreshTokenRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var buf bytes.Buffer
+	tee := io.TeeReader(c.Request.Body, &buf)
+
+	var req dto.RefreshTokenRequest
+	if err := json.NewDecoder(tee).Decode(&req); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
 
-	if err := request.Validate(); err != nil {
+	if err := req.Validate(); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
-
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(buf.Bytes()))
 	consul.ServiceProxy("user-service")(c)
 }
 
@@ -68,17 +77,20 @@ func RefreshToken(c *gin.Context) {
 // @Failure      400  {object}  response.ResponseData
 // @Router       /user-service/auth/logout [post]
 func Logout(c *gin.Context) {
-	var request dto.LogoutRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var buf bytes.Buffer
+	tee := io.TeeReader(c.Request.Body, &buf)
+
+	var req dto.LogoutRequest
+	if err := json.NewDecoder(tee).Decode(&req); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
 
-	if err := request.Validate(); err != nil {
+	if err := req.Validate(); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
-
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(buf.Bytes()))
 	consul.ServiceProxy("user-service")(c)
 }
 

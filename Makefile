@@ -62,4 +62,25 @@ build-video:
 	@echo "Building Video Service"
 	@cd apps/video && go build -o video-service ./cmd/main/main.go
 
-.PHONY: run-gateway run-user run-video run-comment run-gateway-dev run-user-dev run-video-dev run-worker run-worker-dev test-gateway test-user test-video test-comment build-gateway build-user build-video
+run-k6:
+	@echo "Running K6"
+	@cd testing && k6 run login-test.js
+
+.PHONY: \
+	run-gateway \
+	run-user \
+	run-video \
+	run-comment \
+	run-gateway-dev \
+	run-user-dev \
+	run-video-dev \
+	run-worker \
+	run-worker-dev \
+	test-gateway \
+	test-user \
+	test-video \
+	test-comment \
+	build-gateway \
+	build-user \
+	build-video \
+	run-k6

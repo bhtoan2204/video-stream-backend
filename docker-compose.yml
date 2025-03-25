@@ -174,33 +174,41 @@ services:
       - VALUE_CONVERTER_SCHEMAS_ENABLE=false
     restart: always
 
-  scylla-node1:
+  # scylla-node1:
+  #   image: scylladb/scylla:latest
+  #   container_name: scylla-node1
+  #   command: --smp 1 --memory 750M --overprovisioned 1
+  #   ports:
+  #     - "9042:9042" # CQL Port
+  #     - "9160:9160" # Thrift API
+  #   volumes:
+  #     - scylla_data1:/var/lib/scylla
+
+  # scylla-node2:
+  #   image: scylladb/scylla:latest
+  #   container_name: scylla-node2
+  #   command: --smp 1 --memory 750M --overprovisioned 1 --seeds=scylla-node1
+  #   depends_on:
+  #     - scylla-node1
+  #   volumes:
+  #     - scylla_data2:/var/lib/scylla
+
+  # scylla-node3:
+  #   image: scylladb/scylla:latest
+  #   container_name: scylla-node3
+  #   command: --smp 1 --memory 750M --overprovisioned 1 --seeds=scylla-node1
+  #   depends_on:
+  #     - scylla-node1
+  #   volumes:
+  #     - scylla_data3:/var/lib/scylla
+
+  scylla:
     image: scylladb/scylla:latest
-    container_name: scylla-node1
-    command: --smp 1 --memory 750M --overprovisioned 1
     ports:
-      - "9042:9042" # CQL Port
-      - "9160:9160" # Thrift API
+      - "9042:9042"
+      - "9160:9160"
     volumes:
-      - scylla_data1:/var/lib/scylla
-
-  scylla-node2:
-    image: scylladb/scylla:latest
-    container_name: scylla-node2
-    command: --smp 1 --memory 750M --overprovisioned 1 --seeds=scylla-node1
-    depends_on:
-      - scylla-node1
-    volumes:
-      - scylla_data2:/var/lib/scylla
-
-  scylla-node3:
-    image: scylladb/scylla:latest
-    container_name: scylla-node3
-    command: --smp 1 --memory 750M --overprovisioned 1 --seeds=scylla-node1
-    depends_on:
-      - scylla-node1
-    volumes:
-      - scylla_data3:/var/lib/scylla
+      - scylla_data:/var/lib/scylla
 
   # Use this in the future: https://github.com/EventStore/EventStore
   event-store:
@@ -231,5 +239,6 @@ volumes:
   scylla_data1:
   scylla_data2:
   scylla_data3:
+  scylla_data:
   eventstore-volume-data:
   eventstore-volume-logs:

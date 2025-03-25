@@ -9,7 +9,7 @@ type Email struct {
 	value string
 }
 
-var emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+var emailRegex = regexp.MustCompile(`^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,4}$`)
 
 func NewEmail(email string) (*Email, error) {
 	if !emailRegex.MatchString(email) {

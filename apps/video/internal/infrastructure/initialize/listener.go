@@ -9,7 +9,7 @@ import (
 )
 
 func InitListener() {
-	listener, err := net.Listen("tcp", ":0")
+	listener, err := net.Listen("tcp", ":1111")
 	if err != nil {
 		global.Logger.Error("Failed to allocate port", zap.Error(err))
 		os.Exit(1)

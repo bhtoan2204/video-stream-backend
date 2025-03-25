@@ -6,7 +6,9 @@ import (
 	"github.com/bhtoan2204/video/global"
 	"github.com/bhtoan2204/video/internal/infrastructure/db/mysql"
 	"github.com/bhtoan2204/video/internal/infrastructure/db/mysql/repository"
+	"github.com/bhtoan2204/video/internal/infrastructure/db/scylla"
 	"github.com/bhtoan2204/video/internal/infrastructure/grpc"
+	"github.com/bhtoan2204/video/internal/infrastructure/redis"
 	"github.com/bhtoan2204/video/internal/infrastructure/tracing"
 )
 
@@ -15,14 +17,16 @@ func Run() {
 	InitLogger()
 	InitListener()
 
+	redis.InitRedis()
+
 	deregisterService := InitConsul()
 	defer deregisterService()
 
 	mysql.InitDB()
 	defer mysql.CloseDB()
 
-	// scylla.InitDB()
-	// defer scylla.CloseDB()
+	scylla.InitDB()
+	defer scylla.CloseDB()
 
 	InitStorageService()
 

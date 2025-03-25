@@ -1,6 +1,10 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
+
 	"github.com/bhtoan2204/gateway/internal/consul"
 	"github.com/bhtoan2204/gateway/internal/modules/comment/dto"
 	"github.com/bhtoan2204/gateway/pkg/response"
@@ -20,8 +24,11 @@ import (
 // @Failure      401  {object}  response.ResponseData
 // @Router       /comment-service/comments [post]
 func CreateComment(c *gin.Context) {
+	var buf bytes.Buffer
+	tee := io.TeeReader(c.Request.Body, &buf)
+
 	var req dto.CreateCommentRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := json.NewDecoder(tee).Decode(&req); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
@@ -30,7 +37,6 @@ func CreateComment(c *gin.Context) {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
-
-	// Proxy call to comment-service
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(buf.Bytes()))
 	consul.ServiceProxy("comment-service")(c)
 }

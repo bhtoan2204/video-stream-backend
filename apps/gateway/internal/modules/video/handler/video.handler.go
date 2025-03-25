@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
 	"net/http"
 
 	"github.com/bhtoan2204/gateway/internal/consul"
@@ -20,8 +23,11 @@ import (
 // @Failure 500 {object} response.ResponseData
 // @Router /video-service/videos [post]
 func UploadVideo(c *gin.Context) {
+	var buf bytes.Buffer
+	tee := io.TeeReader(c.Request.Body, &buf)
+
 	var req dto.UploadVideoRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := json.NewDecoder(tee).Decode(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -31,6 +37,7 @@ func UploadVideo(c *gin.Context) {
 		return
 	}
 
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(buf.Bytes()))
 	consul.ServiceProxy("video-service")(c)
 }
 
@@ -49,7 +56,7 @@ func GetVideoByURL(c *gin.Context) {
 	consul.ServiceProxy("video-service")(c)
 }
 
-// GetPresignedURL godoc
+// GetPresignedURLUpload godoc
 // @Summary Get a presigned URL
 // @Description Get a presigned URL
 // @Tags video
@@ -60,6 +67,21 @@ func GetVideoByURL(c *gin.Context) {
 // @Failure 400 {object} response.ResponseData
 // @Failure 500 {object} response.ResponseData
 // @Router /video-service/videos/presigned-url [get]
-func GetPresignedURL(c *gin.Context) {
+func GetPresignedURLUpload(c *gin.Context) {
+	consul.ServiceProxy("video-service")(c)
+}
+
+// GetPresignedURLDownload godoc
+// @Summary Get a presigned URL
+// @Description Get a presigned URL
+// @Tags video
+// @Accept json
+// @Produce json
+// @Param url query string true "URL"
+// @Success 200 {object} response.ResponseData
+// @Failure 400 {object} response.ResponseData
+// @Failure 500 {object} response.ResponseData
+// @Router /video-service/videos/presigned-url/download [get]
+func GetPresignedURLDownload(c *gin.Context) {
 	consul.ServiceProxy("video-service")(c)
 }

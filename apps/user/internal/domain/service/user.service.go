@@ -97,10 +97,15 @@ func (s *UserService) Login(ctx context.Context, loginCommand *command.LoginComm
 		return nil, err
 	}
 
+	email, err := value_object.NewEmail(loginCommand.Email)
+	if err != nil {
+		return nil, err
+	}
+
 	user, err := s.userRepository.FindOneByQuery(ctx,
 		&utils.QueryOptions{
 			Filters: map[string]interface{}{
-				"email": loginCommand.Email,
+				"email": email.Value(),
 			},
 		},
 	)

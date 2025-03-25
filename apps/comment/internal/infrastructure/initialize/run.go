@@ -6,6 +6,7 @@ import (
 	"github.com/bhtoan2204/comment/global"
 	"github.com/bhtoan2204/comment/internal/infrastructure/db/mysql"
 	"github.com/bhtoan2204/comment/internal/infrastructure/grpc/client"
+	"github.com/bhtoan2204/comment/internal/infrastructure/hystrix"
 	"github.com/bhtoan2204/comment/internal/infrastructure/tracing"
 )
 
@@ -25,6 +26,8 @@ func Run() {
 	defer tracerShutdown()
 
 	client.InitVideoGRPCClient()
+
+	hystrix.InitHystrix()
 
 	r := InitRouter()
 	if err := r.RunListener(global.Listener); err != nil {

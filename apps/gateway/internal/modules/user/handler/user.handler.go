@@ -1,6 +1,11 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"net/url"
+
 	"github.com/bhtoan2204/gateway/internal/consul"
 	"github.com/bhtoan2204/gateway/internal/modules/user/dto"
 	"github.com/bhtoan2204/gateway/pkg/response"
@@ -19,8 +24,11 @@ import (
 // @Failure      500   {object}  response.ResponseData
 // @Router       /user-service/users [post]
 func CreateUser(c *gin.Context) {
+	var buf bytes.Buffer
+	tee := io.TeeReader(c.Request.Body, &buf)
+
 	var req dto.CreateUserRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := json.NewDecoder(tee).Decode(&req); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
@@ -30,6 +38,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(buf.Bytes()))
 	consul.ServiceProxy("user-service")(c)
 }
 
@@ -45,8 +54,11 @@ func CreateUser(c *gin.Context) {
 // @Failure      500   {object}  response.ResponseData
 // @Router       /user-service/users [put]
 func UpdateUser(c *gin.Context) {
+	var buf bytes.Buffer
+	tee := io.TeeReader(c.Request.Body, &buf)
+
 	var req dto.UpdateProfileRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := json.NewDecoder(tee).Decode(&req); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
@@ -56,6 +68,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(buf.Bytes()))
 	consul.ServiceProxy("user-service")(c)
 }
 
@@ -94,8 +107,11 @@ func GetUserProfile(c *gin.Context) {
 // @Failure 500 {object} response.ResponseData
 // @Router /user-service/users/search [get]
 func SearchUser(c *gin.Context) {
+	var buf bytes.Buffer
+	tee := io.TeeReader(c.Request.URL.Query(), &buf)
+
 	var req dto.SearchUserRequest
-	if err := c.ShouldBindQuery(&req); err != nil {
+	if err := json.NewDecoder(tee).Decode(&req); err != nil {
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
 		return
 	}
@@ -107,5 +123,9 @@ func SearchUser(c *gin.Context) {
 
 	req.SetDefaults()
 
+	c.Request.URL = &url.URL{
+		Path:     c.Request.URL.Path,
+		RawQuery: buf.String(),
+	}
 	consul.ServiceProxy("user-service")(c)
 }

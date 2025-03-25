@@ -13,7 +13,7 @@ func SetUpCommandBus(deps *shared.ServiceDependencies) *CommandBus {
 
 	deleteVideoHandler := handler.NewDeleteVideoCommandHandler(deps.VideoService)
 	createVideoHandler := handler.NewUploadVideoCommandHandler(deps.VideoService)
-	GetVideoByURLHandler := handler.NewGetVideoByURLCommandHandler(deps.VideoService)
+	getVideoByURLHandler := handler.NewGetVideoByURLCommandHandler(deps.VideoService)
 	getVideoByUserIdHandler := handler.NewGetVideoByUserIdCommandHandler(deps.VideoService)
 
 	bus.RegisterHandler("DeleteVideoCommand", func(ctx context.Context, cmd Command) (interface{}, error) {
@@ -23,7 +23,7 @@ func SetUpCommandBus(deps *shared.ServiceDependencies) *CommandBus {
 		return createVideoHandler.Handle(ctx, cmd.(*command.UploadVideoCommand))
 	})
 	bus.RegisterHandler("GetVideoByURLCommand", func(ctx context.Context, cmd Command) (interface{}, error) {
-		return GetVideoByURLHandler.Handle(ctx, cmd.(*command.GetVideoByURLCommand))
+		return getVideoByURLHandler.Handle(ctx, cmd.(*command.GetVideoByURLCommand))
 	})
 	bus.RegisterHandler("GetVideoByUserIdCommand", func(ctx context.Context, cmd Command) (interface{}, error) {
 		return getVideoByUserIdHandler.Handle(ctx, cmd.(*command.GetVideoByUserIdCommand))
