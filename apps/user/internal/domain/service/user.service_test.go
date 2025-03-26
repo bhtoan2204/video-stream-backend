@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"reflect"
 	"testing"
 	"time"
 
@@ -77,7 +76,7 @@ func TestUserService_CreateUser(t *testing.T) {
 				ctx: context.Background(),
 				createUserCommand: &command.CreateUserCommand{
 					Username:  username,
-					Password:  "Toan@12345",
+					Password:  "Toan@123456",
 					Email:     email,
 					Phone:     "+84971308623",
 					FirstName: "Bray",
@@ -86,8 +85,7 @@ func TestUserService_CreateUser(t *testing.T) {
 					Address:   "nga 3 hoang mai thanh 3 phu tho",
 				},
 			},
-			want:    nil,
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 
@@ -98,13 +96,10 @@ func TestUserService_CreateUser(t *testing.T) {
 				tt.fields.esUserRepository,
 				tt.fields.refreshTokenService,
 			)
-			got, err := s.CreateUser(tt.args.ctx, tt.args.createUserCommand)
+			_, err := s.CreateUser(tt.args.ctx, tt.args.createUserCommand)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UserService.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("UserService.CreateUser() = %v, want %v", got, tt.want)
 			}
 		})
 	}

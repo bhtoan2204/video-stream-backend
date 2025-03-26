@@ -48,23 +48,22 @@ func seedRolesAndPermissions(db *gorm.DB) {
 	var commentPost, commentDelete, likeVideo, reportContent persistent_object_test.Permission
 	var viewAnalytics, manageReports, userBan, userEdit persistent_object_test.Permission
 
-	db.Where("name = ?", "video_upload").First(&videoUpload)
-	db.Where("name = ?", "video_edit").First(&videoEdit)
-	db.Where("name = ?", "video_delete").First(&videoDelete)
-	db.Where("name = ?", "video_publish").First(&videoPublish)
-	db.Where("name = ?", "channel_create").First(&channelCreate)
-	db.Where("name = ?", "channel_edit").First(&channelEdit)
-	db.Where("name = ?", "channel_delete").First(&channelDelete)
-	db.Where("name = ?", "comment_post").First(&commentPost)
-	db.Where("name = ?", "comment_delete").First(&commentDelete)
-	db.Where("name = ?", "like_video").First(&likeVideo)
-	db.Where("name = ?", "report_content").First(&reportContent)
-	db.Where("name = ?", "view_analytics").First(&viewAnalytics)
-	db.Where("name = ?", "manage_reports").First(&manageReports)
-	db.Where("name = ?", "user_ban").First(&userBan)
-	db.Where("name = ?", "user_edit").First(&userEdit)
+	// db.Where("name = ?", "video_upload").First(&videoUpload)
+	// db.Where("name = ?", "video_edit").First(&videoEdit)
+	// db.Where("name = ?", "video_delete").First(&videoDelete)
+	// db.Where("name = ?", "video_publish").First(&videoPublish)
+	// db.Where("name = ?", "channel_create").First(&channelCreate)
+	// db.Where("name = ?", "channel_edit").First(&channelEdit)
+	// db.Where("name = ?", "channel_delete").First(&channelDelete)
+	// db.Where("name = ?", "comment_post").First(&commentPost)
+	// db.Where("name = ?", "comment_delete").First(&commentDelete)
+	// db.Where("name = ?", "like_video").First(&likeVideo)
+	// db.Where("name = ?", "report_content").First(&reportContent)
+	// db.Where("name = ?", "view_analytics").First(&viewAnalytics)
+	// db.Where("name = ?", "manage_reports").First(&manageReports)
+	// db.Where("name = ?", "user_ban").First(&userBan)
+	// db.Where("name = ?", "user_edit").First(&userEdit)
 
-	// Định nghĩa các Role mặc định
 	roles := []persistent_object_test.Role{
 		{
 			Name: "admin",
@@ -126,11 +125,22 @@ func CreateTestDb() *gorm.DB {
 		&persistent_object_test.UserSettings{},
 		&persistent_object_test.RefreshToken{},
 	}
+
+	// Auto migrate tables
 	err = db.AutoMigrate(models...)
 	if err != nil {
 		fmt.Printf("Failed to migrate tables: %v", err)
 		panic(err)
 	}
+
+	// Verify tables are created
+	for _, model := range models {
+		if !db.Migrator().HasTable(model) {
+			panic(fmt.Sprintf("Table for %T was not created", model))
+		}
+	}
+
+	// Seed data only after tables are confirmed to exist
 	seedRolesAndPermissions(db)
 	return db
 }

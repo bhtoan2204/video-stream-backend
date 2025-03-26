@@ -4,11 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"strconv"
 
+	"github.com/bhtoan2204/gateway/global"
 	"github.com/bhtoan2204/gateway/internal/consul"
 	"github.com/bhtoan2204/gateway/internal/modules/user/dto"
 	"github.com/bhtoan2204/gateway/pkg/response"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 // CreateUser godoc
@@ -106,25 +109,34 @@ func GetUserProfile(c *gin.Context) {
 // @Failure 500 {object} response.ResponseData
 // @Router /user-service/users/search [get]
 func SearchUser(c *gin.Context) {
-	// var buf bytes.Buffer
-	// tee := io.TeeReader(c.Request.URL.Query(), &buf)
+	// Log query parameters
+	queryParams := c.Request.URL.Query()
+	for key, values := range queryParams {
+		global.Logger.Info("Query parameter",
+			zap.String("key", key),
+			zap.Strings("values", values))
+	}
 
-	// var req dto.SearchUserRequest
-	// if err := json.NewDecoder(tee).Decode(&req); err != nil {
-	// 	response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
-	// 	return
-	// }
+	// Parse page and limit
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
-	// if err := req.Validate(); err != nil {
-	// 	response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
-	// 	return
-	// }
+	// Create request from query parameters
+	req := dto.SearchUserRequest{
+		Query:         c.Query("query"),
+		Page:          page,
+		Limit:         limit,
+		SortBy:        c.Query("sort_by"),
+		SortDirection: c.Query("sort_direction"),
+	}
 
-	// req.SetDefaults()
+	if err := req.Validate(); err != nil {
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
+		return
+	}
 
-	// c.Request.URL = &url.URL{
-	// 	Path:     c.Request.URL.Path,
-	// 	RawQuery: buf.String(),
-	// }
+	req.SetDefaults()
+
+	// Forward request to user service
 	consul.ServiceProxy("user-service")(c)
 }
