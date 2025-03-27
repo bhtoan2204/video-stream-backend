@@ -104,7 +104,7 @@ func (controller *VideoController) GetPresignedURLDownload(c *gin.Context) {
 	}
 	key := "dbe2d01d-0610-455d-a542-914643a205fb/videos/20250325151518.mp4"
 
-	presignedDownloadUrl, err := global.S3Client.GeneratePresignedDownloadURL(c.Request.Context(), key, 15*time.Minute)
+	presignedDownloadUrl, err := global.S3Client.GeneratePresignedDownloadURL(c.Request.Context(), key, 100*time.Hour)
 	if err != nil {
 		global.Logger.Error("Failed to generate presigned URL", zap.Error(err))
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
@@ -128,7 +128,7 @@ func (controller *VideoController) GetPresignedURLUpload(c *gin.Context) {
 		return
 	}
 	key := userResp.Id + "/" + "videos" + "/" + time.Now().Format("20060102150405") + ".mp4"
-	presignedUploadUrl, err := global.S3Client.GeneratePresignedUploadURL(c.Request.Context(), key, 15*time.Minute)
+	presignedUploadUrl, err := global.S3Client.GeneratePresignedUploadURL(c.Request.Context(), key, 100*time.Hour)
 	if err != nil {
 		global.Logger.Error("Failed to generate presigned URL", zap.Error(err))
 		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, err)
