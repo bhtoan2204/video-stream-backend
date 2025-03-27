@@ -1,7 +1,6 @@
 package initialize
 
 import (
-	"context"
 	"log"
 	"strconv"
 
@@ -9,7 +8,6 @@ import (
 	"github.com/bhtoan2204/worker/internal/handler"
 	loadconfig "github.com/bhtoan2204/worker/internal/loadConfig"
 	"github.com/bhtoan2204/worker/internal/logger"
-	"github.com/bhtoan2204/worker/internal/payload"
 	"github.com/bhtoan2204/worker/internal/storage"
 	"github.com/bhtoan2204/worker/internal/tasks"
 	"github.com/bhtoan2204/worker/internal/tracing"
@@ -40,11 +38,6 @@ func Run() {
 	mux.HandleFunc(tasks.TypeEmailDelivery, handler.HandleEmailDeliveryTask)
 	mux.HandleFunc(tasks.TypeImageResize, handler.HandleImageResizeTask)
 	mux.HandleFunc(tasks.TypeVideoTranscoding, handler.HandleVideoTranscodingTask)
-
-	// test resize
-	handler.TestHandleVideoTranscodingTask(context.Background(), payload.VideoTranscodingPayload{
-		ObjectKey: "dbe2d01d-0610-455d-a542-914643a205fb/videos/20250327113229.mp4",
-	})
 
 	if err := srv.Run(mux); err != nil {
 		log.Fatalf("could not run server: %v", err)
