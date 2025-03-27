@@ -8,6 +8,7 @@ import (
 	"github.com/bhtoan2204/video/internal/domain/entities"
 	repository_interface "github.com/bhtoan2204/video/internal/domain/repository/command"
 	"github.com/bhtoan2204/video/internal/infrastructure/db/mysql/mapper"
+	"github.com/bhtoan2204/video/internal/infrastructure/db/mysql/model"
 	"github.com/bhtoan2204/video/utils"
 	"gorm.io/gorm"
 )
@@ -23,7 +24,7 @@ func NewVideoRepository(db *gorm.DB) repository_interface.VideoRepositoryInterfa
 func (g *GormVideoRepository) CreateOne(ctx context.Context, video *entities.Video) (*entities.Video, error) {
 	videoModel := mapper.VideoEntityToModel(video)
 	err := g.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		execution := g.db.Create(&videoModel)
+		execution := tx.Create(&videoModel)
 		if execution.Error != nil {
 			return execution.Error
 		}
@@ -45,7 +46,7 @@ func (g *GormVideoRepository) DeleteOne(ctx context.Context, q *utils.QueryOptio
 	now := time.Now()
 	dbQuery := BuildDbQuery(g.db, q)
 	err := g.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := dbQuery.First(&entities.Video{}).Update("deleted_at", now).Error; err != nil {
+		if err := dbQuery.Model(&model.Video{}).First(&model.Video{}).Update("deleted_at", now).Error; err != nil {
 			return err
 		}
 		return nil
@@ -60,28 +61,34 @@ func (g *GormVideoRepository) DeleteOne(ctx context.Context, q *utils.QueryOptio
 
 func (g *GormVideoRepository) FindAll(ctx context.Context, q *utils.QueryOptions) ([]entities.Video, error) {
 	dbQuery := BuildDbQuery(g.db, q)
-	var videos []entities.Video
+	var videos []model.Video
 	err := dbQuery.WithContext(ctx).Find(&videos).Error
 	if err != nil {
 		return nil, err
 	}
-	return videos, nil
+
+	var result []entities.Video
+	for _, video := range videos {
+		result = append(result, *mapper.VideoModelToEntity(&video))
+	}
+	return result, nil
 }
 
 func (g *GormVideoRepository) FindOne(ctx context.Context, q *utils.QueryOptions) (*entities.Video, error) {
 	dbQuery := BuildDbQuery(g.db, q)
-	var video entities.Video
+	var video model.Video
 	err := dbQuery.WithContext(ctx).First(&video).Error
 	if err != nil {
 		return nil, err
 	}
-	return &video, nil
+	return mapper.VideoModelToEntity(&video), nil
 }
 
 func (g *GormVideoRepository) UpdateOne(ctx context.Context, q *utils.QueryOptions, video *entities.Video) (*entities.Video, error) {
 	dbQuery := BuildDbQuery(g.db, q)
+	videoModel := mapper.VideoEntityToModel(video)
 	err := g.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := dbQuery.First(&entities.Video{}).Updates(video).Error; err != nil {
+		if err := dbQuery.Model(&model.Video{}).First(&model.Video{}).Updates(videoModel).Error; err != nil {
 			return err
 		}
 		return nil

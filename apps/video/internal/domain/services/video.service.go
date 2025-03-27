@@ -11,6 +11,7 @@ import (
 	"github.com/bhtoan2204/video/internal/infrastructure/grpc/proto/user"
 	"github.com/bhtoan2204/video/utils"
 	"github.com/hashicorp/go-uuid"
+	"go.uber.org/zap"
 )
 
 type VideoService struct {
@@ -44,6 +45,7 @@ func (r *VideoService) UploadVideo(ctx context.Context, cmd *command.UploadVideo
 	}
 	video, err := r.videoRepository.CreateOne(ctx, videoEntities)
 	if err != nil {
+		global.Logger.Error("Failed to create video", zap.Error(err))
 		return nil, err
 	}
 	return &command.UploadVideoCommandResult{

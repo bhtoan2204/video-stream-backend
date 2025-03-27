@@ -15,7 +15,7 @@ type UploadVideoRequest struct {
 	Description  string `json:"description"`
 	IsPublic     bool   `json:"is_public"`
 	IsSearchable bool   `json:"is_searchable"`
-	UploadedUser string `json:"uploaded_user" validate:"required"`
+	// UploadedUser string `json:"uploaded_user" validate:"required"`
 }
 
 func (c *UploadVideoRequest) Validate() error {
