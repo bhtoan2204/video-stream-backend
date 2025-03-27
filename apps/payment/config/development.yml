@@ -1,0 +1,45 @@
+server:
+  mode: development
+  gin_mode: release
+mysql:
+  user: root
+  pass: root
+  host: mysql
+  port: 3306
+  name: user
+  parse_time: true
+  charset: utf8mb4
+  loc: UTC
+  max_idle_conns: 10
+  max_open_conns: 100
+  max_lifetime: 3600
+log:
+  log_level: debug
+  file_path: storages/logs/user.log
+  max_size: 100
+  max_backups: 3
+  max_age: 28
+  compress: true
+redis:
+  host: redis
+  port: 6379
+  password:
+  database: 0
+consul:
+  address: consul:8500
+  scheme: http
+  data_center: dc1
+  token:
+kafka:
+  broker: kafka
+  port: 29092
+  topic: user-events
+  group_id: user-group
+elasticsearch:
+  address: http://elastic:9200
+  username: elastic
+  password: changeme
+debezium:
+  group_id: mysql-payment-connector
+opentelemetry:
+  endpoint: otel-collector:4317

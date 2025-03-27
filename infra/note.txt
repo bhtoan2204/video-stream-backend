@@ -1,0 +1,3 @@
+This repository contains my infra as code setup. 
+Since my server doesn't stay live for long, 
+I use this repo to store and share mine so others can view or reuse as needed

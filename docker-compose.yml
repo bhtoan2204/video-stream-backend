@@ -23,63 +23,6 @@ services:
     depends_on:
       - zookeeper
 
-  # mysql1:
-  #   image: mysql:latest
-  #   container_name: mysql1
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: rootpass
-  #   ports:
-  #     - "33061:3306"
-  #   volumes:
-  #     - ./mysql1.cnf:/etc/mysql/conf.d/mysql.cnf
-  #   command:
-  #     - "--server-id=1"
-  #     - "--log-bin=mysql-bin"
-  #     - "--binlog-format=ROW"
-  #     - "--gtid_mode=ON"
-  #     - "--enforce_gtid_consistency=ON"
-  #     - "--group_replication_start_on_boot=OFF"
-  #     - "--group_replication_local_address=mysql1:33061"
-  #     - "--group_replication_group_seeds=mysql1:33061,mysql2:33061,mysql3:33061"
-
-  # mysql2:
-  #   image: mysql:latest
-  #   container_name: mysql2
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: rootpass
-  #   ports:
-  #     - "33062:3306"
-  #   volumes:
-  #     - ./mysql2.cnf:/etc/mysql/conf.d/mysql.cnf
-  #   command:
-  #     - "--server-id=2"
-  #     - "--log-bin=mysql-bin"
-  #     - "--binlog-format=ROW"
-  #     - "--gtid_mode=ON"
-  #     - "--enforce_gtid_consistency=ON"
-  #     - "--group_replication_start_on_boot=OFF"
-  #     - "--group_replication_local_address=mysql2:33061"
-  #     - "--group_replication_group_seeds=mysql1:33061,mysql2:33061,mysql3:33061"
-
-  # mysql3:
-  #   image: mysql:latest
-  #   container_name: mysql3
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: rootpass
-  #   ports:
-  #     - "33063:3306"
-  #   volumes:
-  #     - ./mysql3.cnf:/etc/mysql/conf.d/mysql.cnf
-  #   command:
-  #     - "--server-id=3"
-  #     - "--log-bin=mysql-bin"
-  #     - "--binlog-format=ROW"
-  #     - "--gtid_mode=ON"
-  #     - "--enforce_gtid_consistency=ON"
-  #     - "--group_replication_start_on_boot=OFF"
-  #     - "--group_replication_local_address=mysql3:33061"
-  #     - "--group_replication_group_seeds=mysql1:33061,mysql2:33061,mysql3:33061"
-
   mysql:
     image: mysql:latest
     ports:
@@ -89,21 +32,6 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --server-id=184054 --log-bin=mysql-bin --binlog-format=ROW
-
-  # mysql-router:
-  #   image: mysql/mysql-router:latest
-  #   container_name: mysql-router
-  #   depends_on:
-  #     - mysql1
-  #     - mysql2
-  #     - mysql3
-  #   ports:
-  #     - "7001:7001"
-  #     - "7002:7002"
-  #   volumes:
-  #     - ./router-config:/etc/mysqlrouter
-  #   command: >
-  #     --bootstrap root@mysql1:3306 --user=mysqlrouter --directory=/etc/mysqlrouter
 
   redis:
     image: redis:latest
@@ -119,24 +47,13 @@ services:
     volumes:
       - ./config:/consul/config
 
-  prometheus:
-    image: prom/prometheus:latest
-    restart: always
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-
-  # qdrant:
-  #   image: qdrant/qdrant:latest
-  #   container_name: qdrant
-  #   ports:
-  #     - "6333:6333"
-  #   volumes:
-  #     - qdrant_data:/qdrant/storage
-  #   environment:
-  #     - QDRANT_LOG_LEVEL=info
+  # prometheus:
+  #   image: prom/prometheus:latest
   #   restart: always
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #   ports:
+  #     - "9090:9090"
 
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -152,13 +69,13 @@ services:
     #   - JAEGER_SAMPLER_PARAM=1
     #   - JAEGER_AGENT_HOST=jaeger
 
-  zipkin:
-    image: openzipkin/zipkin:latest
-    environment:
-      - JAVA_OPTS=-Xms1024m -Xmx1024m -XX:+ExitOnOutOfMemoryError
-    restart: always
-    ports:
-      - "9411:9411"
+  # zipkin:
+  #   image: openzipkin/zipkin:latest
+  #   environment:
+  #     - JAVA_OPTS=-Xms1024m -Xmx1024m -XX:+ExitOnOutOfMemoryError
+  #   restart: always
+  #   ports:
+  #     - "9411:9411"
 
   otel-collector:
     image: otel/opentelemetry-collector:0.120.0
@@ -175,11 +92,11 @@ services:
       - "55679:55679" # zpages extension
     depends_on:
       - jaeger
-      - zipkin
+      # - zipkin
 
   gateway:
     build:
-      context: ./gateway
+      context: ./apps/gateway
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
@@ -189,7 +106,7 @@ services:
 
   user:
     build:
-      context: ./user
+      context: ./apps/user
       dockerfile: Dockerfile
     environment:
       - GO_ENV=development
@@ -197,7 +114,7 @@ services:
 
   video:
     build:
-      context: ./video
+      context: ./apps/video
       dockerfile: Dockerfile
     environment:
       - GO_ENV=development
@@ -205,7 +122,7 @@ services:
 
   gateway-dev:
     build:
-      context: ./gateway
+      context: ./apps/gateway
       dockerfile: Dockerfile-dev
     ports:
       - "8080:8080"
@@ -217,7 +134,7 @@ services:
 
   user-dev:
     build:
-      context: ./user
+      context: ./apps/user
       dockerfile: Dockerfile-dev
     environment:
       - GO_ENV=development
@@ -257,10 +174,61 @@ services:
       - VALUE_CONVERTER_SCHEMAS_ENABLE=false
     restart: always
 
-  sqlite:
-    image: sqlite:latest
+  # scylla-node1:
+  #   image: scylladb/scylla:latest
+  #   container_name: scylla-node1
+  #   command: --smp 1 --memory 750M --overprovisioned 1
+  #   ports:
+  #     - "9042:9042" # CQL Port
+  #     - "9160:9160" # Thrift API
+  #   volumes:
+  #     - scylla_data1:/var/lib/scylla
+
+  # scylla-node2:
+  #   image: scylladb/scylla:latest
+  #   container_name: scylla-node2
+  #   command: --smp 1 --memory 750M --overprovisioned 1 --seeds=scylla-node1
+  #   depends_on:
+  #     - scylla-node1
+  #   volumes:
+  #     - scylla_data2:/var/lib/scylla
+
+  # scylla-node3:
+  #   image: scylladb/scylla:latest
+  #   container_name: scylla-node3
+  #   command: --smp 1 --memory 750M --overprovisioned 1 --seeds=scylla-node1
+  #   depends_on:
+  #     - scylla-node1
+  #   volumes:
+  #     - scylla_data3:/var/lib/scylla
+
+  scylla:
+    image: scylladb/scylla:latest
+    ports:
+      - "9042:9042"
+      - "9160:9160"
+    volumes:
+      - scylla_data:/var/lib/scylla
+
+  # Use this in the future: https://github.com/EventStore/EventStore
+  event-store:
+    image: eventstore/eventstore:24.10.4-bookworm-slim
+    ports:
+      - "2113:2113"
     environment:
-      - name=value
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_NODE_PORT=2113
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+    volumes:
+      - type: volume
+        source: eventstore-volume-data
+        target: /var/lib/eventstore
+      - type: volume
+        source: eventstore-volume-logs
+        target: /var/log/eventstore
 
 volumes:
   # qdrant_data:
@@ -268,3 +236,9 @@ volumes:
   mysql_data:
   elastic_data:
     driver: local
+  scylla_data1:
+  scylla_data2:
+  scylla_data3:
+  scylla_data:
+  eventstore-volume-data:
+  eventstore-volume-logs:

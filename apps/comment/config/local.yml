@@ -1,0 +1,45 @@
+server:
+  mode: local
+  gin_mode: debug
+mysql:
+  user: root
+  pass: root
+  host: localhost
+  port: 3306
+  name: comment
+  parse_time: true
+  charset: utf8mb4
+  loc: UTC
+  max_idle_conns: 10
+  max_open_conns: 100
+  max_lifetime: 3600
+log:
+  log_level: debug
+  file_path: storages/logs/comment.log
+  max_size: 100
+  max_backups: 3
+  max_age: 28
+  compress: true
+redis:
+  host: localhost
+  port: 6379
+  password:
+  database: 0
+consul:
+  address: localhost:8500
+  scheme: http
+  data_center: dc1
+  token:
+opentelemetry:
+  endpoint: localhost:4317
+scylla:
+  host: localhost
+  port: 9042
+  username: cassandra
+  password: cassandra
+  keyspace: comment
+kafka:
+  broker: localhost
+  port: 9092
+  topic: comment-events
+  group_id: comment-group

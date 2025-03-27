@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package video;
+
+option go_package = "./pkg/grpc/proto/video";
+
+import "empty.proto";
+
+service VideoService {
+  rpc GetVideo(GetVideoRequest) returns (GetVideoResponse);
+}
+
+message GetVideoRequest {
+  string id = 1;
+}
+
+message GetVideoResponse {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  bool is_searchable = 4;
+  bool is_public = 5;
+  string video_url = 6;
+}
