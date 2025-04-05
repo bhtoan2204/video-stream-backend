@@ -94,57 +94,6 @@ services:
       - jaeger
       # - zipkin
 
-  gateway:
-    build:
-      context: ./apps/gateway
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - GO_ENV=development
-    command: ["./gateway"]
-
-  user:
-    build:
-      context: ./apps/user
-      dockerfile: Dockerfile
-    environment:
-      - GO_ENV=development
-    command: ["./user"]
-
-  video:
-    build:
-      context: ./apps/video
-      dockerfile: Dockerfile
-    environment:
-      - GO_ENV=development
-    command: ["./video"]
-
-  gateway-dev:
-    build:
-      context: ./apps/gateway
-      dockerfile: Dockerfile-dev
-    ports:
-      - "8080:8080"
-    environment:
-      - GO_ENV=development
-    command: ["go", "run", "./cmd/main/main.go"]
-    volumes:
-      - /usr/app:/Users/toanbanh/youtube-backend/gateway
-
-  user-dev:
-    build:
-      context: ./apps/user
-      dockerfile: Dockerfile-dev
-    environment:
-      - GO_ENV=development
-    command: ["go", "run", "./cmd/main/main.go"]
-    deploy:
-      mode: replicated
-      replicas: 1
-    volumes:
-      - /usr/app:/Users/toanbanh/youtube-backend/user
-
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
     ports:
@@ -230,15 +179,41 @@ services:
         source: eventstore-volume-logs
         target: /var/log/eventstore
 
+  vault:
+    image: hashicorp/vault:latest
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: testtoken
+    ports:
+      - 8200:8200
+    privileged: true
+    volumes:
+    - vault-data:/vault/file
+
+  envoy:
+    image: envoyproxy/envoy:v1.24.0
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+    command: /usr/local/bin/envoy -c /etc/envoy/envoy.yaml --service-cluster service-cluster --service-node service-node
+    # depends_on:
+    #   - kafka
+    #   - mysql
+    #   - redis
+    #   - consul
+    #   - elastic
+    #   - scylla
+    #   - event-store
+
 volumes:
   # qdrant_data:
   #   driver: local
   mysql_data:
   elastic_data:
-    driver: local
   scylla_data1:
   scylla_data2:
   scylla_data3:
   scylla_data:
   eventstore-volume-data:
   eventstore-volume-logs:
+  vault-data:

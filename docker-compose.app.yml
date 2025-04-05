@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  gateway:
+    build:
+      context: ./apps/gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - GO_ENV=development
+    command: ["./gateway"]
+
+  user:
+    build:
+      context: ./apps/user
+      dockerfile: Dockerfile
+    environment:
+      - GO_ENV=development
+    command: ["./user"]
+
+  video:
+    build:
+      context: ./apps/video
+      dockerfile: Dockerfile
+    environment:
+      - GO_ENV=development
+    command: ["./video"]
+
+  gateway-dev:
+    build:
+      context: ./apps/gateway
+      dockerfile: Dockerfile-dev
+    ports:
+      - "8080:8080"
+    environment:
+      - GO_ENV=development
+    command: ["go", "run", "./cmd/main/main.go"]
+    volumes:
+      - /usr/app:/Users/toanbanh/youtube-backend/gateway
+
+  user-dev:
+    build:
+      context: ./apps/user
+      dockerfile: Dockerfile-dev
+    environment:
+      - GO_ENV=development
+    command: ["go", "run", "./cmd/main/main.go"]
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - /usr/app:/Users/toanbanh/youtube-backend/user

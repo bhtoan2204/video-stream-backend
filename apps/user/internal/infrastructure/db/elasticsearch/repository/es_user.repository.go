@@ -123,7 +123,7 @@ func (r *ESUserRepository) Search(ctx context.Context, params *query.SearchUserQ
 	if res.IsError() {
 		errStr := res.String()
 		span.RecordError(fmt.Errorf(errStr))
-		global.Logger.Error("Error response from search", zap.String("response", res.String()))
+		global.Logger.Error("Error response from search", zap.Any("response", res))
 		return nil, nil, fmt.Errorf("error response from search: %s", res.String())
 	}
 

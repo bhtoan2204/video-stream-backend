@@ -3,8 +3,8 @@ import { check, sleep } from "k6";
 import { faker } from "https://cdn.skypack.dev/@faker-js/faker";
 
 export const options = {
-  vus: 50,
-  iterations: 5000000, // run once per user
+  vus: 20,
+  iterations: 100, // run once per user
 };
 
 export default function () {

@@ -41,7 +41,7 @@ func NewVideoController(commandBus *command_bus.CommandBus, r *gin.RouterGroup) 
 	r.GET("/:url", instrument(ctrl.GetVideoByURL))
 	r.POST("", middleware.AuthenticationMiddleware(), instrument(ctrl.UploadVideo))
 
-	r.GET("/presigned_url/download", middleware.AuthenticationMiddleware(), instrument(ctrl.GetPresignedURLDownload))
+	r.GET("/presigned_url/download/:key", middleware.AuthenticationMiddleware(), instrument(ctrl.GetPresignedURLDownload))
 	r.GET("/presigned_url/upload", middleware.AuthenticationMiddleware(), instrument(ctrl.GetPresignedURLUpload))
 
 	return ctrl
@@ -102,7 +102,19 @@ func (controller *VideoController) GetPresignedURLDownload(c *gin.Context) {
 		response.ErrorUnauthorizedResponse(c, response.ErrorUnauthorized)
 		return
 	}
-	key := "dbe2d01d-0610-455d-a542-914643a205fb/videos/20250325151518.mp4"
+	key := c.Param("key")
+
+	if key == "" {
+		global.Logger.Error("Key is empty")
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, "Key is empty")
+		return
+	}
+
+	if global.S3Client.VerifyFileExists(c.Request.Context(), key) != nil {
+		global.Logger.Error("File does not exist", zap.String("key", key))
+		response.ErrorBadRequestResponse(c, response.ErrorBadRequest, "File does not exist")
+		return
+	}
 
 	presignedDownloadUrl, err := global.S3Client.GeneratePresignedDownloadURL(c.Request.Context(), key, 100*time.Hour)
 	if err != nil {
