@@ -16,4 +16,6 @@ fi
 helm repo add hashicorp https://helm.releases.hashicorp.com
 helm repo update
 
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
 echo "Helm setup complete."
