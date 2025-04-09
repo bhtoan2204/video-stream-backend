@@ -13,9 +13,7 @@ pipeline {
     HARBOR_PROJECT = 'youtube'
   }
 
-  tools {
-    docker = 'docker'
-  }
+
 
   stages {
     stage('Docker Version') {
