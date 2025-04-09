@@ -1,0 +1,44 @@
+global:
+  enabled: true
+
+server:
+  enabled: true
+  ha:
+    enabled: true
+    replicas: 3
+  dataStorage:
+    enabled: true
+    storageClass: "standard"  # Hoặc dùng storage class cụ thể
+    accessMode: ReadWriteOnce
+    size: 8Gi
+
+  standalone:
+    enabled: false
+
+  extraEnvironmentVars:
+    VAULT_LOG_LEVEL: "info"
+
+  volumes:
+    - name: vault-config
+      configMap:
+        name: vault-config
+
+  volumeMounts:
+    - name: vault-config
+      mountPath: /vault/userconfig/vault-config
+      readOnly: true
+
+  config: |
+    ui = true
+
+    listener "tcp" {
+      address     = "0.0.0.0:8200"
+      tls_disable = 1
+    }
+
+    storage "raft" {
+      path    = "/vault/data"
+      node_id = "vault-0"
+    }
+
+    service_registration "kubernetes" {}
