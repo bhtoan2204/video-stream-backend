@@ -39,9 +39,13 @@ pipeline {
       steps {
         script {
           docker.withTool('docker') {
-            sh 'export TAG=${TAG}'
-            sh 'export HARBOR_IMAGE=${HARBOR_HOST}/${HARBOR_PROJECT}'
-            sh 'docker compose -f docker-compose.app.yml build'
+            def services = ['gateway', 'user', 'video', 'comment', 'worker']
+              for (svc in services) {
+                def imageName = "${env.HARBOR_HOST}/${env.HARBOR_PROJECT}/${svc}:${env.TAG}"
+                def buildContext = "./apps/${svc}"
+                def dockerfile = "${buildContext}/Dockerfile"
+                sh "docker build -t ${imageName} -f ${dockerfile} ${buildContext}"
+              }
           }
         }
       }

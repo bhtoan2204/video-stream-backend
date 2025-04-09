@@ -36,9 +36,9 @@ server:
       tls_disable = 1
     }
 
-    storage "raft" {
-      path    = "/vault/data"
-      node_id = "vault-0"
+    storage "consul" {
+      address = "my-consul-consul-server:8500"
+      path    = "vault/"
     }
 
     service_registration "kubernetes" {}
