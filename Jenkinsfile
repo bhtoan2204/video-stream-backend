@@ -7,7 +7,7 @@ pipeline {
   }
 
   tools {
-    docker 'docker'
+    'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker'
   }
 
   environment {
