@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: jenkins.famfund.io.vn
+  - host: jenkins.domain.com
     http:
       paths:
       - path: /

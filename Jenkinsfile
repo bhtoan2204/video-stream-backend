@@ -28,7 +28,7 @@ pipeline {
         script {
           // Export env for docker-compose to use
           withEnv(["TAG=${env.TAG}", "HARBOR_HOST=${env.HARBOR_HOST}/${env.HARBOR_PROJECT}"]) {
-            sh 'docker-compose -f docker-compose.app.yml build'
+            sh 'docker compose -f docker-compose.app.yml build'
           }
         }
       }

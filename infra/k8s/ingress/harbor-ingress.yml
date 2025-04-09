@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: registry.famfund.io.vn
+  - host: registry.domain.com
     http:
       paths:
       - path: /

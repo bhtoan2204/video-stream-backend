@@ -1,20 +1,20 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: gateway-ingress
-  namespace: default
+  name: vault-ingress
+  namespace: vault
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: api.domain.com
+  - host: vault.domain.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: gateway
+            name: vault
             port:
-              number: 8080
+              number: 8200
