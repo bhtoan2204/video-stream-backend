@@ -18,6 +18,16 @@ pipeline {
   }
 
   stages {
+    stage('Docker Version') {
+      steps {
+        script {
+          docker.withTool('docker') {
+            sh 'docker --version'
+          }
+        }
+      }
+    }
+
     stage('Checkout') {
       steps {
         script {
