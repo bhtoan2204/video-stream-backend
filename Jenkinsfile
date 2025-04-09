@@ -6,10 +6,6 @@ pipeline {
       disableConcurrentBuilds()
   }
 
-  tools {
-    'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker'
-  }
-
   environment {
     HARBOR_USERNAME = credentials('HARBOR_USERNAME')
     HARBOR_PASSWORD = credentials('HARBOR_PASSWORD')
