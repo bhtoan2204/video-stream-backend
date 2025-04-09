@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: gateway-deployment
+    name: video-deployment
     labels:
-        app: gateway
+        app: video
 spec:
     strategy:
         type: RollingUpdate
@@ -13,18 +13,18 @@ spec:
     replicas: 1
     selector:
         matchLabels:
-            app: gateway
+            app: video
     template:
         metadata:
             labels:
-                app: gateway
+                app: video
         spec:
             automountServiceAccountToken: false
             containers:
-                - name: gateway
-                  image: ${HARBOR_HOST}/gateway:${TAG}
+                - name: video
+                  image: ${HARBOR_HOST}/video:${TAG}
                   imagePullPolicy: Always
-                  command: ["./gateway"]
+                  command: ["./video"]
                   env:
                       - name: GO_ENV
                         value: "production"

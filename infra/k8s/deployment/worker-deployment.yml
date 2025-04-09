@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: gateway-deployment
+    name: worker-deployment
     labels:
-        app: gateway
+        app: worker
 spec:
     strategy:
         type: RollingUpdate
@@ -13,18 +13,18 @@ spec:
     replicas: 1
     selector:
         matchLabels:
-            app: gateway
+            app: worker
     template:
         metadata:
             labels:
-                app: gateway
+                app: worker
         spec:
             automountServiceAccountToken: false
             containers:
-                - name: gateway
-                  image: ${HARBOR_HOST}/gateway:${TAG}
+                - name: worker
+                  image: ${HARBOR_HOST}/worker:${TAG}
                   imagePullPolicy: Always
-                  command: ["./gateway"]
+                  command: ["./worker"]
                   env:
                       - name: GO_ENV
                         value: "production"

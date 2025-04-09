@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: gateway-deployment
+    name: comment-deployment
     labels:
-        app: gateway
+        app: comment
 spec:
     strategy:
         type: RollingUpdate
@@ -13,18 +13,18 @@ spec:
     replicas: 1
     selector:
         matchLabels:
-            app: gateway
+            app: comment
     template:
         metadata:
             labels:
-                app: gateway
+                app: comment
         spec:
             automountServiceAccountToken: false
             containers:
-                - name: gateway
-                  image: ${HARBOR_HOST}/gateway:${TAG}
+                - name: comment
+                  image: ${HARBOR_HOST}/comment:${TAG}
                   imagePullPolicy: Always
-                  command: ["./gateway"]
+                  command: ["./comment"]
                   env:
                       - name: GO_ENV
                         value: "production"
