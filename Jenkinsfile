@@ -6,6 +6,10 @@ pipeline {
       disableConcurrentBuilds()
   }
 
+  tools {
+    docker 'docker'
+  }
+
   environment {
     HARBOR_USERNAME = credentials('HARBOR_USERNAME')
     HARBOR_PASSWORD = credentials('HARBOR_PASSWORD')
@@ -26,10 +30,11 @@ pipeline {
     stage('Build Images') {
       steps {
         script {
-          // Export env for docker-compose to use
-          withEnv(["TAG=${env.TAG}", "HARBOR_HOST=${env.HARBOR_HOST}/${env.HARBOR_PROJECT}"]) {
-            sh 'docker compose -f docker-compose.app.yml build'
-          }
+          sh '''
+            export TAG=${TAG}
+            export HARBOR_IMAGE=${HARBOR_HOST}/${HARBOR_PROJECT}
+            docker compose -f docker-compose.app.yml build
+          '''
         }
       }
     }
