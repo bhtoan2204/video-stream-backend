@@ -5,10 +5,10 @@ server:
   enabled: true
   ha:
     enabled: true
-    replicas: 3
+    replicas: 1
   dataStorage:
     enabled: true
-    storageClass: "standard"  # Hoặc dùng storage class cụ thể
+    storageClass: "standard" 
     accessMode: ReadWriteOnce
     size: 8Gi
 

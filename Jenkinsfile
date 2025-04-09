@@ -38,11 +38,11 @@ pipeline {
     stage('Build Images') {
       steps {
         script {
-          sh '''
-            export TAG=${TAG}
-            export HARBOR_IMAGE=${HARBOR_HOST}/${HARBOR_PROJECT}
-            docker compose -f docker-compose.app.yml build
-          '''
+          docker.withTool('docker') {
+            sh 'export TAG=${TAG}'
+            sh 'export HARBOR_IMAGE=${HARBOR_HOST}/${HARBOR_PROJECT}'
+            sh 'docker compose -f docker-compose.app.yml build'
+          }
         }
       }
     }
@@ -50,7 +50,9 @@ pipeline {
     stage('Login to Harbor') {
       steps {
         script {
-          sh "docker login ${env.HARBOR_HOST} -u ${env.HARBOR_CRED} -p ${env.HARBOR_PASS}"
+          docker.withTool('docker') {
+            sh "docker login ${env.HARBOR_HOST} -u ${env.HARBOR_CRED} -p ${env.HARBOR_PASS}"
+          }
         }
       }
     }
@@ -58,10 +60,12 @@ pipeline {
     stage('Push Images') {
       steps {
         script {
-          def services = ['gateway', 'user', 'video', 'comment', 'worker']
-          for (svc in services) {
-            def image = "${env.HARBOR_HOST}/${env.HARBOR_PROJECT}/${svc}:${env.TAG}"
-            sh "docker push ${image}"
+          docker.withTool('docker') {
+            def services = ['gateway', 'user', 'video', 'comment', 'worker']
+            for (svc in services) {
+              def image = "${env.HARBOR_HOST}/${env.HARBOR_PROJECT}/${svc}:${env.TAG}"
+              sh "docker push ${image}"
+            }
           }
         }
       }
@@ -70,7 +74,9 @@ pipeline {
     stage('Clean up') {
       steps {
         script {
-          sh 'docker system prune -af'
+          docker.withTool('docker') {
+            sh 'docker system prune -af'
+          }
         }
       }
     }
