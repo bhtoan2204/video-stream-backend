@@ -13,7 +13,7 @@ pipeline {
     HARBOR_PROJECT = 'youtube'
   }
 
-  tool {
+  tools {
     docker = 'docker'
   }
 
