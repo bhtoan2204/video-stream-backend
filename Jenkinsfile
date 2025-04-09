@@ -11,6 +11,7 @@ pipeline {
     HARBOR_PASSWORD = credentials('HARBOR_PASSWORD')
     HARBOR_HOST = credentials('HARBOR_HOST')
     HARBOR_PROJECT = 'youtube'
+    TAG = "latest"
   }
 
 
