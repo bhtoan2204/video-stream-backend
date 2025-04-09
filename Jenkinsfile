@@ -13,6 +13,10 @@ pipeline {
     HARBOR_PROJECT = 'youtube'
   }
 
+  tool {
+    docker = 'docker'
+  }
+
   stages {
     stage('Checkout') {
       steps {
