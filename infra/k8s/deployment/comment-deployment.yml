@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: comment-deployment
+    labels:
+        app: comment
+spec:
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 0
+    replicas: 1
+    selector:
+        matchLabels:
+            app: comment
+    template:
+        metadata:
+            labels:
+                app: comment
+        spec:
+            automountServiceAccountToken: false
+            containers:
+                - name: comment
+                  image: ${HARBOR_HOST}/comment:${TAG}
+                  imagePullPolicy: Always
+                  command: ["./comment"]
+                  env:
+                      - name: GO_ENV
+                        value: "production"

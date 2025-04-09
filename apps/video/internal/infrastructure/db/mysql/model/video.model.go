@@ -29,7 +29,7 @@ func (v *Video) AfterCreate(tx *gorm.DB) (err error) {
 		Dislike:   0,
 		Thumbnail: "",
 	}
-	if err := tx.Create(&videoMetadata).Error; err != nil {
+	if err := tx.Model(&VideoMetadata{}).Create(&videoMetadata).Error; err != nil {
 		return err
 	}
 

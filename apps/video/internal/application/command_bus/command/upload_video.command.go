@@ -1,6 +1,7 @@
 package command
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/bhtoan2204/video/internal/domain/entities"
@@ -41,7 +42,7 @@ func (c *UploadVideoCommand) Validate() error {
 				err.Tag(),
 				err.Value())
 		}
-		return fmt.Errorf(errorMessage)
+		return errors.New(errorMessage)
 	}
 	return nil
 }

@@ -66,6 +66,10 @@ run-k6:
 	@echo "Running K6"
 	@cd testing && k6 run login-test.js
 
+generate-swagger:
+	@echo "Generating Swagger Documentation"
+	@cd apps/gateway/cmd/main && swag init --parseDependency -g main.go -d .,../../internal/modules --output docs/swagger --parseDepth 2 --exclude "test,mocks,docs"
+
 .PHONY: \
 	run-gateway \
 	run-user \
@@ -84,3 +88,4 @@ run-k6:
 	build-user \
 	build-video \
 	run-k6
+	generate-swagger

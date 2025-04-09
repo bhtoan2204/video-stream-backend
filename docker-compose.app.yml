@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  gateway:
+    image: ${HARBOR_HOST}/gateway:${TAG}
+    build:
+      context: ./apps/gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    command: ["./gateway"]
+
+  user:
+    image: ${HARBOR_HOST}/user:${TAG}
+    build:
+      context: ./apps/user
+      dockerfile: Dockerfile
+    command: ["./user"]
+
+  video:
+    image: ${HARBOR_HOST}/video:${TAG}
+    build:
+      context: ./apps/video
+      dockerfile: Dockerfile
+    command: ["./video"]
+
+  comment:
+    image: ${HARBOR_HOST}/comment:${TAG}
+    build:
+      context: ./apps/comment
+      dockerfile: Dockerfile
+    command: ["./comment"]
+
+  worker:
+    image: ${HARBOR_HOST}/worker:${TAG}
+    build:
+      context: ./apps/worker
+      dockerfile: Dockerfile
+    command: ["./worker"]

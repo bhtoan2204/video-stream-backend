@@ -11,7 +11,7 @@ func SetupVideoRoutes(api *gin.RouterGroup, instrument func(gin.HandlerFunc) gin
 	{
 		videoGroup.GET("/:url", instrument(handler.GetVideoByURL))
 		videoGroup.POST("", middleware.AuthenticationMiddleware(), instrument(handler.UploadVideo))
-		videoGroup.GET("/presigned_url/download", middleware.AuthenticationMiddleware(), instrument(handler.GetPresignedURLDownload))
+		videoGroup.GET("/presigned_url/download/:key", middleware.AuthenticationMiddleware(), instrument(handler.GetPresignedURLDownload))
 		videoGroup.GET("/presigned_url/upload", middleware.AuthenticationMiddleware(), instrument(handler.GetPresignedURLUpload))
 	}
 }

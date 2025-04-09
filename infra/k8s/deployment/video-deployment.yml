@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: video-deployment
+    labels:
+        app: video
+spec:
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 0
+    replicas: 1
+    selector:
+        matchLabels:
+            app: video
+    template:
+        metadata:
+            labels:
+                app: video
+        spec:
+            automountServiceAccountToken: false
+            containers:
+                - name: video
+                  image: ${HARBOR_HOST}/video:${TAG}
+                  imagePullPolicy: Always
+                  command: ["./video"]
+                  env:
+                      - name: GO_ENV
+                        value: "production"

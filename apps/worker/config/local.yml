@@ -1,5 +1,6 @@
 server:
   mode: local
+  gin_mode: debug
 smtp:
   host: smtp.gmail.com
   port: 587
@@ -10,3 +11,15 @@ redis:
   port: 6379
   password:
   database: 0
+opentelemetry:
+  endpoint: localhost:4317
+s3:
+  bucket: youtube-golang
+  region: ap-southeast-1
+log:
+  log_level: debug
+  file_path: storages/logs/worker.log
+  max_size: 100
+  max_backups: 3
+  max_age: 28
+  compress: true

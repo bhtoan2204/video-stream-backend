@@ -4,17 +4,19 @@ import (
 	"log"
 	"net/smtp"
 	"os"
+	"strconv"
 
 	"github.com/aymerick/raymond"
+	"github.com/bhtoan2204/worker/global"
 	"github.com/bhtoan2204/worker/internal/payload"
 )
 
 func SendEmail(email payload.EmailPayload) error {
 	// TODO: replace this by config viper
-	smtpHost := "smtp.example.com"
-	smtpPort := "587"
-	senderEmail := "your-email@example.com"
-	password := "your-password"
+	smtpHost := global.Config.SMTPConfig.Host
+	smtpPort := global.Config.SMTPConfig.Port
+	senderEmail := global.Config.SMTPConfig.Username
+	password := global.Config.SMTPConfig.Password
 
 	templateContent, err := os.ReadFile("templates/" + email.Template)
 	if err != nil {
@@ -34,7 +36,7 @@ func SendEmail(email payload.EmailPayload) error {
 		renderedBody)
 
 	auth := smtp.PlainAuth("", senderEmail, password, smtpHost)
-	addr := smtpHost + ":" + smtpPort
+	addr := smtpHost + ":" + strconv.Itoa(smtpPort)
 
 	err = smtp.SendMail(addr, auth, senderEmail, []string{email.To}, msg)
 	if err != nil {
