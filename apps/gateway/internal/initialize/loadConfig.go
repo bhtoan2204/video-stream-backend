@@ -3,30 +3,76 @@ package initialize
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/bhtoan2204/gateway/global"
-
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
 func InitLoadConfig() {
-	viper := viper.New()
-	viper.AddConfigPath("config")
-	viper.SetConfigType("yml")
-	configName := os.Getenv("GO_ENV")
-	if configName == "" {
-		configName = "local"
-	}
-	viper.SetConfigName(configName)
-
-	// Read the config file
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("fatal error config file: %s", err))
+	env := os.Getenv("GO_ENV")
+	if env == "" {
+		env = "local"
 	}
 
-	err = viper.Unmarshal(&global.Config)
-	if err != nil {
-		panic(fmt.Errorf("unable to decode configuration: %s", err))
+	if env != "production" {
+		if err := godotenv.Load(
+			fmt.Sprintf("config/.env.%s", env),
+		); err != nil {
+			panic(fmt.Errorf("error loading .env files: %w", err))
+		}
 	}
+
+	v := viper.New()
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	bindEnv(v)
+
+	if err := v.Unmarshal(&global.Config); err != nil {
+		panic(fmt.Errorf("unable to decode configuration: %w", err))
+	}
+}
+
+func bindEnv(v *viper.Viper) {
+	// Set up mappings for environment variables to configuration structure
+	v.BindEnv("server.port", "SERVER_PORT")
+	v.BindEnv("server.mode", "SERVER_MODE")
+
+	// Redis mappings
+	v.BindEnv("redis.host", "REDIS_HOST")
+	v.BindEnv("redis.port", "REDIS_PORT")
+	v.BindEnv("redis.password", "REDIS_PASSWORD")
+	v.BindEnv("redis.database", "REDIS_DATABASE")
+
+	// Log mappings
+	v.BindEnv("log.log_level", "LOG_LOG_LEVEL")
+	v.BindEnv("log.file_path", "LOG_FILE_PATH")
+	v.BindEnv("log.max_size", "LOG_MAX_SIZE")
+	v.BindEnv("log.max_backups", "LOG_MAX_BACKUPS")
+	v.BindEnv("log.max_age", "LOG_MAX_AGE")
+	v.BindEnv("log.compress", "LOG_COMPRESS")
+
+	// Consul mappings
+	v.BindEnv("consul.address", "CONSUL_ADDRESS")
+	v.BindEnv("consul.scheme", "CONSUL_SCHEME")
+	v.BindEnv("consul.data_center", "CONSUL_DATA_CENTER")
+	v.BindEnv("consul.token", "CONSUL_TOKEN")
+
+	// Kafka mappings
+	v.BindEnv("kafka.broker", "KAFKA_BROKER")
+	v.BindEnv("kafka.port", "KAFKA_PORT")
+	v.BindEnv("kafka.topic", "KAFKA_TOPIC")
+	v.BindEnv("kafka.group_id", "KAFKA_GROUP_ID")
+
+	// Security mappings
+	v.BindEnv("security.jwt_access_secret", "SECURITY_JWT_ACCESS_SECRET")
+	v.BindEnv("security.jwt_refresh_secret", "SECURITY_JWT_REFRESH_SECRET")
+	v.BindEnv("security.jwt_access_expiration", "SECURITY_JWT_ACCESS_EXPIRATION")
+	v.BindEnv("security.jwt_refresh_expiration", "SECURITY_JWT_REFRESH_EXPIRATION")
+	v.BindEnv("security.hmac_secret", "SECURITY_HMAC_SECRET")
+
+	// Jaeger mappings
+	v.BindEnv("jaeger.endpoint", "JAEGER_ENDPOINT")
 }

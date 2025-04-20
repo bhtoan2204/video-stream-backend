@@ -14,6 +14,7 @@ import (
 
 func InitRedis() {
 	rc := global.Config.RedisConfig
+
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%v", rc.Host, rc.Port),
 		Password: rc.Password, // no password set

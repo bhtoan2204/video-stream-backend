@@ -15,6 +15,7 @@ require (
 	github.com/googollee/go-socket.io v1.7.0
 	github.com/hashicorp/consul/api v1.31.1
 	github.com/hashicorp/go-uuid v1.0.3
+	github.com/joho/godotenv v1.5.1
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/segmentio/kafka-go v0.4.47
